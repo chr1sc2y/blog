@@ -9,7 +9,7 @@ showtoc: false
 
 🇦🇺🇨🇳
 
-This is Chris, Software Engineer at a start-up, previously at **Amazon** and **Tencent**.
+This is Zhengyu, Software Engineer at **ByteDance**, previously at **Amazon** and **Tencent**.
 
 Checkout my resume:
 

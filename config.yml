@@ -1,6 +1,6 @@
 baseURL: 'https://prov1dence.top/'
 languageCode: 'en-us'
-title: 'ChrisChen - 尾張'
+title: 'Zhengyu Chen - 尾張'
 theme: "PaperMod"
 
 pagination:
@@ -18,8 +18,8 @@ minify:
 
 params:
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
-  title: 'ChrisChen'
-  description: "Prov1dence Portfolio"
+  title: 'Zhengyu Chen'
+  description: "Zhengyu Chen's Blog"
   keywords: [Blog, Portfolio, PaperMod]
   # author: "Zhengyu"
   # author: ["Me", "You"] # multiple authors
@@ -58,7 +58,7 @@ params:
   # profile-mode
   profileMode:
     enabled: true # needs to be explicitly set
-    title: 'Chris Chen'
+    title: 'Zhengyu Chen'
     # subtitle: "Zhengyu"
     # imageUrl: "<img location>"
     # imageWidth: 120
