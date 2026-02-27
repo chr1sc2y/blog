@@ -1,3 +1,10 @@
+---
+title: "Google ADK 架构解析：如何用软件工程思维构建 AI Agent 系统"
+date: 2026-02-27T23:01:12+08:00
+draft: false
+categories: ["AI Agent"]
+---
+
 # Google ADK 架构解析：如何用软件工程思维构建 AI Agent 系统
 
 Agent Development Kit（ADK）是 Google 在 2025 年开源的一个 AI Agent 开发框架，目前在 GitHub 上有超过 18000 个 star，支持 Python、TypeScript、Go 和 Java 四种语言的实现。ADK 的设计目标很明确：让 Agent 开发回归软件工程的范式，而不是停留在 prompt engineering 的阶段。这意味着它需要提供清晰的抽象层级、可组合的模块、确定性的执行流程、以及工业级的状态管理能力。
