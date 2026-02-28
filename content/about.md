@@ -7,13 +7,13 @@ showtoc: false
 
 ### Hi there 👋
 
-🇦🇺🇨🇳
+🇨🇳 🇦🇺
 
 This is Zhengyu, Software Engineer at **ByteDance**, previously at **Amazon**, **Tencent**, and a Startup.
 
 Checkout my resume:
 
-- [English](https://portfolio-website-resource.s3.ap-southeast-2.amazonaws.com/Resume_Zhengyu_Chen_EN_2025.pdf)
-- [Simplified Chinese](https://portfolio-website-resource.s3.ap-southeast-2.amazonaws.com/%E9%99%88%E6%AD%A3%E5%AE%87_%E7%AE%80%E5%8E%86_2025.pdf)
+- [English](/attachments/Resume_Zhengyu_Chen_EN_2026.pdf)
+- [Simplified Chinese](/attachments/陈正宇_简历_2026.pdf)
 
 Cheers 🍻
