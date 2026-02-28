@@ -9,7 +9,7 @@ showtoc: false
 
 🇦🇺🇨🇳
 
-This is Zhengyu, Software Engineer at **ByteDance**, previously at **Amazon** and **Tencent**.
+This is Zhengyu, Software Engineer at **ByteDance**, previously at **Amazon**, **Tencent**, and a Startup.
 
 Checkout my resume:
 
