@@ -1,0 +1,66 @@
+---
+description: Hugo 技术博客项目的写作规范和项目约定
+alwaysApply: true
+---
+
+# Hugo 技术博客项目规范
+
+## 项目概述
+
+这是 Zhengyu Chen（陈正宇）的个人技术博客，使用 Hugo 静态站点生成器 + PaperMod 主题构建，托管在 https://prov1dence.top/。作者是一名有游戏后台（腾讯天美）和分布式系统背景的软件工程师，内容覆盖 C++、Python、系统设计、AI Agent、机器学习、算法等方向。
+
+## 目录结构
+
+- `content/posts/` — 所有博文，按主题分子目录（cpp/, python/, ai-agent/, computer-science/, 等）
+- `content/about.md` — 作者介绍页
+- `config.yml` — Hugo 站点配置（PaperMod 主题）
+- `themes/PaperMod/` — 主题文件
+- `public/` — 生成的静态站点（独立 Git 仓库，部署用）
+- `static/attachments/` — 简历等附件
+
+## 文章 Front Matter 格式
+
+```yaml
+---
+title: "文章标题"
+date: 2026-01-01T00:00:00+08:00
+draft: false
+categories: ["分类名"]
+---
+```
+
+- `title` 使用双引号包裹
+- `date` 使用 ISO 8601 格式，时区 +08:00
+- `draft: true` 的文章不会被构建（buildDrafts: false）
+- `categories` 用于归类，一般为单个分类
+
+## 写作风格
+
+- 中文技术文章为主，部分英文文章（如 Deep Learning 方向）
+- 文章开头用一级标题 `#` 重复 title，随后进入正文
+- 使用编号章节结构（## 1 xxx, ### 1.1 xxx）组织长文
+- 代码块标注语言（```cpp, ```python, ```shell 等）
+- 行文兼顾深度和可读性：先介绍概念背景，再深入源码或实现细节，最后总结权衡
+- 图片使用外部图床 URL（raw.githubusercontent.com）或 Hugo 相对路径
+- ASCII 图表用于架构和流程说明
+
+## 构建和部署
+
+- 本地预览：`hugo serve`
+- 生成站点：`hugo`（输出到 `public/`）
+- `public/` 是独立的 Git 仓库（prov1dence.github.io），提交时需要分别在主仓库和 public 子仓库中 commit & push
+
+## 代表性文章（风格参考）
+
+- `ai-agent/google-adk-architecture.md` — 深度架构解析，含大量 ASCII 图和源码分析
+- `python/python-source-code-interpreter.md` — CPython 源码分析系列
+- `cpp/smart pointer/smart-pointer.md` — C++ 智能指针实现
+- `cpp/coroutine/C++ coroutine - function and coroutine.md` — C++ 协程机制
+- `service-governance/load-balancing.md` — 负载均衡算法
+- `Message Broker/kafka.md` — Kafka 入门，概念+源码级解析
+- `serialization/protocol-buffer.md` — ProtoBuf 语法和编码原理
+- `reinforcement learning/heuristic-search-and-reinforcement-learning.md` — 启发式搜索与强化学习
+- `Design-Pattern/C++ template singleton.md` — C++ 设计模式
+- `Deep-Learning/Methods-to-Prevent-Overfitting-in-Deep-Learning.md` — 英文深度学习文章
+- `experience/2022.md` — 个人经历与行业思考
+- `computer-science/Distributed System.md` — 分布式系统基础
