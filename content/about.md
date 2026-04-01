@@ -7,6 +7,7 @@ showtoc: false
 
 ### Hi there 👋
 
+This is Zhengyu, Software Engineer at ByteDance, previously at Amazon, Tencent, and a Startup.
 
 Checkout my resume:
 
