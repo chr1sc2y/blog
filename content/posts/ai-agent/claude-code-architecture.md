@@ -1,0 +1,525 @@
+---
+title: "Claude Code 架构解析：从源码看现代 AI Agent 的四大核心设计"
+date: 2026-04-01T10:00:00+08:00
+draft: false
+categories: ["AI Agent"]
+---
+
+# Claude Code 架构解析：从源码看现代 AI Agent 的四大核心设计
+
+Claude Code 是 Anthropic 于 2025 年 2 月发布的 AI 编程 Agent，内部代号 **Tengu**（天狗）。从第一个 v0.2 beta 到泄露时的 v2.1.88，Claude Code 在一年多的时间里经历了快速迭代，陆续引入了后台 Agent 支持、auto 权限模式、MCP 服务器集成、Agent Teams 多 Agent 协作等功能。与 LangChain、Google ADK 等以"框架"自居的项目不同，Claude Code 本身是一个面向终端用户的产品，它不提供 SDK 让开发者构建自己的 Agent，而是直接作为一个可以在终端中运行的编程伙伴存在。这个定位差异决定了它的架构设计面临着一组完全不同的约束：不需要考虑可扩展性和可组合性这些框架层面的抽象问题，但必须在安全性、上下文管理、流式交互和错误恢复等工程维度上做到生产级可靠。
+
+2026 年 3 月底，Claude Code 的完整 TypeScript 源码因一次 npm 发布配置失误而被公开。安全研究者 Chaofan Shou 发现 Anthropic 在向 npm 发布 v2.1.88 版本时，遗留了构建产物中的 `.map` 文件（Source Map），该文件指向了 Cloudflare R2 存储桶上一份未经混淆的源码压缩包。多个 GitHub 镜像仓库迅速备份了代码，Anthropic 虽然在数小时内推送了更新并删除旧版本，但源码已无法收回。
+
+这份意外泄露的代码库包含近 2000 个文件、超过 50 万行 TypeScript 代码，涵盖了完整的 Agent 循环、40 余种工具实现、权限管线、上下文压缩策略，以及 44 个内部 feature flag 背后的未发布功能。它为我们提供了一个从源码级别审视工业级 AI Agent 内部设计的罕见机会。Anthropic 在 Claude Code 上贯彻的核心设计哲学是 **"Less scaffolding, more model"**，即尽可能信任模型的推理能力，将系统复杂度从编排层转移到模型自身。这意味着没有 DAG、没有分类器、没有 RAG 系统，整个架构的核心是一个朴素的推理-行动循环。
+
+## 1 AI Agent 与程序员的新工作范式
+
+### 1.1 从代码补全到自主执行
+
+2023 年之前，AI 对程序员工作方式的影响主要停留在"补全"层面。GitHub Copilot 在光标位置生成代码片段，开发者逐行审阅并决定是否接受。这种交互模式本质上是人类驱动的：开发者负责拆解任务、确定实现路径、编写代码骨架，AI 只在局部细节上提供加速。
+
+2024 年至今，AI 编程工具正在经历从 Copilot 到 Agent 的范式转变。Cursor、Windsurf、Claude Code 等产品不再等待开发者逐行指示，而是接受一个高层目标（"重构这个模块的数据库访问层"），然后自主地搜索代码库、阅读文件、编写代码、运行测试、修复错误，直到任务完成或遇到需要人类决策的节点。这个转变的核心在于 Agent 具备了自主的推理-行动循环能力，能够将一个模糊的目标分解为具体的步骤序列，并在执行过程中根据反馈动态调整计划。OpenAI 在一项为期五个月的内部实验中，仅凭 3 名工程师使用 Codex Agent 就生成了约 100 万行代码，工程师的角色从"写代码"转变为"设计环境、描述意图、构建反馈循环"。这个转变正在重新定义软件工程师的工作内容。
+
+### 1.2 编程 Agent 的四大核心维度
+
+理解一个编程 Agent 的架构设计，可以从四个维度来切入。这四个维度并非 Claude Code 特有，而是当前 AI Agent 领域的共识性框架，不同的 Agent 产品在每个维度上的设计选择构成了它们之间的核心差异。
+
+第一个维度是**推理与规划**。Agent 如何将用户的高层目标转化为可执行的步骤序列？它的核心推理循环是什么结构？当执行过程中遇到意外情况时，它如何调整计划？Claude Code、Cursor、OpenAI Codex 都采用了某种形式的 ReAct 循环作为推理核心，但在编排复杂度和模型信任程度上有显著差异。
+
+第二个维度是**记忆**。Agent 如何管理有限的上下文窗口？当对话历史和工具结果不断累积，逼近 token 上限时，系统如何决定保留什么、丢弃什么、压缩什么？Claude Code 使用五层渐进式压缩管线，Cursor 依赖代码库索引和 embedding 检索，两种策略体现了对"Agent 应该如何认识代码库"这个问题的不同回答。
+
+第三个维度是**工具使用**。Agent 通过什么机制与外部环境交互？它的工具体系如何定义、如何编排多个工具的并行执行、如何处理工具执行中的错误？
+
+第四个维度是**感知与安全**。Agent 如何评估自身行为的风险？一个可以在用户机器上执行任意 Bash 命令的 Agent，如何在自主性和安全性之间取得平衡？
+
+### 1.3 Claude Code 的整体架构
+
+在进入四个维度的逐一分析之前，先从宏观上理解 Claude Code 的整体分层结构：
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                       用户界面层                                  │
+│       REPL (Ink/React) │ SDK / 无头模式 │ 远程模式 (WebSocket)   │
+├─────────────────────────────────────────────────────────────────┤
+│                    查询引擎 (QueryEngine.ts)                      │
+│          会话状态 │ 消息生命周期 │ SDK 门面                        │
+├─────────────────────────────────────────────────────────────────┤
+│                    Agent 循环 (query.ts)                          │
+│      while(true) { 准备上下文 → 调用模型 → 执行工具 → 递归 }      │
+├──────────────┬──────────────┬───────────────────────────────────┤
+│   工具系统    │   权限管线    │          上下文管理                 │
+│  Tool.ts     │  permissions │                                   │
+│  工具编排     │  .ts         │  自动压缩 │ 微压缩                  │
+│  流式执行器   │  useCanUse   │  历史截断 │ 上下文折叠              │
+│  工具执行     │  Tool.tsx    │  工具结果预算                       │
+│              │              │  会话记忆                           │
+├──────────────┴──────────────┴───────────────────────────────────┤
+│                    API 通信层 (claude.ts + withRetry.ts)          │
+│          流式传输 │ 重试 / 降级 │ 模型路由                         │
+├─────────────────────────────────────────────────────────────────┤
+│                       基础设施层                                  │
+│      全局状态 │ 数据分析 │ MCP │ OAuth │ 配置管理                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+自底向上，基础设施层管理全局状态、配置、分析和认证；API 通信层封装与 Anthropic 模型的通信，包含流式传输、重试和模型降级；Agent 循环层驱动核心的推理-行动循环；工具系统、权限管线和上下文管理三个子系统分别承担工具执行、安全控制和上下文窗口管理的职责；查询引擎为 SDK 和无头模式提供会话级封装；最上层是面向用户的三种交互界面。接下来的四章将沿着推理与规划、记忆、工具使用、感知与安全四个维度，逐一深入这些子系统的源码实现。
+
+## 2 推理与规划
+
+### 2.1 ReAct 范式与 `while(true)` 循环
+
+现代 AI Agent 的推理核心大多遵循 **ReAct**（Reasoning + Acting）范式：模型在每一轮交互中先进行推理（生成思考过程和行动计划），然后执行行动（调用工具），再根据行动的结果进行下一轮推理。这个"思考-行动-观察"的循环不断重复，直到模型判断任务已经完成。OpenAI Codex 的官方技术文档中将这个循环称为"agent loop"，其核心结构与 Claude Code 几乎一致：接收输入 → 生成响应或工具调用 → 执行工具 → 将结果追加到 prompt → 循环直到生成最终响应。
+
+当我们审视 LangChain 的 Runnable 管道、Google ADK 的事件驱动 Agent 树、或者 AutoGen 的多角色对话系统时，会发现这些框架都在 ReAct 循环之上引入了额外的编排机制。Claude Code 做了一个截然相反的选择：将全部推理编排逻辑集中在 `src/query.ts` 的单一循环中，拒绝引入 DAG、状态机或图执行引擎。这不是一个关于代码风格的决定，而是一个关于**复杂度预算分配**的决定：将编排层面的显式结构化替换为对模型推理能力的隐式信任。系统的正确性更多地依赖于模型的行为一致性，而非代码的结构保证。
+
+```typescript
+async function* queryLoop(
+  params: QueryParams,
+  consumedCommandUuids: string[],
+): AsyncGenerator<StreamEvent | Message | TombstoneMessage, Terminal> {
+  let state: State = {
+    messages: params.messages,
+    toolUseContext: params.toolUseContext,
+    // ...
+  }
+
+  while (true) {
+    let { toolUseContext } = state
+    const { messages, turnCount } = state
+
+    // 1. 准备消息：compaction、snip、microcompact、context collapse
+    let messagesForQuery = [...getMessagesAfterCompactBoundary(messages)]
+    messagesForQuery = await applyToolResultBudget(messagesForQuery, ...)
+
+    // 2. 调用模型（流式）
+    const stream = deps.callModel(messagesForQuery, systemPrompt, ...)
+    for await (const event of stream) {
+      // 收集 assistantMessages、toolUseBlocks
+    }
+
+    // 3. 无 tool_use → 终止
+    if (!needsFollowUp) {
+      return { reason: 'completed' }
+    }
+
+    // 4. 执行工具
+    const toolUpdates = streamingToolExecutor
+      ? streamingToolExecutor.getRemainingResults()
+      : runTools(toolUseBlocks, assistantMessages, canUseTool, toolUseContext)
+
+    // 5. 收集结果，递归
+    state = {
+      messages: [...messagesForQuery, ...assistantMessages, ...toolResults],
+      turnCount: nextTurnCount,
+      transition: { reason: 'next_turn' },
+    }
+  } // while (true)
+}
+```
+
+这段代码是 Claude Code 1700 多行 `query.ts` 的骨架。每一次循环迭代对应 ReAct 范式中的一个完整回合：准备上下文（Reasoning 的输入）→ 调用模型（Reasoning）→ 如果模型请求工具调用则执行工具（Acting）→ 将工具结果追加到消息列表（Observation）→ 进入下一次迭代。当模型返回的响应中不包含 `tool_use` 块时，表示模型认为任务已完成，循环终止。
+
+`queryLoop` 的返回类型是 `AsyncGenerator`，这个选择直接塑造了整个系统的事件流架构。异步生成器让循环中的每一步都可以通过 `yield` 向上游推送事件（流式文本、工具进度、压缩通知），而不需要引入额外的事件总线或发布-订阅机制。这与 Google ADK 中 `BaseAgent.run_async` 返回 `AsyncGenerator[Event, None]` 的设计如出一辙，两者都将异步生成器作为 Agent 运行时事件流的基础设施。
+
+不过，这种设计同时将全团队的协作瓶颈压缩到了一个文件上。`query.ts` 中每一个新功能（压缩、降级、流式回退、stop hook）都以条件分支的形式嵌入循环体，随时间推移不断累积控制流路径的密度。循环中有 7 个 `continue` 站点，每一个都代表一种隐式的状态机跳转，是潜在的 bug 来源。更重要的是，当模型升级或降级时，同一份循环代码可能表现出截然不同的行为，因为系统的正确性依赖于模型的一致性而非代码的结构保证。这是"less scaffolding"设计的核心风险：你获得了架构的简洁性，但把复杂度转嫁给了模型行为的可预测性。
+
+### 2.2 单次推理回合的完整生命周期
+
+上一节展示的是循环骨架，这一节展开每次迭代内部的关键环节。
+
+一次推理回合从**准备上下文**开始。系统先从消息列表中截取压缩边界之后的部分（`getMessagesAfterCompactBoundary`），然后依次经过工具结果预算裁剪、历史截断、微压缩、上下文折叠和自动压缩五层处理（第 3 章会展开每一层的机制）。准备好的消息列表还需要经过**系统 prompt 组装**。`getSystemPrompt`（`src/constants/prompts.ts`）将系统 prompt 拆分为**静态段**（intro、system、tasks、actions、tools、tone）和**动态段**（memory、MCP 指令、scratchpad 等），两者之间用一个 `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` 标记隔开。静态段在多次 API 调用之间可以被缓存复用，动态段每次调用都需要重新构建。这种 prompt 缓存边界的设计直接影响 API 成本：静态段命中缓存后，后续调用只需要为动态段的 token 付费。
+
+上下文准备完成后，系统通过 `deps.callModel` 发起流式 API 调用。在 `claude.ts` 中，模型调用涉及一个在 AI Agent 系统中普遍存在的经济权衡：**思考模式**（thinking config）的选择。Claude Code 默认使用 `adaptive` 模式，将推理深度的决策权完全交给模型，这意味着同一个用户查询在不同时刻可能消耗截然不同的 token 预算，使得 API 成本变得不可预测。对于 Anthropic 自身而言，这种不可预测性可以通过服务端的容量规划来吸收；但对于通过 API key 使用 Claude Code 的企业用户来说，`adaptive` 思考意味着无法对单次会话设定可靠的成本上限。源码中保留了 `enabled`（固定预算）和 `disabled` 模式作为逃逸阀，但默认选择 `adaptive` 表明 Anthropic 判断质量改善带来的用户留存价值高于成本可预测性带来的企业销售价值。
+
+模型的响应以 token 为单位逐步返回，系统在流式接收过程中完成两件事：将文本 token 通过 `yield` 推送给上游（实现逐字显示的交互体验），以及识别和收集响应中的 `tool_use` 块。如果启用了 `StreamingToolExecutor`，工具的执行甚至可以在模型还在生成后续输出时就开始（第 4 章会详细讨论）。当模型响应完成且包含 `tool_use` 块时，所有工具的执行结果被包装为 `UserMessage`（在 Anthropic 的消息协议中，工具结果由 "user" 角色承载），追加到消息列表中，然后系统构建新的 `State` 对象并 `continue`，开始下一次循环迭代。
+
+### 2.3 状态管理与可测试性
+
+Agent 循环中最容易失控的部分是跨迭代的状态管理。Claude Code 对此的处理是将所有跨迭代状态封装进一个显式的 `State` 类型：
+
+```typescript
+type State = {
+  messages: Message[]
+  toolUseContext: ToolUseContext
+  autoCompactTracking: AutoCompactTrackingState | undefined
+  maxOutputTokensRecoveryCount: number
+  hasAttemptedReactiveCompact: boolean
+  maxOutputTokensOverride: number | undefined
+  pendingToolUseSummary: Promise<ToolUseSummaryMessage | null> | undefined
+  stopHookActive: boolean | undefined
+  turnCount: number
+  transition: Continue | undefined
+}
+```
+
+每一次循环迭代在开头解构 `state`，在结尾通过 `state = { ... }` 整体赋值来"提交"状态变更。这种模式的好处在于，所有的 `continue` 站点都必须构建完整的新 `State`，编译器会在任何字段遗漏时报错。`transition` 字段记录了上一次迭代 `continue` 的原因，源码注释明确说明这个字段主要用于让测试断言恢复路径是否被正确触发。
+
+可测试性在这个系统中不是附带品，而是刻意的架构选择。`queryLoop` 通过 `params.deps` 接受外部依赖注入，`productionDeps()` 返回的对象包含 `callModel`、`microcompact`、`uuid` 等可替换的函数。这使得测试可以注入 mock 实现来验证"给定模型返回这组 tool_use 块，系统会正确执行工具并将结果反馈给模型"，而不需要启动真实的 API 连接。
+
+### 2.4 工程韧性：模型降级、流式回退与重试
+
+真实世界中的 API 调用远比教科书上描述的复杂。Claude Code 在推理循环内部实现了多层回退机制来保障韧性。
+
+第一层是**模型降级**（model fallback）。当 `withRetry` 抛出 `FallbackTriggeredError` 时，循环会清除当前迭代产生的 assistant 消息和工具结果，切换到 `fallbackModel`，然后 `continue` 重新开始这个迭代。
+
+第二层是**流式回退**（streaming fallback）。当流式传输过程中遇到不可恢复错误时，已经部分接收的 assistant 消息会被标记为 `tombstone`，正在执行的工具会通过 `StreamingToolExecutor.discard()` 被丢弃，然后循环回退到非流式模式重试。
+
+在 API 通信层，重试逻辑（`src/services/api/withRetry.ts`）对不同类型的错误采取差异化策略：
+
+```typescript
+const FOREGROUND_529_RETRY_SOURCES = new Set<QuerySource>([
+  'repl_main_thread', 'sdk', 'agent:custom', 'agent:default',
+  'compact', 'hook_agent', 'side_question', 'auto_mode',
+])
+```
+
+529 错误（服务过载）的重试策略体现了一个分布式系统的经典设计原则：**负载敏感的重试分级**。在容量级联期间，重试请求本身成为负载的一部分，源码注释估算放大系数为 3-10 倍，这与工业界在大规模微服务系统中观察到的**重试风暴**（retry storm）数据一致。Claude Code 的解法是将请求来源分为前台（用户直接感知的请求）和后台（摘要生成、标题建议、分类器），只为前台请求承担重试的负载代价。后台任务的"快速失败"策略意味着在系统高负载时，用户可能注意到对话标题不更新、摘要延迟等次要功能退化，但核心交互的可靠性得到保障。这种有意的 **graceful degradation** 决策，和网络拥塞控制中的优先级队列、SRE 实践中的负载卸载（load shedding）是同一类思想。
+
+此外，系统还实现了一个**流式看门狗**（stream watchdog），如果在配置的超时窗口内没有收到新的流式事件，请求会被主动取消并重试，防止挂死的连接导致 Agent 循环永久阻塞。OpenAI 在 Codex 的技术文档中也提到了类似的工程挑战：prompt 的二次方增长和缓存未命中导致的性能问题。两个系统面临的底层难题是一样的，但 Claude Code 在前台/后台请求的差异化处理上展现了更系统化的思考。
+
+### 2.5 子 Agent 与多层规划
+
+当一个编程任务的复杂度超出单次推理循环的处理能力时，Claude Code 通过 `AgentTool`（对用户暴露为 `Task`）实现多层规划。主 Agent 可以生成子 Agent 来处理独立的子任务，每个子 Agent 拥有独立的 200K 上下文窗口，只将摘要结果返回给父 Agent：
+
+```
+主 Agent（200K 上下文窗口）
+    │
+    ├── 任务: "搜索所有使用了 deprecated API 的文件"
+    │       └── 子 Agent（独立 200K 上下文窗口）
+    │               ├── Grep(pattern="deprecatedFn")
+    │               ├── Read(file1), Read(file2), ...
+    │               └── 返回摘要结果 → 主 Agent
+    │
+    ├── 任务: "为每个文件生成迁移方案"
+    │       └── 子 Agent（独立 200K 上下文窗口）
+    │               └── ...
+    │
+    └── 综合结果，执行最终修改
+```
+
+一个重要的架构约束是**递归深度限制为 1**，子 Agent 不能再生成自己的子 Agent。这个看似简单的约束解决了三个层面的问题：第一是**费用可控性**，递归 Agent 生成的费用增长是指数级的，深度限制将其压缩为线性；第二是**调试可追溯性**，任何工具调用最多向上追溯两层（主 Agent → 子 Agent → 工具），监控系统不需要处理任意深度的调用栈；第三是**上下文隔离的可预测性**，每个子 Agent 拥有独立的 200K 上下文窗口但只向父 Agent 返回摘要结果，这构成了一个清晰的信息瓶颈点。
+
+在任务规划层面，Claude Code 还提供了 `TodoWriteTool` 作为显式的规划工具。它的状态管理按 session 或 agent 隔离（`todoKey = context.agentId ?? getSessionId()`），当所有 todo 项都标记为 completed 时列表会被自动清空。这种"显式 todo 列表"的规划方式比隐式地依赖模型的上下文记忆更可靠，但也更依赖模型主动使用规划工具的意愿。
+
+源码中还包含 `coordinator/` 和 `swarm/` 相关的模块，泄露的 feature flag 列表中包含了 Coordinator Mode 的开关。这种从单 Agent 到深度为 1 的子 Agent、再到 coordinator/swarm 模式的分阶段演进路径，与 Google ADK 从第一天就提供 `SequentialAgent`、`ParallelAgent`、`LoopAgent` 三种编排模式的"框架优先"思路形成了对比。
+
+## 3 记忆与上下文管理
+
+### 3.1 上下文窗口的压力来源
+
+AI Agent 的记忆问题在编程场景中尤为突出。一个典型的代码重构任务可能涉及阅读十几个源文件（每个文件数百行）、执行多次 grep 搜索（每次返回数十条匹配结果）、运行测试命令（输出可能有数千行），这些工具结果会迅速填满 200K token 的上下文窗口。更棘手的是，Agent 不能简单地丢弃早期的工具结果，因为后续的推理可能依赖于之前读取的文件内容或搜索结果。
+
+这个问题的解法在不同的 Agent 产品中存在根本性的分歧。Cursor 的策略是在 Agent 循环之外建立一套独立的上下文管理系统，通过代码库索引和 embedding 检索来按需召回相关信息，上下文层级按"光标邻近度 → 最近打开文件 → 语义检索 → 用户显式引用"排列优先级。Claude Code 则完全不使用 RAG 或 embedding，而是在 Agent 循环内部部署了一套多层的**渐进式压缩**管线。Anthropic 团队曾解释这个选择的理由：grep 式的搜索比 RAG 更简单，没有索引同步问题，没有对外部 embedding 服务的依赖，安全边界也更清晰。
+
+### 3.2 五层压缩管线
+
+Claude Code 的压缩管线在 `query.ts` 的每次循环迭代开头执行，每一层使用不同策略、不同成本来缩减上下文：
+
+```
+┌──────────────────────────────────────────────┐
+│              原始消息列表                       │
+│    (包含所有历史 assistant/user/tool 消息)      │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│    第一层：工具结果预算裁剪                      │
+│    单条工具结果大小超限 → 持久化到磁盘，        │
+│    替换为预览 + 文件路径                        │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│    第二层：历史截断                              │
+│    移除压缩边界之前的消息                        │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│    第三层：微压缩（cache-editing）              │
+│    通过 API 缓存编辑删除旧工具结果              │
+│    本地消息不修改，仅在 API 层生效              │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│    第四层：上下文折叠                             │
+│    读时投影，对历史消息进行摘要式合并            │
+│    原始消息保留在 REPL 数组中不被修改            │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│    第五层：自动压缩                              │
+│    当 token 用量超过阈值时触发全量摘要压缩       │
+│    阈值 = 上下文窗口 - 13000 缓冲 token        │
+└──────────────────┬───────────────────────────┘
+                   ▼
+              送入模型 API
+```
+
+前两层是纯机械操作：工具结果预算裁剪（`applyToolResultBudget`）将超过 `maxResultSizeChars` 限制的工具输出持久化到磁盘并替换为预览和文件路径，历史截断移除压缩边界之前的旧消息。
+
+第三层**微压缩**（`src/services/compact/microCompact.ts`）是一个值得深入理解的机制。它并不是一个 LLM 摘要器，而是一个基于 API 缓存编辑的精确裁剪系统。微压缩维护一个可压缩工具的白名单（`COMPACTABLE_TOOLS`：read、shell、grep、glob、web、edit、write），通过 token 估算决定哪些旧工具结果应该被删除，然后生成 `cache_edits` 指令发送给 API 层。关键在于：**本地消息数组不被修改**，删除操作只在 API 请求层通过 `cache_reference` 和 `cache_edits` 生效。这意味着如果 API 缓存是热的，微压缩可以在不破坏缓存的前提下缩减上下文；如果缓存是冷的，系统会切换到基于时间的裁剪策略，直接清除旧的工具结果。
+
+第四层**上下文折叠**（context collapse）也是一种非破坏性操作。`query.ts` 中的注释明确说明折叠后的视图是一个**读时投影**（read-time projection），摘要消息存储在折叠存储中而非 REPL 的消息数组里。折叠在自动压缩之前运行，如果折叠足以将上下文降到阈值以下，自动压缩就不会触发，从而保留了更多的原始细节。当遇到 413（prompt too long）错误时，系统会通过 `recoverFromOverflow` 排空暂存的折叠来释放空间。
+
+只有当这四层都不够时，第五层自动压缩才会触发。它调用一次独立的模型调用来生成整段对话的摘要（`compact.ts` 中使用 `thinkingConfig: disabled` 以节省 token），然后将摘要作为新的压缩边界插入消息列表。
+
+### 3.3 自动压缩的触发与 circuit breaker
+
+自动压缩的触发阈值在 `src/services/compact/autoCompact.ts` 中定义：
+
+```typescript
+export function getAutoCompactThreshold(model: string): number {
+  const effectiveContextWindow = getEffectiveContextWindowSize(model)
+  return effectiveContextWindow - AUTOCOMPACT_BUFFER_TOKENS  // 13000
+}
+```
+
+触发后，`compactConversation` 运行预压缩钩子，构建一个包含 `<analysis>` 和 `<summary>` 结构的压缩 prompt，然后通过 `streamCompactSummary` 调用模型生成摘要。如果遇到 prompt-too-long 错误，系统会截断头部的 API 轮次组并重试。摘要作为新的压缩边界插入消息列表后，后续迭代只能看到边界之后的消息。
+
+这里有一个重要的工程细节：压缩操作本身需要消耗模型调用，而在高负载时 API 可能不可用。源码中实现了一个 circuit breaker 模式：
+
+```typescript
+const MAX_CONSECUTIVE_AUTOCOMPACT_FAILURES = 3
+```
+
+如果 autocompact 连续失败 3 次，系统就不再重试。源码注释引用了一个具体的数据点：2026 年 3 月 10 日的数据显示，1279 个 session 出现了 50 次以上的连续压缩失败（最高达 3272 次），每天全局浪费约 25 万次 API 调用。这种用生产数据直接佐证工程决策的做法，在 Agent 项目中并不多见。
+
+### 3.4 Session Memory 与 MEMORY.md
+
+压缩管线解决的是"上下文不够装"的问题，Claude Code 的记忆系统还需要处理另一个问题：压缩后的信息衰减。为此，Claude Code 实现了两套互补的长期记忆方案。
+
+第一套是 **Session Memory**（`src/services/SessionMemory/sessionMemory.ts`），它通过一个后台子 Agent（`runForkedAgent`）在不阻塞主对话流的情况下，定期从对话历史中提取关键信息并以 Markdown 格式写入 `session-memory.md`。触发机制是基于阈值的：对话达到一定长度后首次初始化，之后每隔一定数量的工具调用进行增量更新。
+
+第二套是**项目级记忆** `MEMORY.md`（`src/memdir/memdir.ts`），它在系统 prompt 的 `memory` 段中被加载。`MEMORY.md` 有明确的大小限制：最多 200 行或 25000 字节，超出后会被截断。记忆内容按索引文件和主题文件组织，`loadMemoryPrompt()` 将其转换为系统 prompt 的一部分。
+
+这两套方案都回避了向量数据库和 embedding 检索，选择了最朴素的文件 IO 方式。Markdown 文件是人类可读的，出问题时可以直接打开检查，不存在索引同步或 embedding 漂移等隐式故障模式。但这种方案的局限性也是明显的：当会话历史涵盖了多个不同主题时，线性的 Markdown 笔记很难支撑精确的语义检索。相比之下，LangGraph 的 Checkpointer 通过在每个 super-step 保存完整状态快照来实现精确的状态回溯，但代价是更高的存储开销和更复杂的基础设施依赖。两种方案反映了对"Agent 应该如何记住过去"这个问题的不同权衡取舍。
+
+### 3.5 Task Budget：跨压缩边界的预算协调
+
+上下文管理还有一个容易被忽视的维度：**任务预算**（task budget）。Claude Code 在 `query.ts` 中维护了一个 `taskBudgetRemaining` 变量，跟踪 API 分配的任务预算在压缩后的剩余量：
+
+```typescript
+// task_budget.remaining tracking across compaction boundaries. Undefined
+// until first compact fires — while context is uncompacted the server can
+// see the full history and handles the countdown from {total} itself. After
+// a compact, the server sees only the summary and would under-count spend;
+// remaining tells it the pre-compact final window that got summarized away.
+let taskBudgetRemaining: number | undefined = undefined
+```
+
+这段注释揭示了一个有趣的设计权衡：在压缩前，服务端可以看到完整的历史并自行计算预算消耗；但压缩后，服务端只能看到摘要，会低估已消耗的预算。因此客户端需要主动跟踪并在 API 请求中告知服务端 `remaining` 值。这种客户端-服务端之间的状态协调，在压缩类 Agent 系统中是一个普遍性的设计难题。
+
+## 4 工具使用
+
+工具的执行能力越强，对其设计的要求就越高。这一章从设计哲学切入，逐步深入到接口契约、执行编排和错误处理的具体实现。
+
+### 4.1 原语组合 vs 专用工具
+
+Claude Code 在工具设计上做了一个鲜明的选择：提供少量通用原语而非大量专用工具，让模型自行决定如何组合原语来完成任务。核心工具集相当克制：BashTool、FileReadTool、FileWriteTool、FileEditTool、GlobTool、GrepTool、AgentTool、TodoWriteTool、WebSearchTool、WebFetchTool 等大约 15 个。大量高级工具（REPLTool、CronTool、MonitorTool 等）则被放在 `feature('...')` 或 `process.env.USER_TYPE === 'ant'` 条件后面，通过死代码消除在外部构建中移除。
+
+`BashTool` 配合 `GrepTool` 和 `FileEditTool`，理论上可以完成几乎所有编程任务。这和 LangChain 生态中提供大量专用工具的思路形成了对比。"原语组合"策略对模型的推理能力提出了更高的要求，如果模型不够强，少量原语反而会限制 Agent 的表现。这是一个押注于模型能力持续提升的设计赌注。
+
+为了在大量可用工具和有限的 prompt 空间之间取得平衡，Claude Code 还引入了 **Tool Search** 机制。工具可以通过 `shouldDefer` 标记为延迟加载，API 调用时只发送已经被模型"发现"过的工具 schema，其余工具通过 `defer_loading` 标志告知 API 在需要时再加载。`ToolSearchTool` 本身实现了基于关键词评分的工具检索，支持 `select:A,B,C` 的多选语法和 `+term` 的必含词过滤。这样，即使注册了 40 多个工具加上所有 MCP 工具，每次 API 调用实际发送的 schema 数量也是可控的。
+
+### 4.2 工具接口的类型契约
+
+每个工具需要实现 `src/Tool.ts` 中定义的一组方法契约：
+
+```typescript
+interface Tool<Input, Output, P> {
+  readonly name: string
+  readonly inputSchema: Input             // Zod schema，用于输入验证
+  call(args, context, canUseTool, parentMessage, onProgress?): Promise<ToolResult<Output>>
+  isConcurrencySafe(input): boolean       // 是否可以与其他工具并行
+  isReadOnly(input): boolean              // 是否为只读操作
+  isDestructive?(input): boolean          // 是否不可逆
+  interruptBehavior?(): 'cancel' | 'block'  // 用户中断时的行为
+  checkPermissions?(input, context): Promise<PermissionResult>
+  maxResultSizeChars: number              // 结果大小上限
+}
+```
+
+这个接口有几个值得注意的设计。`isConcurrencySafe` 和 `isReadOnly` 是以输入为参数的方法，而不是静态属性。这意味着同一个工具可以根据不同的输入返回不同的并发安全性判断。举个例子，`BashTool` 在执行 `ls` 时是并发安全的，但在执行 `rm -rf` 时显然不是。`interruptBehavior` 定义了当用户在工具执行过程中发送新消息时，该工具应该被取消还是阻塞：文件编辑被中断时应该取消，但正在运行的编译命令可能不应该被中断。
+
+### 4.3 BashTool：最核心也最危险的工具
+
+在所有工具中，`BashTool`（`src/tools/BashTool/BashTool.tsx`）的实现最为复杂，因为它同时承担着最强大的执行能力和最高的安全风险。它的 `checkPermissions` 委托给 `bashToolHasPermission`（`bashPermissions.ts`），后者实现了一套完整的命令安全分析体系：引入 tree-sitter AST 解析器（`parseForSecurityFromAst`）对 shell 命令进行语法树级别的安全检查，将命令拆分为子命令后逐一评估，设置了 `MAX_SUBCOMMANDS_FOR_SECURITY_CHECK = 50` 的上限以防止 DoS 攻击。超过这个上限的命令会被默认标记为需要用户确认。
+
+`BashTool` 的执行路径（`call` 方法）会根据上下文做出多种适配：子 Agent 中会启用 `preventCwdChanges` 防止工作目录被修改；检测到 sed 编辑模式时会短路到专用的 `applySedEdit` 路径以获得更好的 diff 展示；沙箱模式下通过 `@anthropic-ai/sandbox-runtime` 在受限环境中执行命令。
+
+### 4.4 并行与串行的动态编排
+
+当模型在一次响应中请求多个工具调用时，编排层需要决定哪些可以并行、哪些必须串行：
+
+```
+工具调用请求序列: [Grep, Read, Read, Bash, Read, Read]
+                       │
+                       ▼
+               ┌───────────────┐
+               │  分区算法       │
+               │  partitionTool │
+               │  Calls()      │
+               └───────┬───────┘
+                       ▼
+     批次 1 (并发安全)    批次 2 (非并发)    批次 3 (并发安全)
+    ┌─────────────┐   ┌──────────┐    ┌─────────────┐
+    │ Grep ║ Read │   │   Bash   │    │ Read ║ Read │
+    │ ║ Read      │   │ (独占)    │    │             │
+    └─────────────┘   └──────────┘    └─────────────┘
+      并行执行            串行执行          并行执行
+      (上限 10)                          (上限 10)
+```
+
+`partitionToolCalls`（`src/services/tools/toolOrchestration.ts`）线性扫描所有 `tool_use` 块，将连续的并发安全工具归入同一批次。当 `isConcurrencySafe` 方法抛出异常时（比如 Bash 工具解析 shell 命令失败），系统默认将该工具视为非并发安全的。这种"失败时走保守路径"的策略贯穿于整个代码库。
+
+除了批次执行路径，`StreamingToolExecutor`（`src/services/tools/StreamingToolExecutor.ts`）实现了更激进的优化：在模型的流式响应还未完成时就开始执行已接收到的工具调用。它维护一个工具队列，每个工具有 `queued → executing → completed → yielded` 四个状态，`addTool` 在模型每产生一个 `tool_use` 块时被调用，如果并发条件满足就立即开始执行。
+
+`StreamingToolExecutor` 中一个值得关注的设计是**兄弟工具取消**（sibling abort）：只有 Bash 工具的错误会触发兄弟取消（通过 `siblingAbortController.abort('sibling_error')`）。Bash 命令之间往往存在隐式依赖链（`mkdir` 失败后后续的 `cp` 命令就没有意义了），而 `Read` 或 `WebFetch` 等工具之间通常是独立的，一个失败不应该影响其他。这种对不同工具语义差异的区分处理，体现了生产级 Agent 系统在错误传播控制上的考量。
+
+## 5 感知与安全
+
+工具的执行能力越强，对其行为的约束就越关键。Claude Code 将 Agent 对风险的"感知"实现为一套多层安全体系，覆盖了从全局策略到单个命令解析的完整纵深。
+
+### 5.1 七步权限管线
+
+对于一个可以在用户机器上执行任意 Bash 命令和编辑任意文件的 Agent 来说，权限系统的设计质量直接关系到用户的安全。Claude Code 的权限判定核心是一套七步管线：
+
+```
+工具调用请求
+    │
+    ▼
+┌───────────────────────────────────────┐
+│  第一步：全局禁止规则                    │  ← 硬拒绝，不可覆写
+└───────────────────┬───────────────────┘
+                    ▼
+┌───────────────────────────────────────┐
+│  第二步：全局确认规则                    │  ← 需要用户确认
+└───────────────────┬───────────────────┘
+                    ▼
+┌───────────────────────────────────────┐
+│  第三步：工具自身权限检查                 │  ← 每个工具根据输入判断
+│  Tool.checkPermissions()             │
+└───────────────────┬───────────────────┘
+                    ▼
+┌───────────────────────────────────────┐
+│  第四步：工具实现层拒绝                   │
+└───────────────────┬───────────────────┘
+                    ▼
+┌───────────────────────────────────────┐
+│  第五步：交互需求检查                    │  ← 需要用户交互
+└───────────────────┬───────────────────┘
+                    ▼
+┌───────────────────────────────────────┐
+│  第六步：基于内容的确认规则              │
+└───────────────────┬───────────────────┘
+                    ▼
+┌───────────────────────────────────────┐
+│  第七步：安全护栏                       │  ← 保护 .git/、.claude/、
+│  (受保护目录和配置文件)                 │     shell 配置等
+└───────────────────┬───────────────────┘
+                    ▼
+              权限决定
+          (允许 / 拒绝 / 询问)
+```
+
+权限判定的核心入口是 `hasPermissionsToUseTool` 函数（`src/utils/permissions/permissions.ts`），它首先检查全局的 deny/ask 规则，然后将判定权下放给工具自身的 `checkPermissions` 方法。以 `BashTool` 为例，它的 `checkPermissions` 委托给 `bashToolHasPermission`（`bashPermissions.ts`），后者会使用 tree-sitter 对命令进行 AST 级解析，评估每个子命令的安全性。当子命令数量超过 `MAX_SUBCOMMANDS_FOR_SECURITY_CHECK`（50）时，系统默认要求用户确认，避免复杂 shell 表达式绕过检查。
+
+权限逻辑不是集中在一个巨型函数里，而是分布在全局规则和各工具的实现之间。这种分层的好处是每个工具可以根据自己的语义定制安全策略，全局规则只负责横切关注点（如受保护目录）。
+
+### 5.2 CanUseToolFn：权限的可插拔接口
+
+权限系统的一个关键抽象是 `CanUseToolFn` 类型：
+
+```typescript
+export type CanUseToolFn<Input extends Record<string, unknown>> = (
+  tool: ToolType, input: Input, toolUseContext: ToolUseContext,
+  assistantMessage: AssistantMessage, toolUseID: string,
+  forceDecision?: PermissionDecision<Input>,
+) => Promise<PermissionDecision<Input>>
+```
+
+这个异步函数在不同的运行环境中有不同的实现：REPL 模式通过 React hook 将确认请求推入 UI 队列等待用户交互，SDK 模式走结构化 IO 通道或自动拒绝，远程模式通过 WebSocket 桥接到远程客户端。工具执行管线完全不需要关心权限的具体呈现方式，都由同一个函数签名统一处理。
+
+在交互式权限确认的实现中（`src/hooks/toolPermission/handlers/interactiveHandler.ts`），有一个精巧的细节：系统会在用户交互的同时异步运行后台安全分类器，两者进行一次"竞赛"。为了防止用户的意外按键（比如在分类器返回结果之前按下回车）取消分类器的检查，系统设置了 200 毫秒的"首次交互宽限期"（grace period）。这种在用户体验的即时性和安全检查的完整性之间寻找平衡的处理方式，在安全系统设计中是一个值得关注的模式。
+
+### 5.3 Hook 系统与 deny 的单调性
+
+Claude Code 允许用户注册 `PreToolUse` 和 `PostToolUse` 钩子来自定义权限策略。钩子与权限管线的交互逻辑在 `resolveHookPermissionDecision`（`src/services/tools/toolHooks.ts`）中处理，其核心判断如下：
+
+```typescript
+export async function resolveHookPermissionDecision(
+  hookPermissionResult, tool, input, toolUseContext,
+  canUseTool, assistantMessage, toolUseID,
+) {
+  if (hookPermissionResult?.behavior === 'allow') {
+    const hookInput = hookPermissionResult.updatedInput ?? input
+    const ruleCheck = await checkRuleBasedPermissions(tool, hookInput, toolUseContext)
+    // deny 规则覆盖 hook 的 allow；ask 仍然走 canUseTool
+  }
+}
+```
+
+这段逻辑体现了一个关键的安全不变式：**hook 的 `allow` 决定永远不能覆盖 deny 规则**。即使用户配置的 `PreToolUse` 钩子返回 `allow`，全局 deny 规则仍然会生效。deny 在这个系统中是**单调的**（monotonic），任何一个环节的拒绝都是终局性的，后续环节不能翻转这个决定。这个约束从安全工程的角度看是正确的：在纵深防御体系中，内层不应该有能力削弱外层的保护。但它也意味着钩子系统的灵活性是受限的，用户不能通过钩子来"解锁"被全局规则禁止的操作。
+
+### 5.4 权限模式的渐变谱系与沙箱
+
+Claude Code 提供了五种权限模式，从最保守到最激进：
+
+- **`default`**：标准模式，首次使用新工具时提示确认
+- **`plan`**：只读分析模式，禁止任何写操作
+- **`acceptEdits`**：自动接受文件编辑，Bash 命令仍需确认
+- **`auto`**：自动批准大部分操作，同时在后台运行安全分类器
+- **`bypassPermissions`**：跳过所有权限提示（受保护目录除外）
+
+`auto` 模式的实现值得深入理解。它引入了一个后台安全分类器（`classifierDecision`），在自动批准操作的同时异步检查安全性。如果分类器判定操作可能有害，系统会追溯性地记录并在未来提高警惕。这是一种务实的平衡，但也意味着在分类器做出判定之前，有害操作可能已经被执行。对于文件删除这类不可逆操作，"先执行后审计"的模式是否足够安全，取决于具体的使用场景和风险容忍度。
+
+作为最后一道防线，Claude Code 还集成了沙箱机制（`src/utils/sandbox/sandbox-adapter.ts`），通过 `@anthropic-ai/sandbox-runtime` 在受限环境中执行 Bash 命令。`shouldUseSandbox`（`src/tools/BashTool/shouldUseSandbox.ts`）的判断逻辑中有一个值得注意的注释：
+
+```typescript
+// NOTE: excludedCommands is a user-facing convenience feature, not a security boundary.
+// It is not a security bug to be able to bypass excludedCommands — the sandbox permission
+// system (which prompts users) is the actual security control.
+```
+
+这段注释清楚地划定了安全边界：命令排除列表只是用户体验的便利功能，真正的安全控制在于权限提示和沙箱隔离。沙箱的路径解析也有专门的语义设计：`//path` 表示从文件系统根目录开始的绝对路径，`/path` 表示相对于配置文件所在目录的路径。这种两种前缀约定避免了路径解析歧义，在多项目环境中尤为重要。
+
+整体来看，Claude Code 的安全体系在纵深层面是完整的：全局策略 → 工具级权限 → AST 级命令解析 → 后台分类器 → 沙箱隔离，每一层都有独立的防护逻辑。这种设计与传统安全工程中的"纵深防御"（defense in depth）原则一致：假设任何单一防线都可能被突破，系统的安全性来自多层防护的组合效应。
+
+## 6 总结与前瞻
+
+### 6.1 四维度的关键发现
+
+在推理与规划维度，Claude Code 将复杂度预算从编排层转移到了模型推理层，用最简的循环结构承载了全部的推理编排。这个设计的成立条件是围绕循环建立足够完善的错误恢复、状态管理和成本控制机制。自适应思考预算的引入在推理质量和 API 成本之间建立了动态平衡，系统 prompt 的缓存边界设计则在多轮对话中降低了重复传输的开销。
+
+在记忆维度，五层渐进式压缩管线是这份源码中最精致的工程设计之一。微压缩通过 API 缓存编辑而非 LLM 摘要来缩减上下文、上下文折叠使用读时投影来保留原始消息，这些"非破坏性"的压缩策略在工程上比全量摘要更精细，也更容易调试。但完全不使用 embedding 检索的记忆方案在语义精度上存在天然局限。
+
+在工具使用维度，少量通用原语加上 Tool Search 的延迟加载机制，构成了一个既灵活又不会过度消耗 prompt 空间的工具体系。`StreamingToolExecutor` 的流式启动和兄弟取消机制则展现了在工具执行效率和错误控制之间的精细权衡。
+
+在感知与安全维度，七步权限管线、deny 单调性约束、AST 级命令解析和沙箱隔离构成了完整的纵深防御。`auto` 模式的后台分类器在自主性和安全性之间找到了一个可调节的平衡点，但"先执行后审计"的模式对不可逆操作的风险控制仍有改进空间。
+
+### 6.2 源码质量
+
+从代码质量的角度看，Claude Code 源码中的防御性工程模式超越了常规的"好代码"范畴，上升到了**用类型系统实施组织策略**的层面。`AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS` 是一个 `never` 类型，在运行时不持有任何值，只能通过显式的 `as` 类型断言来使用。每一次断言都是开发者对"这个字符串不包含用户代码或文件路径"的书面声明，在代码审查中形成可追溯的合规记录。这本质上是将隐私合规从运行时检查提前到了开发时的类型检查阶段，一种用 TypeScript 类型系统实现的轻量级**污点分析**（taint analysis）。类似的模式可以推广到任何需要区分"已审计数据"和"未审计数据"的场景。
+
+注释的信息密度是另一个亮点。`bootstrap/state.ts` 开头的 `DO NOT ADD MORE STATE HERE - BE JUDICIOUS WITH GLOBAL STATE` 传达的是架构意图而非代码语义，autocompact 中引用 2026 年 3 月 10 日的生产数据来佐证 circuit breaker 阈值的注释则是工程决策的审计记录。这些注释的共同特点是回答"为什么"而非"是什么"。防御性编程贯穿于各个层面，可测试性则通过依赖注入和 `productionDeps()` 的分离来保障。
+
+### 6.3 AI 编程 Agent 的演进方向
+
+Claude Code 的架构选择暗示了 AI 编程 Agent 领域几个值得关注的演进方向。
+
+"Less scaffolding, more model" 的哲学建立在一个前提之上：模型的推理能力会持续提升。如果这个前提成立，那么今天看起来"过度信任模型"的设计（少量原语工具、没有显式的任务规划器、没有 RAG）在未来可能被证明是正确的方向。反过来，如果模型能力的提升遇到瓶颈，更多的 scaffolding 和更结构化的编排可能重新变得必要。OpenAI 的 Codex 团队在实践中发现，Agent 在训练数据分布之外的场景中仍然"脆弱"，需要人类监督才能用于生产工作。这暗示了当前的"信任模型"策略可能有其适用边界。
+
+上下文窗口的扩大正在改变压缩策略的经济性。当窗口从 200K 扩展到 1M 甚至更大时，五层压缩管线中的一些层可能变得不再必要，但 Session Memory 这类长期记忆方案的重要性反而会上升，因为更长的会话意味着更多需要跨回合保持的信息。
+
+多 Agent 协作仍处于早期探索阶段。Claude Code 从深度为 1 的子 Agent 谨慎起步，源码中 coordinator/swarm 模块的存在表明团队正在向更复杂的多 Agent 模式演进。如何在多个 Agent 之间协调权限、共享上下文、分配任务预算，这些问题在工程层面尚未形成成熟的解法。
+
+### 6.4 藏在源码里的彩蛋
+
+50 万行代码中不全是严肃的工程逻辑。泄露的源码还揭示了几个颇具趣味的细节，它们从侧面反映了 Anthropic 团队的产品思维和工程文化。
+
+**BUDDY 赛博宠物系统**。Claude Code 内置了一个完整的虚拟宠物系统（隐藏在 `BUDDY` feature flag 之后），包含 18 种生物（鸭子、龙、水豚、幽灵、蝾螈等），每种按扭蛋（gacha）机制分为五个稀有度等级（普通 60%、传说 1%），拥有帽子、眼睛等装饰选项和五种 RPG 风格属性：调试力（DEBUGGING）、耐心（PATIENCE）、混沌（CHAOS）、智慧（WISDOM）和阴阳怪气值（SNARK）。宠物基于用户 ID 确定性生成，使用一个名为 "Mulberry32" 的极简伪随机数生成器。源码中甚至有一条注释解释为什么要用十六进制编码物种名称：因为其中一个物种名恰好与 Anthropic 内部的模型代号冲突，会触发构建时的字符串扫描器。这个系统原定在 2026 年 4 月 1 日至 7 日作为彩蛋推出，发布策略的注释写道："使用本地时间而非 UTC，让 24 小时的滚动窗口跨时区传播，在 Twitter 上维持持续的讨论热度，同时避免 UTC 午夜的瞬时生成负载峰值。"
+
+**autoDream：夜间记忆整理**。KAIROS feature flag 背后隐藏着一个"常驻模式"（Always-On Claude），其中包含一个名为 `autoDream` 的后台记忆整理系统。整理 prompt 的开头是："You are performing a dream — a reflective pass over your memory files."（你正在做一个梦——对你的记忆文件进行一次反思性的回顾。）系统使用基于 PID 的文件锁来防止多个 Claude Code 实例同时"做梦"，整理过程分为四个阶段：定向（Orient）、收集（Gather）、整合（Consolidate）和修剪（Prune）。这个设计在概念上与人类的睡眠记忆整合（sleep-dependent memory consolidation）有异曲同工之处。
+
+**模型迁移的考古记录**。`src/migrations/` 目录包含了一条完整的模型重命名迁移链：`migrateSonnet1mToSonnet45.ts` → `migrateSonnet45ToSonnet46.ts` → `migrateLegacyOpusToCurrent.ts` → `migrateOpusToOpus1m.ts` → `resetProToOpusDefault.ts`。每一次 Anthropic 重命名模型，Claude Code 都需要执行一次客户端迁移来更新用户保存的偏好设置。这些迁移文件像地层一样记录了 Anthropic 模型命名策略的每一次变更，是快速模型迭代所带来的一种隐性维护成本。
+
+对于关注 AI Agent 系统设计的工程师来说，Claude Code 的源码提供了一个难得的参照系：不是框架设计者理想中的 Agent 应该长什么样，而是一个经过数百万用户验证的产品级 Agent 实际上是如何构建的。两者之间的差距，也许正是当下 AI Agent 工程化进程中最值得关注的部分。
