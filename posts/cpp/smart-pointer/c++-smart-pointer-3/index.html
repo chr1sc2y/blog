@@ -1,0 +1,558 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>C++ 智能指针（3）：shared_ptr | Zhengyu Chen - 尾張</title>
+<meta name=keywords content><meta name=description content='C++智能指针（3）：shared_ptr
+分析
+UniquePointer对象只能绑定单个指针，要实现指针的自动管理和销毁需要引入计数器
+private:
+    int *counter;
+    T *pointer;
+    D *deleter;
+计数器的主要作用是标识当前指针被几个智能指针对象所引用，在析构当前对象时，使其计数器自减1。如果计数器等于0，则表示已经没有其他的对象在使用当前指针，此时则可以销毁指针，计数器和删除器。
+template<typename T, typename D>
+void SharedPointer<T, D>::release() {
+    if (pointer) {
+        std::cout << "SharedPointer " << this << " counter remains " << *counter << std::endl;
+        if (--(*counter) == 0) {
+            std::cout << "SharedPointer " << this << " destructor called." << std::endl;
+            (*deleter)(pointer);
+            (*deleter)(counter);
+            (*deleter)(deleter);
+            pointer = nullptr;
+            counter = nullptr;
+            deleter = nullptr;
+        }
+    }
+}
+reset函数将指针设为other的指针
+template<typename T, typename D>
+void SharedPointer<T, D>::reset(const SharedPointer<T, D> &amp;other) {
+    pointer = other.pointer;
+    counter = other.counter;
+    deleter = other.deleter;
+    if (pointer)
+        ++(*counter);
+}
+析构函数可以直接调用release函数'><meta name=author content><link rel=canonical href=https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-3/><link crossorigin=anonymous href=/assets/css/stylesheet.45e028aa8ce0961349adf411b013ee39406be2c0bc80d4ea3fc04555f7f4611a.css integrity="sha256-ReAoqozglhNJrfQRsBPuOUBr4sC8gNTqP8BFVff0YRo=" rel="preload stylesheet" as=style><link rel=icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-3/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-3/"><meta property="og:site_name" content="Zhengyu Chen - 尾張"><meta property="og:title" content="C++ 智能指针（3）：shared_ptr"><meta property="og:description" content='C++智能指针（3）：shared_ptr 分析 UniquePointer对象只能绑定单个指针，要实现指针的自动管理和销毁需要引入计数器
+private: int *counter; T *pointer; D *deleter; 计数器的主要作用是标识当前指针被几个智能指针对象所引用，在析构当前对象时，使其计数器自减1。如果计数器等于0，则表示已经没有其他的对象在使用当前指针，此时则可以销毁指针，计数器和删除器。
+template<typename T, typename D> void SharedPointer<T, D>::release() { if (pointer) { std::cout << "SharedPointer " << this << " counter remains " << *counter << std::endl; if (--(*counter) == 0) { std::cout << "SharedPointer " << this << " destructor called." << std::endl; (*deleter)(pointer); (*deleter)(counter); (*deleter)(deleter); pointer = nullptr; counter = nullptr; deleter = nullptr; } } } reset函数将指针设为other的指针
+template<typename T, typename D> void SharedPointer<T, D>::reset(const SharedPointer<T, D> &amp;other) { pointer = other.pointer; counter = other.counter; deleter = other.deleter; if (pointer) ++(*counter); } 析构函数可以直接调用release函数'><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-01-25T17:47:38+11:00"><meta property="article:modified_time" content="2019-01-25T17:47:38+11:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="C++ 智能指针（3）：shared_ptr"><meta name=twitter:description content='C++智能指针（3）：shared_ptr
+分析
+UniquePointer对象只能绑定单个指针，要实现指针的自动管理和销毁需要引入计数器
+private:
+    int *counter;
+    T *pointer;
+    D *deleter;
+计数器的主要作用是标识当前指针被几个智能指针对象所引用，在析构当前对象时，使其计数器自减1。如果计数器等于0，则表示已经没有其他的对象在使用当前指针，此时则可以销毁指针，计数器和删除器。
+template<typename T, typename D>
+void SharedPointer<T, D>::release() {
+    if (pointer) {
+        std::cout << "SharedPointer " << this << " counter remains " << *counter << std::endl;
+        if (--(*counter) == 0) {
+            std::cout << "SharedPointer " << this << " destructor called." << std::endl;
+            (*deleter)(pointer);
+            (*deleter)(counter);
+            (*deleter)(deleter);
+            pointer = nullptr;
+            counter = nullptr;
+            deleter = nullptr;
+        }
+    }
+}
+reset函数将指针设为other的指针
+template<typename T, typename D>
+void SharedPointer<T, D>::reset(const SharedPointer<T, D> &amp;other) {
+    pointer = other.pointer;
+    counter = other.counter;
+    deleter = other.deleter;
+    if (pointer)
+        ++(*counter);
+}
+析构函数可以直接调用release函数'><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://prov1dence.top/posts/"},{"@type":"ListItem","position":2,"name":"C++ 智能指针（3）：shared_ptr","item":"https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-3/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++ 智能指针（3）：shared_ptr","name":"C\u002b\u002b 智能指针（3）：shared_ptr","description":"C++智能指针（3）：shared_ptr 分析 UniquePointer对象只能绑定单个指针，要实现指针的自动管理和销毁需要引入计数器\nprivate: int *counter; T *pointer; D *deleter; 计数器的主要作用是标识当前指针被几个智能指针对象所引用，在析构当前对象时，使\b其计数器自减1。\b如果计数器等于0，则表示已经没有其他的对象在使用当前指针，\b此时则可以销毁指针，计数器和删除器。\ntemplate\u0026lt;typename T, typename D\u0026gt; void SharedPointer\u0026lt;T, D\u0026gt;::release() { if (pointer) { std::cout \u0026lt;\u0026lt; \u0026#34;SharedPointer \u0026#34; \u0026lt;\u0026lt; this \u0026lt;\u0026lt; \u0026#34; counter remains \u0026#34; \u0026lt;\u0026lt; *counter \u0026lt;\u0026lt; std::endl; if (--(*counter) == 0) { std::cout \u0026lt;\u0026lt; \u0026#34;SharedPointer \u0026#34; \u0026lt;\u0026lt; this \u0026lt;\u0026lt; \u0026#34; destructor called.\u0026#34; \u0026lt;\u0026lt; std::endl; (*deleter)(pointer); (*deleter)(counter); (*deleter)(deleter); pointer = nullptr; counter = nullptr; deleter = nullptr; } } } reset函数将指针设为other的指针\ntemplate\u0026lt;typename T, typename D\u0026gt; void SharedPointer\u0026lt;T, D\u0026gt;::reset(const SharedPointer\u0026lt;T, D\u0026gt; \u0026amp;other) { pointer = other.pointer; counter = other.counter; deleter = other.deleter; if (pointer) ++(*counter); } 析构函数可以直接调用release函数\n","keywords":[],"articleBody":"C++智能指针（3）：shared_ptr 分析 UniquePointer对象只能绑定单个指针，要实现指针的自动管理和销毁需要引入计数器\nprivate: int *counter; T *pointer; D *deleter; 计数器的主要作用是标识当前指针被几个智能指针对象所引用，在析构当前对象时，使\b其计数器自减1。\b如果计数器等于0，则表示已经没有其他的对象在使用当前指针，\b此时则可以销毁指针，计数器和删除器。\ntemplate void SharedPointer::release() { if (pointer) { std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" counter remains \" \u003c\u003c *counter \u003c\u003c std::endl; if (--(*counter) == 0) { std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" destructor called.\" \u003c\u003c std::endl; (*deleter)(pointer); (*deleter)(counter); (*deleter)(deleter); pointer = nullptr; counter = nullptr; deleter = nullptr; } } } reset函数将指针设为other的指针\ntemplate void SharedPointer::reset(const SharedPointer \u0026other) { pointer = other.pointer; counter = other.counter; deleter = other.deleter; if (pointer) ++(*counter); } 析构函数可以直接调用release函数\ntemplate SharedPointer::~SharedPointer() { release(); } 拷贝构造函数可以直接调用reset函数\ntemplate SharedPointer::SharedPointer(const SharedPointer \u0026other) { std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" copy constructor called.\" \u003c\u003c std::endl; reset(other); } 使用赋值操作符时先调用release函数，再调用reset函数\ntemplate SharedPointer \u0026SharedPointer::operator=(const SharedPointer \u0026other) { std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" assignment operator called.\" \u003c\u003c std::endl; if (this != \u0026other) { release(); reset(other); } return *this; } 实现 根据shared_ptr的源码，能够大致实现SharedPointer类\ntemplate class SharedPointer { public: explicit SharedPointer(T *t = nullptr, D *d = nullptr); ~SharedPointer(); T \u0026operator*(); T *operator-\u003e(); void reset(const SharedPointer \u0026other); void release(); SharedPointer(const SharedPointer \u0026other); SharedPointer \u0026operator=(const SharedPointer \u0026other); private: int *counter; T *pointer; D *deleter; }; template void SharedPointer::reset(const SharedPointer \u0026other) { pointer = other.pointer; counter = other.counter; deleter = other.deleter; if (pointer) ++(*counter); } template void SharedPointer::release() { if (pointer) { std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" counter remains \" \u003c\u003c *counter \u003c\u003c std::endl; if (--(*counter) == 0) { std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" destructor called.\" \u003c\u003c std::endl; (*deleter)(pointer); (*deleter)(counter); (*deleter)(deleter); pointer = nullptr; counter = nullptr; deleter = nullptr; } } } template SharedPointer::SharedPointer(T *t, D *d): pointer(t), deleter(d) { if (pointer) counter = new int(1); else counter = nullptr; std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" constructor called.\" \u003c\u003c std::endl; } template SharedPointer::SharedPointer(const SharedPointer \u0026other) { std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" copy constructor called.\" \u003c\u003c std::endl; reset(other); } template SharedPointer::~SharedPointer() { release(); } template T \u0026SharedPointer::operator*() { return *pointer; } template T *SharedPointer::operator-\u003e() { return pointer; } template SharedPointer \u0026SharedPointer::operator=(const SharedPointer \u0026other) { std::cout \u003c\u003c \"SharedPointer \" \u003c\u003c this \u003c\u003c \" assignment operator called.\" \u003c\u003c std::endl; if (this != \u0026other) { release(); reset(other); } return *this; } 测试 尝试使用拷贝构造函数和赋值操作符使多个SharedPointer对象使用同一个指针，以及使用reset函数清空智能指针对象的指针\nint main() { Deleter *deleter = new Deleter(); Obj *o = new Obj(); SharedPointer s1(o, deleter); SharedPointer s2(s1); SharedPointer s3; s3 = s1; return 0; } /* output: Construct SharedPointer 0x7ffeeebdda00 constructor called. SharedPointer 0x7ffeeebdd9e8 copy constructor called. SharedPointer 0x7ffeeebdd9d0 constructor called. SharedPointer 0x7ffeeebdd9d0 assignment operator called. SharedPointer 0x7ffeeebdd9d0 counter remains 3 SharedPointer 0x7ffeeebdd9e8 counter remains 2 SharedPointer 0x7ffeeebdda00 counter remains 1 SharedPointer 0x7ffeeebdda00 destructor called. Destruct */ 考虑如下一个类\nclass Object : public Obj { public: SharedPointer S; }; 创建两个Object类型的对象\nint main() { SharedPointer s1(new Object()); SharedPointer s2(new Object()); s1-\u003eS = s2; s2-\u003eS = s1; return 0; } /* output: Construct SharedPointer 0x7f88eac02ab0 constructor called. SharedPointer 0x7ffee0bfaa20 constructor called. Construct SharedPointer 0x7f88eac02ae0 constructor called. SharedPointer 0x7ffee0bfa9f8 constructor called. SharedPointer 0x7f88eac02ab0 assignment operator called. SharedPointer 0x7f88eac02ae0 assignment operator called. SharedPointer 0x7ffee0bfa9f8 counter remains 2 SharedPointer 0x7ffee0bfaa20 counter remains 2 */ 两个Object类型的指针都包含了一个SharedPointer类型的智能指针对象，但这两个指针又依赖于SharedPointer对象去进行销毁，导致最后s1和s2的计数器都不能减为0，从而不能正确地\b销毁指针，导致了内存泄漏。这种现象叫做交叉引用。\n总结 SharedPointer利用Reference counting（计数引用）解决了多个对象使用同一个指针时自动销毁指针的问题，但又会发生交叉引用时不能够正确销毁指针的问题。\b\nshared_pointer源码 template class _LIBCPP_TEMPLATE_VIS shared_ptr { public: typedef _Tp element_type; #if _LIBCPP_STD_VER \u003e 14 typedef weak_ptr\u003c_Tp\u003e weak_type; #endif private: element_type* __ptr_; __shared_weak_count* __cntrl_; struct __nat {int __for_bool_;}; public: _LIBCPP_INLINE_VISIBILITY _LIBCPP_CONSTEXPR shared_ptr() _NOEXCEPT; _LIBCPP_INLINE_VISIBILITY _LIBCPP_CONSTEXPR shared_ptr(nullptr_t) _NOEXCEPT; template explicit shared_ptr(_Yp* __p, typename enable_if","wordCount":"1323","inLanguage":"en","datePublished":"2019-01-25T17:47:38+11:00","dateModified":"2019-01-25T17:47:38+11:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-3/"},"publisher":{"@type":"Organization","name":"Zhengyu Chen - 尾張","logo":{"@type":"ImageObject","url":"https://prov1dence.top/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://prov1dence.top/ accesskey=h title="尾張 (Alt + H)">尾張</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://prov1dence.top/archives/ title=Posts><span>Posts</span></a></li><li><a href=https://prov1dence.top/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">C++ 智能指针（3）：shared_ptr</h1><div class=post-meta><span title='2019-01-25 17:47:38 +1100 +1100'>January 25, 2019</span>&nbsp;·&nbsp;7 min</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#c%e6%99%ba%e8%83%bd%e6%8c%87%e9%92%883shared_ptr aria-label=C++智能指针（3）：shared_ptr>C++智能指针（3）：shared_ptr</a><ul><li><a href=#%e5%88%86%e6%9e%90 aria-label=分析>分析</a></li><li><a href=#%e5%ae%9e%e7%8e%b0 aria-label=实现>实现</a></li><li><a href=#%e6%b5%8b%e8%af%95 aria-label=测试>测试</a></li><li><a href=#%e6%80%bb%e7%bb%93 aria-label=总结>总结</a></li><li><a href=#shared_pointer%e6%ba%90%e7%a0%81 aria-label=shared_pointer源码>shared_pointer源码</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=c智能指针3shared_ptr>C++智能指针（3）：shared_ptr<a hidden class=anchor aria-hidden=true href=#c智能指针3shared_ptr>#</a></h1><h2 id=分析>分析<a hidden class=anchor aria-hidden=true href=#分析>#</a></h2><p>UniquePointer对象只能绑定单个指针，要实现指针的自动管理和销毁需要引入计数器</p><pre tabindex=0><code>private:
+    int *counter;
+    T *pointer;
+    D *deleter;
+</code></pre><p>计数器的主要作用是标识当前指针被几个智能指针对象所引用，在析构当前对象时，使其计数器自减1。如果计数器等于0，则表示已经没有其他的对象在使用当前指针，此时则可以销毁指针，计数器和删除器。</p><pre tabindex=0><code>template&lt;typename T, typename D&gt;
+void SharedPointer&lt;T, D&gt;::release() {
+    if (pointer) {
+        std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; counter remains &#34; &lt;&lt; *counter &lt;&lt; std::endl;
+        if (--(*counter) == 0) {
+            std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; destructor called.&#34; &lt;&lt; std::endl;
+            (*deleter)(pointer);
+            (*deleter)(counter);
+            (*deleter)(deleter);
+            pointer = nullptr;
+            counter = nullptr;
+            deleter = nullptr;
+        }
+    }
+}
+</code></pre><p>reset函数将指针设为other的指针</p><pre tabindex=0><code>template&lt;typename T, typename D&gt;
+void SharedPointer&lt;T, D&gt;::reset(const SharedPointer&lt;T, D&gt; &amp;other) {
+    pointer = other.pointer;
+    counter = other.counter;
+    deleter = other.deleter;
+    if (pointer)
+        ++(*counter);
+}
+</code></pre><p>析构函数可以直接调用release函数</p><pre tabindex=0><code>template&lt;typename T, typename D&gt;
+SharedPointer&lt;T, D&gt;::~SharedPointer() {
+    release();
+}
+</code></pre><p>拷贝构造函数可以直接调用reset函数</p><pre tabindex=0><code>template&lt;typename T, typename D&gt;
+SharedPointer&lt;T, D&gt;::SharedPointer(const SharedPointer&lt;T, D&gt; &amp;other) {
+    std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; copy constructor called.&#34; &lt;&lt; std::endl;
+    reset(other);
+}
+</code></pre><p>使用赋值操作符时先调用release函数，再调用reset函数</p><pre tabindex=0><code>template&lt;typename T, typename D&gt;
+SharedPointer&lt;T, D&gt; &amp;SharedPointer&lt;T, D&gt;::operator=(const SharedPointer&lt;T, D&gt; &amp;other) {
+    std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; assignment operator called.&#34; &lt;&lt; std::endl;
+    if (this != &amp;other) {
+        release();
+        reset(other);
+    }
+    return *this;
+}
+</code></pre><h2 id=实现>实现<a hidden class=anchor aria-hidden=true href=#实现>#</a></h2><p>根据shared_ptr的源码，能够大致实现SharedPointer类</p><pre tabindex=0><code>template&lt;typename T, typename D&gt;
+class SharedPointer {
+public:
+    explicit SharedPointer(T *t = nullptr, D *d = nullptr);
+
+    ~SharedPointer();
+
+    T &amp;operator*();
+
+    T *operator-&gt;();
+
+    void reset(const SharedPointer &amp;other);
+
+    void release();
+
+    SharedPointer(const SharedPointer &amp;other);
+
+    SharedPointer &amp;operator=(const SharedPointer &amp;other);
+
+private:
+
+    int *counter;
+    T *pointer;
+    D *deleter;
+};
+
+template&lt;typename T, typename D&gt;
+void SharedPointer&lt;T, D&gt;::reset(const SharedPointer&lt;T, D&gt; &amp;other) {
+    pointer = other.pointer;
+    counter = other.counter;
+    deleter = other.deleter;
+    if (pointer)
+        ++(*counter);
+}
+
+template&lt;typename T, typename D&gt;
+void SharedPointer&lt;T, D&gt;::release() {
+    if (pointer) {
+        std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; counter remains &#34; &lt;&lt; *counter &lt;&lt; std::endl;
+        if (--(*counter) == 0) {
+            std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; destructor called.&#34; &lt;&lt; std::endl;
+            (*deleter)(pointer);
+            (*deleter)(counter);
+            (*deleter)(deleter);
+            pointer = nullptr;
+            counter = nullptr;
+            deleter = nullptr;
+        }
+    }
+}
+
+template&lt;typename T, typename D&gt;
+SharedPointer&lt;T, D&gt;::SharedPointer(T *t, D *d): pointer(t), deleter(d) {
+    if (pointer)
+        counter = new int(1);
+    else
+        counter = nullptr;
+    std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; constructor called.&#34; &lt;&lt; std::endl;
+}
+
+template&lt;typename T, typename D&gt;
+SharedPointer&lt;T, D&gt;::SharedPointer(const SharedPointer&lt;T, D&gt; &amp;other) {
+    std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; copy constructor called.&#34; &lt;&lt; std::endl;
+    reset(other);
+}
+
+
+template&lt;typename T, typename D&gt;
+SharedPointer&lt;T, D&gt;::~SharedPointer() {
+    release();
+}
+
+template&lt;typename T, typename D&gt;
+T &amp;SharedPointer&lt;T, D&gt;::operator*() {
+    return *pointer;
+}
+
+template&lt;typename T, typename D&gt;
+T *SharedPointer&lt;T, D&gt;::operator-&gt;() {
+    return pointer;
+}
+
+template&lt;typename T, typename D&gt;
+SharedPointer&lt;T, D&gt; &amp;SharedPointer&lt;T, D&gt;::operator=(const SharedPointer&lt;T, D&gt; &amp;other) {
+    std::cout &lt;&lt; &#34;SharedPointer &#34; &lt;&lt; this &lt;&lt; &#34; assignment operator called.&#34; &lt;&lt; std::endl;
+    if (this != &amp;other) {
+        release();
+        reset(other);
+    }
+    return *this;
+}
+</code></pre><h2 id=测试>测试<a hidden class=anchor aria-hidden=true href=#测试>#</a></h2><p>尝试使用拷贝构造函数和赋值操作符使多个SharedPointer对象使用同一个指针，以及使用reset函数清空智能指针对象的指针</p><pre tabindex=0><code>int main() {
+    Deleter *deleter = new Deleter();
+    Obj *o = new Obj();
+    SharedPointer&lt;Obj, Deleter&gt; s1(o, deleter);
+    SharedPointer&lt;Obj, Deleter&gt; s2(s1);
+    SharedPointer&lt;Obj, Deleter&gt; s3;
+    s3 = s1;
+    return 0;
+}
+/*
+output:
+Construct
+SharedPointer 0x7ffeeebdda00 constructor called.
+SharedPointer 0x7ffeeebdd9e8 copy constructor called.
+SharedPointer 0x7ffeeebdd9d0 constructor called.
+SharedPointer 0x7ffeeebdd9d0 assignment operator called.
+SharedPointer 0x7ffeeebdd9d0 counter remains 3
+SharedPointer 0x7ffeeebdd9e8 counter remains 2
+SharedPointer 0x7ffeeebdda00 counter remains 1
+SharedPointer 0x7ffeeebdda00 destructor called.
+Destruct
+*/
+</code></pre><p>考虑如下一个类</p><pre tabindex=0><code>class Object : public Obj {
+public:
+    SharedPointer&lt;Object, Deleter&gt; S;
+};
+</code></pre><p>创建两个Object类型的对象</p><pre tabindex=0><code>int main() {
+    SharedPointer&lt;Object, Deleter&gt; s1(new Object());
+    SharedPointer&lt;Object, Deleter&gt; s2(new Object());
+    s1-&gt;S = s2;
+    s2-&gt;S = s1;
+    return 0;
+}
+/*
+output:
+Construct
+SharedPointer 0x7f88eac02ab0 constructor called.
+SharedPointer 0x7ffee0bfaa20 constructor called.
+Construct
+SharedPointer 0x7f88eac02ae0 constructor called.
+SharedPointer 0x7ffee0bfa9f8 constructor called.
+SharedPointer 0x7f88eac02ab0 assignment operator called.
+SharedPointer 0x7f88eac02ae0 assignment operator called.
+SharedPointer 0x7ffee0bfa9f8 counter remains 2
+SharedPointer 0x7ffee0bfaa20 counter remains 2
+*/
+</code></pre><p>两个Object类型的指针都包含了一个SharedPointer类型的智能指针对象，但这两个指针又依赖于SharedPointer对象去进行销毁，导致最后s1和s2的计数器都不能减为0，从而不能正确地销毁指针，导致了内存泄漏。这种现象叫做交叉引用。</p><h2 id=总结>总结<a hidden class=anchor aria-hidden=true href=#总结>#</a></h2><p>SharedPointer利用<a href=https://en.wikipedia.org/wiki/Reference_counting>Reference counting</a>（计数引用）解决了多个对象使用同一个指针时自动销毁指针的问题，但又会发生交叉引用时不能够正确销毁指针的问题。</p><h2 id=shared_pointer源码>shared_pointer源码<a hidden class=anchor aria-hidden=true href=#shared_pointer源码>#</a></h2><pre tabindex=0><code>template&lt;class _Tp&gt;
+class _LIBCPP_TEMPLATE_VIS shared_ptr
+{
+public:
+    typedef _Tp element_type;
+
+#if _LIBCPP_STD_VER &gt; 14
+    typedef weak_ptr&lt;_Tp&gt; weak_type;
+#endif
+private:
+    element_type*      __ptr_;
+    __shared_weak_count* __cntrl_;
+
+    struct __nat {int __for_bool_;};
+public:
+    _LIBCPP_INLINE_VISIBILITY
+    _LIBCPP_CONSTEXPR shared_ptr() _NOEXCEPT;
+    _LIBCPP_INLINE_VISIBILITY
+    _LIBCPP_CONSTEXPR shared_ptr(nullptr_t) _NOEXCEPT;
+    template&lt;class _Yp&gt;
+        explicit shared_ptr(_Yp* __p,
+                            typename enable_if&lt;is_convertible&lt;_Yp*, element_type*&gt;::value, __nat&gt;::type = __nat());
+    template&lt;class _Yp, class _Dp&gt;
+        shared_ptr(_Yp* __p, _Dp __d,
+                   typename enable_if&lt;is_convertible&lt;_Yp*, element_type*&gt;::value, __nat&gt;::type = __nat());
+    template&lt;class _Yp, class _Dp, class _Alloc&gt;
+        shared_ptr(_Yp* __p, _Dp __d, _Alloc __a,
+                   typename enable_if&lt;is_convertible&lt;_Yp*, element_type*&gt;::value, __nat&gt;::type = __nat());
+    template &lt;class _Dp&gt; shared_ptr(nullptr_t __p, _Dp __d);
+    template &lt;class _Dp, class _Alloc&gt; shared_ptr(nullptr_t __p, _Dp __d, _Alloc __a);
+    template&lt;class _Yp&gt; _LIBCPP_INLINE_VISIBILITY shared_ptr(const shared_ptr&lt;_Yp&gt;&amp; __r, element_type* __p) _NOEXCEPT;
+    _LIBCPP_INLINE_VISIBILITY
+    shared_ptr(const shared_ptr&amp; __r) _NOEXCEPT;
+    template&lt;class _Yp&gt;
+        _LIBCPP_INLINE_VISIBILITY
+        shared_ptr(const shared_ptr&lt;_Yp&gt;&amp; __r,
+                   typename enable_if&lt;is_convertible&lt;_Yp*, element_type*&gt;::value, __nat&gt;::type = __nat())
+                       _NOEXCEPT;
+#ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
+    _LIBCPP_INLINE_VISIBILITY
+    shared_ptr(shared_ptr&amp;&amp; __r) _NOEXCEPT;
+    template&lt;class _Yp&gt; _LIBCPP_INLINE_VISIBILITY  shared_ptr(shared_ptr&lt;_Yp&gt;&amp;&amp; __r,
+                   typename enable_if&lt;is_convertible&lt;_Yp*, element_type*&gt;::value, __nat&gt;::type = __nat())
+                       _NOEXCEPT;
+#endif  // _LIBCPP_HAS_NO_RVALUE_REFERENCES
+    template&lt;class _Yp&gt; explicit shared_ptr(const weak_ptr&lt;_Yp&gt;&amp; __r,
+                   typename enable_if&lt;is_convertible&lt;_Yp*, element_type*&gt;::value, __nat&gt;::type= __nat());
+#if _LIBCPP_STD_VER &lt;= 14 || defined(_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR)
+#ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
+    template&lt;class _Yp&gt;
+        shared_ptr(auto_ptr&lt;_Yp&gt;&amp;&amp; __r,
+                   typename enable_if&lt;is_convertible&lt;_Yp*, element_type*&gt;::value, __nat&gt;::type = __nat());
+#else
+    template&lt;class _Yp&gt;
+        shared_ptr(auto_ptr&lt;_Yp&gt; __r,
+                   typename enable_if&lt;is_convertible&lt;_Yp*, element_type*&gt;::value, __nat&gt;::type = __nat());
+#endif
+#endif
+#ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
+    template &lt;class _Yp, class _Dp&gt;
+        shared_ptr(unique_ptr&lt;_Yp, _Dp&gt;&amp;&amp;,
+                   typename enable_if
+                   &lt;
+                       !is_lvalue_reference&lt;_Dp&gt;::value &amp;&amp;
+                       !is_array&lt;_Yp&gt;::value &amp;&amp;
+                       is_convertible&lt;typename unique_ptr&lt;_Yp, _Dp&gt;::pointer, element_type*&gt;::value,
+                       __nat
+                   &gt;::type = __nat());
+    template &lt;class _Yp, class _Dp&gt;
+        shared_ptr(unique_ptr&lt;_Yp, _Dp&gt;&amp;&amp;,
+                   typename enable_if
+                   &lt;
+                       is_lvalue_reference&lt;_Dp&gt;::value &amp;&amp;
+                       !is_array&lt;_Yp&gt;::value &amp;&amp;
+                       is_convertible&lt;typename unique_ptr&lt;_Yp, _Dp&gt;::pointer, element_type*&gt;::value,
+                       __nat
+                   &gt;::type = __nat());
+#else  // _LIBCPP_HAS_NO_RVALUE_REFERENCES
+    template &lt;class _Yp, class _Dp&gt;
+        shared_ptr(unique_ptr&lt;_Yp, _Dp&gt;,
+                   typename enable_if
+                   &lt;
+                       !is_lvalue_reference&lt;_Dp&gt;::value &amp;&amp;
+                       !is_array&lt;_Yp&gt;::value &amp;&amp;
+                       is_convertible&lt;typename unique_ptr&lt;_Yp, _Dp&gt;::pointer, element_type*&gt;::value,
+                       __nat
+                   &gt;::type = __nat());
+    template &lt;class _Yp, class _Dp&gt;
+        shared_ptr(unique_ptr&lt;_Yp, _Dp&gt;,
+                   typename enable_if
+                   &lt;
+                       is_lvalue_reference&lt;_Dp&gt;::value &amp;&amp;
+                       !is_array&lt;_Yp&gt;::value &amp;&amp;
+                       is_convertible&lt;typename unique_ptr&lt;_Yp, _Dp&gt;::pointer, element_type*&gt;::value,
+                       __nat
+                   &gt;::type = __nat());
+#endif  // _LIBCPP_HAS_NO_RVALUE_REFERENCES
+
+    ~shared_ptr();
+
+    _LIBCPP_INLINE_VISIBILITY
+    shared_ptr&amp; operator=(const shared_ptr&amp; __r) _NOEXCEPT;
+    template&lt;class _Yp&gt;
+        typename enable_if
+        &lt;
+            is_convertible&lt;_Yp*, element_type*&gt;::value,
+            shared_ptr&amp;
+        &gt;::type
+        _LIBCPP_INLINE_VISIBILITY
+        operator=(const shared_ptr&lt;_Yp&gt;&amp; __r) _NOEXCEPT;
+#ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
+    _LIBCPP_INLINE_VISIBILITY
+    shared_ptr&amp; operator=(shared_ptr&amp;&amp; __r) _NOEXCEPT;
+    template&lt;class _Yp&gt;
+        typename enable_if
+        &lt;
+            is_convertible&lt;_Yp*, element_type*&gt;::value,
+            shared_ptr&lt;_Tp&gt;&amp;
+        &gt;::type
+        _LIBCPP_INLINE_VISIBILITY
+        operator=(shared_ptr&lt;_Yp&gt;&amp;&amp; __r);
+#if _LIBCPP_STD_VER &lt;= 14 || defined(_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR)
+    template&lt;class _Yp&gt;
+        _LIBCPP_INLINE_VISIBILITY
+        typename enable_if
+        &lt;
+            !is_array&lt;_Yp&gt;::value &amp;&amp;
+            is_convertible&lt;_Yp*, element_type*&gt;::value,
+            shared_ptr
+        &gt;::type&amp;
+        operator=(auto_ptr&lt;_Yp&gt;&amp;&amp; __r);
+#endif
+#else  // _LIBCPP_HAS_NO_RVALUE_REFERENCES
+#if _LIBCPP_STD_VER &lt;= 14 || defined(_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR)
+    template&lt;class _Yp&gt;
+        _LIBCPP_INLINE_VISIBILITY
+        typename enable_if
+        &lt;
+            !is_array&lt;_Yp&gt;::value &amp;&amp;
+            is_convertible&lt;_Yp*, element_type*&gt;::value,
+            shared_ptr&amp;
+        &gt;::type
+        operator=(auto_ptr&lt;_Yp&gt; __r);
+#endif
+#endif
+    template &lt;class _Yp, class _Dp&gt;
+        typename enable_if
+        &lt;
+            !is_array&lt;_Yp&gt;::value &amp;&amp;
+            is_convertible&lt;typename unique_ptr&lt;_Yp, _Dp&gt;::pointer, element_type*&gt;::value,
+            shared_ptr&amp;
+        &gt;::type
+#ifndef _LIBCPP_HAS_NO_RVALUE_REFERENCES
+        _LIBCPP_INLINE_VISIBILITY
+        operator=(unique_ptr&lt;_Yp, _Dp&gt;&amp;&amp; __r);
+#else  // _LIBCPP_HAS_NO_RVALUE_REFERENCES
+        _LIBCPP_INLINE_VISIBILITY
+        operator=(unique_ptr&lt;_Yp, _Dp&gt; __r);
+#endif
+
+    _LIBCPP_INLINE_VISIBILITY
+    void swap(shared_ptr&amp; __r) _NOEXCEPT;
+    _LIBCPP_INLINE_VISIBILITY
+    void reset() _NOEXCEPT;
+    template&lt;class _Yp&gt;
+        typename enable_if
+        &lt;
+            is_convertible&lt;_Yp*, element_type*&gt;::value,
+            void
+        &gt;::type
+        _LIBCPP_INLINE_VISIBILITY
+        reset(_Yp* __p);
+    template&lt;class _Yp, class _Dp&gt;
+        typename enable_if
+        &lt;
+            is_convertible&lt;_Yp*, element_type*&gt;::value,
+            void
+        &gt;::type
+        _LIBCPP_INLINE_VISIBILITY
+        reset(_Yp* __p, _Dp __d);
+    template&lt;class _Yp, class _Dp, class _Alloc&gt;
+        typename enable_if
+        &lt;
+            is_convertible&lt;_Yp*, element_type*&gt;::value,
+            void
+        &gt;::type
+        _LIBCPP_INLINE_VISIBILITY
+        reset(_Yp* __p, _Dp __d, _Alloc __a);
+
+    _LIBCPP_INLINE_VISIBILITY
+    element_type* get() const _NOEXCEPT {return __ptr_;}
+    _LIBCPP_INLINE_VISIBILITY
+    typename add_lvalue_reference&lt;element_type&gt;::type operator*() const _NOEXCEPT
+        {return *__ptr_;}
+    _LIBCPP_INLINE_VISIBILITY
+    element_type* operator-&gt;() const _NOEXCEPT {return __ptr_;}
+    _LIBCPP_INLINE_VISIBILITY
+    long use_count() const _NOEXCEPT {return __cntrl_ ? __cntrl_-&gt;use_count() : 0;}
+    _LIBCPP_INLINE_VISIBILITY
+    bool unique() const _NOEXCEPT {return use_count() == 1;}
+    _LIBCPP_INLINE_VISIBILITY
+    _LIBCPP_EXPLICIT operator bool() const _NOEXCEPT {return get() != 0;}
+    template &lt;class _Up&gt;
+        _LIBCPP_INLINE_VISIBILITY
+        bool owner_before(shared_ptr&lt;_Up&gt; const&amp; __p) const _NOEXCEPT
+        {return __cntrl_ &lt; __p.__cntrl_;}
+    template &lt;class _Up&gt;
+        _LIBCPP_INLINE_VISIBILITY
+        bool owner_before(weak_ptr&lt;_Up&gt; const&amp; __p) const _NOEXCEPT
+        {return __cntrl_ &lt; __p.__cntrl_;}
+    _LIBCPP_INLINE_VISIBILITY
+    bool
+    __owner_equivalent(const shared_ptr&amp; __p) const
+        {return __cntrl_ == __p.__cntrl_;}
+
+#ifndef _LIBCPP_NO_RTTI
+    template &lt;class _Dp&gt;
+        _LIBCPP_INLINE_VISIBILITY
+        _Dp* __get_deleter() const _NOEXCEPT
+            {return static_cast&lt;_Dp*&gt;(__cntrl_
+                    ? const_cast&lt;void *&gt;(__cntrl_-&gt;__get_deleter(typeid(_Dp)))
+                      : nullptr);}
+#endif  // _LIBCPP_NO_RTTI
+
+#ifndef _LIBCPP_HAS_NO_VARIADICS
+
+    template&lt;class ..._Args&gt;
+        static
+        shared_ptr&lt;_Tp&gt;
+        make_shared(_Args&amp;&amp; ...__args);
+
+    template&lt;class _Alloc, class ..._Args&gt;
+        static
+        shared_ptr&lt;_Tp&gt;
+        allocate_shared(const _Alloc&amp; __a, _Args&amp;&amp; ...__args);
+
+#else  // _LIBCPP_HAS_NO_VARIADICS
+
+    static shared_ptr&lt;_Tp&gt; make_shared();
+
+    template&lt;class _A0&gt;
+        static shared_ptr&lt;_Tp&gt; make_shared(_A0&amp;);
+
+    template&lt;class _A0, class _A1&gt;
+        static shared_ptr&lt;_Tp&gt; make_shared(_A0&amp;, _A1&amp;);
+
+    template&lt;class _A0, class _A1, class _A2&gt;
+        static shared_ptr&lt;_Tp&gt; make_shared(_A0&amp;, _A1&amp;, _A2&amp;);
+
+    template&lt;class _Alloc&gt;
+        static shared_ptr&lt;_Tp&gt;
+        allocate_shared(const _Alloc&amp; __a);
+
+    template&lt;class _Alloc, class _A0&gt;
+        static shared_ptr&lt;_Tp&gt;
+        allocate_shared(const _Alloc&amp; __a, _A0&amp; __a0);
+
+    template&lt;class _Alloc, class _A0, class _A1&gt;
+        static shared_ptr&lt;_Tp&gt;
+        allocate_shared(const _Alloc&amp; __a, _A0&amp; __a0, _A1&amp; __a1);
+
+    template&lt;class _Alloc, class _A0, class _A1, class _A2&gt;
+        static shared_ptr&lt;_Tp&gt;
+        allocate_shared(const _Alloc&amp; __a, _A0&amp; __a0, _A1&amp; __a1, _A2&amp; __a2);
+
+#endif  // _LIBCPP_HAS_NO_VARIADICS
+
+private:
+    template &lt;class _Yp, bool = is_function&lt;_Yp&gt;::value&gt;
+        struct __shared_ptr_default_allocator
+        {
+            typedef allocator&lt;_Yp&gt; type;
+        };
+
+    template &lt;class _Yp&gt;
+        struct __shared_ptr_default_allocator&lt;_Yp, true&gt;
+        {
+            typedef allocator&lt;__shared_ptr_dummy_rebind_allocator_type&gt; type;
+        };
+
+    template &lt;class _Yp, class _OrigPtr&gt;
+        _LIBCPP_INLINE_VISIBILITY
+        typename enable_if&lt;is_convertible&lt;_OrigPtr*,
+                                          const enable_shared_from_this&lt;_Yp&gt;*
+        &gt;::value,
+            void&gt;::type
+        __enable_weak_this(const enable_shared_from_this&lt;_Yp&gt;* __e,
+                           _OrigPtr* __ptr) _NOEXCEPT
+        {
+            typedef typename remove_cv&lt;_Yp&gt;::type _RawYp;
+            if (__e &amp;&amp; __e-&gt;__weak_this_.expired())
+            {
+                __e-&gt;__weak_this_ = shared_ptr&lt;_RawYp&gt;(*this,
+                    const_cast&lt;_RawYp*&gt;(static_cast&lt;const _Yp*&gt;(__ptr)));
+            }
+        }
+
+    _LIBCPP_INLINE_VISIBILITY void __enable_weak_this(...) _NOEXCEPT {}
+
+    template &lt;class _Up&gt; friend class _LIBCPP_TEMPLATE_VIS shared_ptr;
+    template &lt;class _Up&gt; friend class _LIBCPP_TEMPLATE_VIS weak_ptr;
+};
+</code></pre></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=prev href=https://prov1dence.top/posts/deep-learning/methods-to-prevent-overfitting-in-deep-learning/><span class=title>« Prev</span><br><span>Methods to Prevent Overfitting in Deep Learning</span>
+</a><a class=next href=https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-2/><span class=title>Next »</span><br><span>C++ 智能指针（2）：unique_ptr</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://prov1dence.top/>Zhengyu Chen - 尾張</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

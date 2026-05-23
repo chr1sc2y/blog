@@ -1,0 +1,264 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Kick Start 2019 Round C | Zhengyu Chen - 尾張</title>
+<meta name=keywords content><meta name=description content="Kick Start 2019 Round C
+Wiggle Walk (6pts, 12pts)
+在一个R * C的矩阵里面移动，遇到已经走过的格子直接跳过。数据保证移动时不会超出给定的矩阵。
+Solution: Simulation
+用一个visited数组记录已经走过的格子，遇到走过的格子则直接跳过往后遍历。讲道理这个方法时间复杂度是过不了Hidden Test Set的，但是我也不知道为什么就过了。
+
+时间复杂度：O(n^2)
+空间复杂度：O(n^2)
+
+// C++
+#include <iostream>
+#include <cmath>
+#include <cstdio>
+#include <math.h>
+#include <limits>
+#include <algorithm>
+#include <vector>
+#include <stack>
+#include <queue>
+#include <string>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+
+using namespace std;
+
+vector<vector<bool>> visited(50001, vector<bool>(50001, false));
+
+void Forward(char &amp;p, int &amp;r, int &amp;c) {
+    if (p == 'E') {
+        while (visited[r][c + 1])
+            ++c;
+        visited[r][++c] = true;
+    } else if (p == 'W') {
+        while (visited[r][c - 1])
+            --c;
+        visited[r][--c] = true;
+    } else if (p == 'N') {
+        while (visited[r - 1][c])
+            --r;
+        visited[--r][c] = true;
+    } else if (p == 'S') {
+        while (visited[r + 1][c])
+            ++r;
+        visited[++r][c] = true;
+    }
+}
+
+void solve(const int &amp;t) {
+    int n, R, C, r, c;
+    string str;
+    scanf(&#34;%d %d %d %d %d&#34;, &amp;n, &amp;R, &amp;C, &amp;r, &amp;c);
+    cin >> str;
+    visited = vector<vector<bool>>(50001, vector<bool>(50001, false));
+    visited[r][c] = true;
+    for (int i = 0; i < n; ++i)
+        Forward(str[i], r, c);
+    printf(&#34;Case #%d: %d %d\n&#34;, t, r, c);
+}
+
+int main() {
+    int T;
+    scanf(&#34;%d&#34;, &amp;T);
+    for (int t = 1; t <= T; ++t)
+        solve(t);
+    return 0;
+}
+Circuit Board (14pts, 20pts)
+在矩阵里找到每一行最大值与最小值不超过K的最大子矩阵。"><meta name=author content><link rel=canonical href=https://prov1dence.top/posts/kick-start/2019-round-c/><link crossorigin=anonymous href=/assets/css/stylesheet.45e028aa8ce0961349adf411b013ee39406be2c0bc80d4ea3fc04555f7f4611a.css integrity="sha256-ReAoqozglhNJrfQRsBPuOUBr4sC8gNTqP8BFVff0YRo=" rel="preload stylesheet" as=style><link rel=icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://prov1dence.top/posts/kick-start/2019-round-c/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://prov1dence.top/posts/kick-start/2019-round-c/"><meta property="og:site_name" content="Zhengyu Chen - 尾張"><meta property="og:title" content="Kick Start 2019 Round C"><meta property="og:description" content="Kick Start 2019 Round C Wiggle Walk (6pts, 12pts) 在一个R * C的矩阵里面移动，遇到已经走过的格子直接跳过。数据保证移动时不会超出给定的矩阵。
+Solution: Simulation 用一个visited数组记录已经走过的格子，遇到走过的格子则直接跳过往后遍历。讲道理这个方法时间复杂度是过不了Hidden Test Set的，但是我也不知道为什么就过了。
+时间复杂度：O(n^2) 空间复杂度：O(n^2) // C++ #include <iostream> #include <cmath> #include <cstdio> #include <math.h> #include <limits> #include <algorithm> #include <vector> #include <stack> #include <queue> #include <string> #include <map> #include <set> #include <unordered_map> #include <unordered_set> using namespace std; vector<vector<bool>> visited(50001, vector<bool>(50001, false)); void Forward(char &amp;p, int &amp;r, int &amp;c) { if (p == 'E') { while (visited[r][c + 1]) ++c; visited[r][++c] = true; } else if (p == 'W') { while (visited[r][c - 1]) --c; visited[r][--c] = true; } else if (p == 'N') { while (visited[r - 1][c]) --r; visited[--r][c] = true; } else if (p == 'S') { while (visited[r + 1][c]) ++r; visited[++r][c] = true; } } void solve(const int &amp;t) { int n, R, C, r, c; string str; scanf(&#34;%d %d %d %d %d&#34;, &amp;n, &amp;R, &amp;C, &amp;r, &amp;c); cin >> str; visited = vector<vector<bool>>(50001, vector<bool>(50001, false)); visited[r][c] = true; for (int i = 0; i < n; ++i) Forward(str[i], r, c); printf(&#34;Case #%d: %d %d\n&#34;, t, r, c); } int main() { int T; scanf(&#34;%d&#34;, &amp;T); for (int t = 1; t <= T; ++t) solve(t); return 0; } Circuit Board (14pts, 20pts) 在矩阵里找到每一行最大值与最小值不超过K的最大子矩阵。"><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-05-26T23:29:45+10:00"><meta property="article:modified_time" content="2019-05-26T23:29:45+10:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Kick Start 2019 Round C"><meta name=twitter:description content="Kick Start 2019 Round C
+Wiggle Walk (6pts, 12pts)
+在一个R * C的矩阵里面移动，遇到已经走过的格子直接跳过。数据保证移动时不会超出给定的矩阵。
+Solution: Simulation
+用一个visited数组记录已经走过的格子，遇到走过的格子则直接跳过往后遍历。讲道理这个方法时间复杂度是过不了Hidden Test Set的，但是我也不知道为什么就过了。
+
+时间复杂度：O(n^2)
+空间复杂度：O(n^2)
+
+// C++
+#include <iostream>
+#include <cmath>
+#include <cstdio>
+#include <math.h>
+#include <limits>
+#include <algorithm>
+#include <vector>
+#include <stack>
+#include <queue>
+#include <string>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+
+using namespace std;
+
+vector<vector<bool>> visited(50001, vector<bool>(50001, false));
+
+void Forward(char &amp;p, int &amp;r, int &amp;c) {
+    if (p == 'E') {
+        while (visited[r][c + 1])
+            ++c;
+        visited[r][++c] = true;
+    } else if (p == 'W') {
+        while (visited[r][c - 1])
+            --c;
+        visited[r][--c] = true;
+    } else if (p == 'N') {
+        while (visited[r - 1][c])
+            --r;
+        visited[--r][c] = true;
+    } else if (p == 'S') {
+        while (visited[r + 1][c])
+            ++r;
+        visited[++r][c] = true;
+    }
+}
+
+void solve(const int &amp;t) {
+    int n, R, C, r, c;
+    string str;
+    scanf(&#34;%d %d %d %d %d&#34;, &amp;n, &amp;R, &amp;C, &amp;r, &amp;c);
+    cin >> str;
+    visited = vector<vector<bool>>(50001, vector<bool>(50001, false));
+    visited[r][c] = true;
+    for (int i = 0; i < n; ++i)
+        Forward(str[i], r, c);
+    printf(&#34;Case #%d: %d %d\n&#34;, t, r, c);
+}
+
+int main() {
+    int T;
+    scanf(&#34;%d&#34;, &amp;T);
+    for (int t = 1; t <= T; ++t)
+        solve(t);
+    return 0;
+}
+Circuit Board (14pts, 20pts)
+在矩阵里找到每一行最大值与最小值不超过K的最大子矩阵。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://prov1dence.top/posts/"},{"@type":"ListItem","position":2,"name":"Kick Start 2019 Round C","item":"https://prov1dence.top/posts/kick-start/2019-round-c/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Kick Start 2019 Round C","name":"Kick Start 2019 Round C","description":"Kick Start 2019 Round C Wiggle Walk (6pts, 12pts) 在一个R * C的矩阵里面移动，遇到已经走过的格子直接跳过。数据保证移动时不会超出给定的矩阵。\nSolution: Simulation 用一个visited数组记录已经走过的格子，遇到走过的格子则直接跳过往后遍历。讲道理这个方法时间复杂度是过不了Hidden Test Set的，但是我也不知道为什么就过了。\n时间复杂度：O(n^2) 空间复杂度：O(n^2) // C++ #include \u0026lt;iostream\u0026gt; #include \u0026lt;cmath\u0026gt; #include \u0026lt;cstdio\u0026gt; #include \u0026lt;math.h\u0026gt; #include \u0026lt;limits\u0026gt; #include \u0026lt;algorithm\u0026gt; #include \u0026lt;vector\u0026gt; #include \u0026lt;stack\u0026gt; #include \u0026lt;queue\u0026gt; #include \u0026lt;string\u0026gt; #include \u0026lt;map\u0026gt; #include \u0026lt;set\u0026gt; #include \u0026lt;unordered_map\u0026gt; #include \u0026lt;unordered_set\u0026gt; using namespace std; vector\u0026lt;vector\u0026lt;bool\u0026gt;\u0026gt; visited(50001, vector\u0026lt;bool\u0026gt;(50001, false)); void Forward(char \u0026amp;p, int \u0026amp;r, int \u0026amp;c) { if (p == \u0026#39;E\u0026#39;) { while (visited[r][c + 1]) ++c; visited[r][++c] = true; } else if (p == \u0026#39;W\u0026#39;) { while (visited[r][c - 1]) --c; visited[r][--c] = true; } else if (p == \u0026#39;N\u0026#39;) { while (visited[r - 1][c]) --r; visited[--r][c] = true; } else if (p == \u0026#39;S\u0026#39;) { while (visited[r + 1][c]) ++r; visited[++r][c] = true; } } void solve(const int \u0026amp;t) { int n, R, C, r, c; string str; scanf(\u0026#34;%d %d %d %d %d\u0026#34;, \u0026amp;n, \u0026amp;R, \u0026amp;C, \u0026amp;r, \u0026amp;c); cin \u0026gt;\u0026gt; str; visited = vector\u0026lt;vector\u0026lt;bool\u0026gt;\u0026gt;(50001, vector\u0026lt;bool\u0026gt;(50001, false)); visited[r][c] = true; for (int i = 0; i \u0026lt; n; ++i) Forward(str[i], r, c); printf(\u0026#34;Case #%d: %d %d\\n\u0026#34;, t, r, c); } int main() { int T; scanf(\u0026#34;%d\u0026#34;, \u0026amp;T); for (int t = 1; t \u0026lt;= T; ++t) solve(t); return 0; } Circuit Board (14pts, 20pts) 在矩阵里找到每一行最大值与最小值不超过K的最大子矩阵。\n","keywords":[],"articleBody":"Kick Start 2019 Round C Wiggle Walk (6pts, 12pts) 在一个R * C的矩阵里面移动，遇到已经走过的格子直接跳过。数据保证移动时不会超出给定的矩阵。\nSolution: Simulation 用一个visited数组记录已经走过的格子，遇到走过的格子则直接跳过往后遍历。讲道理这个方法时间复杂度是过不了Hidden Test Set的，但是我也不知道为什么就过了。\n时间复杂度：O(n^2) 空间复杂度：O(n^2) // C++ #include #include #include #include #include #include #include #include #include #include #include #include #include #include using namespace std; vector\u003cvector\u003cbool\u003e\u003e visited(50001, vector\u003cbool\u003e(50001, false)); void Forward(char \u0026p, int \u0026r, int \u0026c) { if (p == 'E') { while (visited[r][c + 1]) ++c; visited[r][++c] = true; } else if (p == 'W') { while (visited[r][c - 1]) --c; visited[r][--c] = true; } else if (p == 'N') { while (visited[r - 1][c]) --r; visited[--r][c] = true; } else if (p == 'S') { while (visited[r + 1][c]) ++r; visited[++r][c] = true; } } void solve(const int \u0026t) { int n, R, C, r, c; string str; scanf(\"%d %d %d %d %d\", \u0026n, \u0026R, \u0026C, \u0026r, \u0026c); cin \u003e\u003e str; visited = vector\u003cvector\u003cbool\u003e\u003e(50001, vector\u003cbool\u003e(50001, false)); visited[r][c] = true; for (int i = 0; i \u003c n; ++i) Forward(str[i], r, c); printf(\"Case #%d: %d %d\\n\", t, r, c); } int main() { int T; scanf(\"%d\", \u0026T); for (int t = 1; t \u003c= T; ++t) solve(t); return 0; } Circuit Board (14pts, 20pts) 在矩阵里找到每一行最大值与最小值不超过K的最大子矩阵。\nSolution: Dynamic Programming 定义一个矩阵len[r][c]来保存格子r, c在r行上符合条件的最长数组。因为题目要求是需要保证每一行的最大值与最小值不超过K，行与行之间是没有关系的，所以对于每一个格子，遍历该列上的所有格子，找到这些格子能够到达的最远的位置，取最小值，用当前的高度乘最远位置就能得到答案。\n时间复杂度：O(RRC) 空间复杂度：O(RC) // C++ #include #include #include #include #include #include #include #include #include #include #include #include #include #include using namespace std; void solve(const int \u0026t) { int R, C, K; scanf(\"%d %d %d\", \u0026R, \u0026C, \u0026K); vector\u003cvector\u003cint\u003e\u003e len(301, vector\u003cint\u003e(301, 1)), matrix(301, vector\u003cint\u003e(301)); for (int r = 0; r \u003c R; ++r) for (int c = 0; c \u003c C; ++c) scanf(\"%d\", \u0026matrix[r][c]); for (int r = 0; r \u003c R; ++r) { for (int c = 0; c \u003c C; ++c) { int i = c - 1, current_max = matrix[r][c], current_min = matrix[r][c]; while (i \u003e= 0) { current_max = max(current_max, matrix[r][i]); current_min = min(current_min, matrix[r][i]); if (current_max - current_min \u003e K) break; --i; } len[r][c] = c - i; } } int res = 1; for (int r = 0; r \u003c R; ++r) { for (int c = 0; c \u003c C; ++c) { int min_c = len[r][c]; for (int line = r; line \u003e= 0; --line) { min_c = min(min_c, len[line][c]); res = max(res, min_c * (r - line + 1)); } } } printf(\"Case #%d: %d\\n\", t, res); } int main() { int T; scanf(\"%d\", \u0026T); for (int t = 1; t \u003c= T; ++t) solve(t); return 0; } Catch Some (18pts, 30pts) // TODO\n","wordCount":"432","inLanguage":"en","datePublished":"2019-05-26T23:29:45+10:00","dateModified":"2019-05-26T23:29:45+10:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://prov1dence.top/posts/kick-start/2019-round-c/"},"publisher":{"@type":"Organization","name":"Zhengyu Chen - 尾張","logo":{"@type":"ImageObject","url":"https://prov1dence.top/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://prov1dence.top/ accesskey=h title="尾張 (Alt + H)">尾張</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://prov1dence.top/archives/ title=Posts><span>Posts</span></a></li><li><a href=https://prov1dence.top/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">Kick Start 2019 Round C</h1><div class=post-meta><span title='2019-05-26 23:29:45 +1000 +1000'>May 26, 2019</span>&nbsp;·&nbsp;3 min</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#kick-start-2019-round-chttpscodingcompetitionswithgooglecomkickstartround0000000000050ff2 aria-label="Kick Start 2019 Round C">Kick Start 2019 Round C</a><ul><li><a href=#wiggle-walk-6pts-12ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150aac aria-label="Wiggle Walk (6pts, 12pts)">Wiggle Walk (6pts, 12pts)</a><ul><li><a href=#solution-simulation aria-label="Solution: Simulation">Solution: Simulation</a></li></ul></li><li><a href=#circuit-board-14pts-20ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150aae aria-label="Circuit Board (14pts, 20pts)">Circuit Board (14pts, 20pts)</a><ul><li><a href=#solution-dynamic-programming aria-label="Solution: Dynamic Programming">Solution: Dynamic Programming</a></li></ul></li><li><a href=#catch-some-18pts-30ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150a0d aria-label="Catch Some (18pts, 30pts)">Catch Some (18pts, 30pts)</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=kick-start-2019-round-chttpscodingcompetitionswithgooglecomkickstartround0000000000050ff2><a href=https://codingcompetitions.withgoogle.com/kickstart/round/0000000000050ff2>Kick Start 2019 Round C</a><a hidden class=anchor aria-hidden=true href=#kick-start-2019-round-chttpscodingcompetitionswithgooglecomkickstartround0000000000050ff2>#</a></h1><h2 id=wiggle-walk-6pts-12ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150aac><a href=https://codingcompetitions.withgoogle.com/kickstart/round/0000000000050ff2/0000000000150aac>Wiggle Walk (6pts, 12pts)</a><a hidden class=anchor aria-hidden=true href=#wiggle-walk-6pts-12ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150aac>#</a></h2><p>在一个R * C的矩阵里面移动，遇到已经走过的格子直接跳过。数据保证移动时不会超出给定的矩阵。</p><h3 id=solution-simulation>Solution: Simulation<a hidden class=anchor aria-hidden=true href=#solution-simulation>#</a></h3><p>用一个visited数组记录已经走过的格子，遇到走过的格子则直接跳过往后遍历。讲道理这个方法时间复杂度是过不了Hidden Test Set的，但是我也不知道为什么就过了。</p><ul><li>时间复杂度：O(n^2)</li><li>空间复杂度：O(n^2)</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C++ data-lang=C++><span style=display:flex><span><span style=color:#75715e>// C++
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;cmath&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;cstdio&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;math.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;limits&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;algorithm&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;vector&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stack&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;queue&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;string&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;map&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;set&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unordered_map&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unordered_set&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>using</span> <span style=color:#66d9ef>namespace</span> std;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>vector<span style=color:#f92672>&lt;</span>vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>bool</span><span style=color:#f92672>&gt;&gt;</span> visited(<span style=color:#ae81ff>50001</span>, vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>bool</span><span style=color:#f92672>&gt;</span>(<span style=color:#ae81ff>50001</span>, false));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>Forward</span>(<span style=color:#66d9ef>char</span> <span style=color:#f92672>&amp;</span>p, <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>r, <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>c) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (p <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;E&#39;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (visited[r][c <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>])
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>c;
+</span></span><span style=display:flex><span>        visited[r][<span style=color:#f92672>++</span>c] <span style=color:#f92672>=</span> true;
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (p <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;W&#39;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (visited[r][c <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>])
+</span></span><span style=display:flex><span>            <span style=color:#f92672>--</span>c;
+</span></span><span style=display:flex><span>        visited[r][<span style=color:#f92672>--</span>c] <span style=color:#f92672>=</span> true;
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (p <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;N&#39;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (visited[r <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>][c])
+</span></span><span style=display:flex><span>            <span style=color:#f92672>--</span>r;
+</span></span><span style=display:flex><span>        visited[<span style=color:#f92672>--</span>r][c] <span style=color:#f92672>=</span> true;
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (p <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;S&#39;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (visited[r <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>][c])
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>r;
+</span></span><span style=display:flex><span>        visited[<span style=color:#f92672>++</span>r][c] <span style=color:#f92672>=</span> true;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>solve</span>(<span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>t) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> n, R, C, r, c;
+</span></span><span style=display:flex><span>    string str;
+</span></span><span style=display:flex><span>    scanf(<span style=color:#e6db74>&#34;%d %d %d %d %d&#34;</span>, <span style=color:#f92672>&amp;</span>n, <span style=color:#f92672>&amp;</span>R, <span style=color:#f92672>&amp;</span>C, <span style=color:#f92672>&amp;</span>r, <span style=color:#f92672>&amp;</span>c);
+</span></span><span style=display:flex><span>    cin <span style=color:#f92672>&gt;&gt;</span> str;
+</span></span><span style=display:flex><span>    visited <span style=color:#f92672>=</span> vector<span style=color:#f92672>&lt;</span>vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>bool</span><span style=color:#f92672>&gt;&gt;</span>(<span style=color:#ae81ff>50001</span>, vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>bool</span><span style=color:#f92672>&gt;</span>(<span style=color:#ae81ff>50001</span>, false));
+</span></span><span style=display:flex><span>    visited[r][c] <span style=color:#f92672>=</span> true;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; <span style=color:#f92672>++</span>i)
+</span></span><span style=display:flex><span>        Forward(str[i], r, c);
+</span></span><span style=display:flex><span>    printf(<span style=color:#e6db74>&#34;Case #%d: %d %d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, t, r, c);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> T;
+</span></span><span style=display:flex><span>    scanf(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>T);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> t <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>; t <span style=color:#f92672>&lt;=</span> T; <span style=color:#f92672>++</span>t)
+</span></span><span style=display:flex><span>        solve(t);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=circuit-board-14pts-20ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150aae><a href=https://codingcompetitions.withgoogle.com/kickstart/round/0000000000050ff2/0000000000150aae>Circuit Board (14pts, 20pts)</a><a hidden class=anchor aria-hidden=true href=#circuit-board-14pts-20ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150aae>#</a></h2><p>在矩阵里找到每一行最大值与最小值不超过K的最大子矩阵。</p><h3 id=solution-dynamic-programming>Solution: Dynamic Programming<a hidden class=anchor aria-hidden=true href=#solution-dynamic-programming>#</a></h3><p>定义一个矩阵len[r][c]来保存格子r, c在r行上符合条件的最长数组。因为题目要求是需要保证每一行的最大值与最小值不超过K，行与行之间是没有关系的，所以对于每一个格子，遍历该列上的所有格子，找到这些格子能够到达的最远的位置，取最小值，用当前的高度乘最远位置就能得到答案。</p><ul><li>时间复杂度：O(RRC)</li><li>空间复杂度：O(RC)</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C++ data-lang=C++><span style=display:flex><span><span style=color:#75715e>// C++
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;cmath&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;cstdio&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;math.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;limits&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;algorithm&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;vector&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stack&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;queue&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;string&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;map&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;set&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unordered_map&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unordered_set&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>using</span> <span style=color:#66d9ef>namespace</span> std;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>solve</span>(<span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>t) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> R, C, K;
+</span></span><span style=display:flex><span>    scanf(<span style=color:#e6db74>&#34;%d %d %d&#34;</span>, <span style=color:#f92672>&amp;</span>R, <span style=color:#f92672>&amp;</span>C, <span style=color:#f92672>&amp;</span>K);
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span>vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&gt;</span> len(<span style=color:#ae81ff>301</span>, vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span>(<span style=color:#ae81ff>301</span>, <span style=color:#ae81ff>1</span>)), matrix(<span style=color:#ae81ff>301</span>, vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span>(<span style=color:#ae81ff>301</span>));
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> r <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; r <span style=color:#f92672>&lt;</span> R; <span style=color:#f92672>++</span>r)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> c <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; c <span style=color:#f92672>&lt;</span> C; <span style=color:#f92672>++</span>c)
+</span></span><span style=display:flex><span>            scanf(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>matrix[r][c]);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> r <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; r <span style=color:#f92672>&lt;</span> R; <span style=color:#f92672>++</span>r) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> c <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; c <span style=color:#f92672>&lt;</span> C; <span style=color:#f92672>++</span>c) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> c <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, current_max <span style=color:#f92672>=</span> matrix[r][c], current_min <span style=color:#f92672>=</span> matrix[r][c];
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (i <span style=color:#f92672>&gt;=</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>                current_max <span style=color:#f92672>=</span> max(current_max, matrix[r][i]);
+</span></span><span style=display:flex><span>                current_min <span style=color:#f92672>=</span> min(current_min, matrix[r][i]);
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> (current_max <span style=color:#f92672>-</span> current_min <span style=color:#f92672>&gt;</span> K)
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>                <span style=color:#f92672>--</span>i;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            len[r][c] <span style=color:#f92672>=</span> c <span style=color:#f92672>-</span> i;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> res <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> r <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; r <span style=color:#f92672>&lt;</span> R; <span style=color:#f92672>++</span>r) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> c <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; c <span style=color:#f92672>&lt;</span> C; <span style=color:#f92672>++</span>c) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>int</span> min_c <span style=color:#f92672>=</span> len[r][c];
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> line <span style=color:#f92672>=</span> r; line <span style=color:#f92672>&gt;=</span> <span style=color:#ae81ff>0</span>; <span style=color:#f92672>--</span>line) {
+</span></span><span style=display:flex><span>                min_c <span style=color:#f92672>=</span> min(min_c, len[line][c]);
+</span></span><span style=display:flex><span>                res <span style=color:#f92672>=</span> max(res, min_c <span style=color:#f92672>*</span> (r <span style=color:#f92672>-</span> line <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>));
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    printf(<span style=color:#e6db74>&#34;Case #%d: %d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, t, res);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> T;
+</span></span><span style=display:flex><span>    scanf(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>T);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> t <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>; t <span style=color:#f92672>&lt;=</span> T; <span style=color:#f92672>++</span>t)
+</span></span><span style=display:flex><span>        solve(t);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=catch-some-18pts-30ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150a0d><a href=https://codingcompetitions.withgoogle.com/kickstart/round/0000000000050ff2/0000000000150a0d>Catch Some (18pts, 30pts)</a><a hidden class=anchor aria-hidden=true href=#catch-some-18pts-30ptshttpscodingcompetitionswithgooglecomkickstartround0000000000050ff20000000000150a0d>#</a></h2><p>// TODO</p></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=prev href=https://prov1dence.top/posts/leetcode/bitmanipulation/><span class=title>« Prev</span><br><span>LeetCode 位运算</span>
+</a><a class=next href=https://prov1dence.top/posts/deep-learning/object-detection-yolo/><span class=title>Next »</span><br><span>Object Detection</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://prov1dence.top/>Zhengyu Chen - 尾張</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

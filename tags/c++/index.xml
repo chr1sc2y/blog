@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>C&#43;&#43; on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/tags/c&#43;&#43;/</link>
+    <description>Recent content in C&#43;&#43; on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 21 Feb 2021 21:20:18 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/tags/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43; 智能指针的简单实现</title>
+      <link>https://prov1dence.top/posts/cpp/smart-pointer/smart-pointer/</link>
+      <pubDate>Sun, 21 Feb 2021 21:20:18 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/smart-pointer/smart-pointer/</guid>
+      <description>&lt;h1 id=&#34;c-智能指针的简单实现&#34;&gt;C++ 智能指针的简单实现&lt;/h1&gt;
+&lt;h2 id=&#34;1-stdauto_ptr&#34;&gt;1 std::auto_ptr&lt;/h2&gt;
+&lt;p&gt;C++ 中经常会出现因为没有 delete 指针而造成的内存泄漏，例如有一个 Object 模板类：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Object&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// constructor
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    Object() &lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; t_() { cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Object::Constructor &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object(T t) &lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; t_(t) { cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Object::Constructor &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// copy-ctor
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    Object(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; Object &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;other) { cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Object::Copy-ctor &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// destructor
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;Object() { cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Object::Destructor &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Set&lt;/span&gt;(T t) { t_ &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; t; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Print&lt;/span&gt;() { cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; t_ &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    T t_;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果在堆上为类对象分配了内存，在离开其作用域的时候又没将其释放，则会造成内存泄漏：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>C&#43;&#43; 闭包和匿名函数</title>
+      <link>https://prov1dence.top/posts/cpp/closure-and-anonymous-function/</link>
+      <pubDate>Sat, 14 Nov 2020 21:20:18 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/closure-and-anonymous-function/</guid>
+      <description>&lt;h1 id=&#34;c-闭包和匿名函数&#34;&gt;C++ 闭包和匿名函数&lt;/h1&gt;
+&lt;p&gt;本文主要介绍了 C++ 中闭包和仿函数，以及匿名函数相关的概念。&lt;/p&gt;
+&lt;h2 id=&#34;1-闭包和仿函数&#34;&gt;1 闭包和仿函数&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;闭包&lt;/strong&gt;（&lt;a href=&#34;https://en.wikipedia.org/wiki/Closure_(computer_programming)&#34;&gt;Closure&lt;/a&gt;）可以被理解为一个附带数据的操作，WikiPedia 对闭包的定义是 &lt;em&gt;&amp;ldquo;In programming languages, a &lt;strong&gt;closure&lt;/strong&gt;, also &lt;strong&gt;lexical closure&lt;/strong&gt; or &lt;strong&gt;function closure&lt;/strong&gt;, is a technique for implementing &lt;strong&gt;lexically scoped name binding&lt;/strong&gt; in a language with &lt;strong&gt;first-class functions&lt;/strong&gt;.&amp;quot;&lt;/em&gt;，其中有两层含义：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;词法作用域（&lt;a href=&#34;https://en.wikipedia.org/wiki/Lexically_scoped&#34;&gt;lexically scoped&lt;/a&gt;）的名字绑定（&lt;a href=&#34;https://en.wikipedia.org/wiki/Name_binding&#34;&gt;name binding&lt;/a&gt;）：在词法作用域（C++ 的词法作用域是静态绑定的，包括块、函数、类、命名空间、全局作用域等）中，变量名与其词法上下文的标识符相关联，而独立于运行时的调用栈；&lt;/li&gt;
+&lt;li&gt;函数被当作头等公民（&lt;a href=&#34;https://en.wikipedia.org/wiki/First-class_citizen&#34;&gt;first-class citizen&lt;/a&gt;）：在运行时可以构造一个函数对象并将其作为参数传递给其他函数；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;显然 C++ 98 并不符合这两点定义，因此 C++ 98 中并没有严格意义上的闭包，但我们可以用仿函数（&lt;a href=&#34;https://www.geeksforgeeks.org/functors-in-cpp/&#34;&gt;Functor&lt;/a&gt;）来模拟闭包的行为；仿函数即一个重载了小括号操作符的类，这个类拥有与函数相近的行为方式，它拥有自己的私有成员变量，例如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Adder&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;()(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; num)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        sum &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; num;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; sum;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Adder() &lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; sum(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;) {}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Adder(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; num) &lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; sum(num) {}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; sum;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Adder adder(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; adder(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; adder(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; adder(&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ g++ -std&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;c++98 -o adder adder.cpp 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ./adder 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;相比之下 golang 中真正的闭包显得简洁很多：&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

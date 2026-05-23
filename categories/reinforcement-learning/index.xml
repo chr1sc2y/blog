@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Reinforcement Learning on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/reinforcement-learning/</link>
+    <description>Recent content in Reinforcement Learning on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 10 Dec 2020 20:07:52 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/reinforcement-learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>启发式搜索和强化学习</title>
+      <link>https://prov1dence.top/posts/reinforcement-learning/heuristic-search-and-reinforcement-learning/</link>
+      <pubDate>Thu, 10 Dec 2020 20:07:52 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/reinforcement-learning/heuristic-search-and-reinforcement-learning/</guid>
+      <description>&lt;h1 id=&#34;启发式搜索和强化学习&#34;&gt;启发式搜索和强化学习&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://inst.eecs.berkeley.edu/~cs188/fa18/projects.html&#34;&gt;The Pac-Man Projects&lt;/a&gt; 是 UC Berkeley CS 188 的课程项目，本文以该项目为例介绍启发式搜索和强化学习。&lt;/p&gt;
+&lt;h2 id=&#34;1-盲目搜索&#34;&gt;1 盲目搜索&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;盲目搜索&lt;/strong&gt;（Blind Search）指不利用任何额外信息（输入数据，或辅助函数），只依赖于算法本身的搜索，例如 BFS，DFS，Dijkstra 等；&lt;/p&gt;
+&lt;h3 id=&#34;dfs&#34;&gt;DFS&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;The Pac-Man Projects &lt;/code&gt; 已经实现了吃豆人游戏的后台逻辑和图形渲染框架，我们只需要在 &lt;code&gt;search.py&lt;/code&gt; 文件中实现具体的搜索算法，并根据搜索算法生成寻路路径，即可让吃豆人移动，先来实现一个简单的 DFS：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DepthFirstSearch&lt;/span&gt;(problem):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; util &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Stack
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    open_list &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Stack()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    visited &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    open_list&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;push((problem&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getStartState(), []))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; open_list&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;isEmpty():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        current_node, path &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open_list&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;pop()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; problem&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;isGoalState(current_node):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; path
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; current_node &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; visited:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        visited&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(current_node)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; next_node, action, cost &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; problem&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getSuccessors(current_node):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; next_node &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; visited:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                open_list&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;push((next_node, path &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; [action]))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dfs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; DepthFirstSearch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在吃豆人游戏的框架下，为寻路函数传入的 &lt;code&gt;problem&lt;/code&gt; 参数可以理解为一个 &lt;code&gt;class SearchProblem&lt;/code&gt; 类型的抽象基类，实际的问题有 &lt;code&gt;PositionSearchProblem&lt;/code&gt;（找到单个终点），&lt;code&gt;FoodSearchProblem&lt;/code&gt;（找到所有食物），&lt;code&gt;CapsuleSearchProblem&lt;/code&gt;（找到增益药丸和所有食物）等，这些子类都需要实现以下函数：&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

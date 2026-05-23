@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Redis on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/redis/</link>
+    <description>Recent content in Redis on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 01 Feb 2023 18:02:04 +1100</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/redis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis 持久化机制: RDB 和 AOF</title>
+      <link>https://prov1dence.top/posts/data/redis-%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-rdb-%E5%92%8C-aof-72a88c70207a4518824d1fe4be7ebb9e/</link>
+      <pubDate>Wed, 01 Feb 2023 18:02:04 +1100</pubDate>
+      <guid>https://prov1dence.top/posts/data/redis-%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-rdb-%E5%92%8C-aof-72a88c70207a4518824d1fe4be7ebb9e/</guid>
+      <description>&lt;h1 id=&#34;redis-持久化机制-rdb-和-aof&#34;&gt;Redis 持久化机制: RDB 和 AOF&lt;/h1&gt;
+&lt;h1 id=&#34;redis-持久化&#34;&gt;Redis 持久化&lt;/h1&gt;
+&lt;h3 id=&#34;为什么需要持久化&#34;&gt;为什么需要持久化?&lt;/h3&gt;
+&lt;p&gt;Redis 是基于内存的数据库, 服务一旦宕机, 内存中的数据将全部丢失. 通常来说可以通过数据库来恢复这些数据, 但这会给数据库带来非常大的读压力, 并且这个过程会非常缓慢, 并导致程序响应慢, 因此 Redis 提供了把内存数据持久化到硬盘, 并通过备份文件来恢复数据的功能, 即持久化机制.&lt;/p&gt;
+&lt;h3 id=&#34;持久化的方式&#34;&gt;持久化的方式&lt;/h3&gt;
+&lt;p&gt;目前 &lt;a href=&#34;https://redis.io/docs/management/persistence/&#34;&gt;Redis Documentation&lt;/a&gt; 上对持久化的支持有以下几种方案:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;RDB (Redis Database): 将某个时间点上的数据生成快照 (snapshot) 并保存到硬盘上&lt;/li&gt;
+&lt;li&gt;AOF (Append Only File): 将每个接收到的写操作记录到硬盘上, 这些操作可以在 Redis 重启时被重放, 并用于重新构建 Redis 数据库&lt;/li&gt;
+&lt;li&gt;RDB + AOF: AOF 和 RDB 的混合模式&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;rdb&#34;&gt;RDB&lt;/h1&gt;
+&lt;p&gt;RDB 指对整个数据集在特定时间点生成快照 (point-to-time snapshot), 可用于Redis的数据备份, 转移和恢复. 它是 Redis 默认使用的持久化方案.&lt;/p&gt;
+&lt;h2 id=&#34;工作原理&#34;&gt;工作原理&lt;/h2&gt;
+&lt;p&gt;RDB 利用操作系统提供的&lt;a href=&#34;https://en.wikipedia.org/wiki/Copy-on-write&#34;&gt;写时复制&lt;/a&gt; (Copy-on-Write) 机制来进行持久化, 即当主进程 P fork 出子进程时 Q 时, Q 和 P 共享同一块内存空间, 当 P 准备对某块内存进行写操作时, P 会将这块内存页进行复制, 并在新的副本上对数据进行修改, 而 Q 仍然读取原先的内存页. 这样既能够保证 Redis 实例继续服务外部流量, 又能够以最小的成本完成数据的持久化. 但正因如此, 持久化过程中的写操作是不会被记录的.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

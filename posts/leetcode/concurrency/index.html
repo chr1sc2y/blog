@@ -1,0 +1,870 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>LeetCode 并发 | Zhengyu Chen - 尾張</title>
+<meta name=keywords content><meta name=description content="LeetCode 并发
+题目
+1114 按序打印
+C++ mutex
+class Foo {
+    mutex lock1, lock2;
+public:
+    Foo() {
+        lock1.lock();
+        lock2.lock();
+    }
+
+    void first(function<void()> printFirst) {
+        printFirst();
+        lock1.unlock();
+    }
+
+    void second(function<void()> printSecond) {
+        lock1.lock();
+        printSecond();
+        lock1.unlock();
+        lock2.unlock();
+    }
+
+    void third(function<void()> printThird) {
+        lock2.lock();
+        printThird();
+        lock2.unlock();
+    }
+};
+C++ condition_variable
+class Foo {
+    int i;
+    mutex mut;
+    condition_variable con_var1, con_var2;
+
+public:
+    Foo() : i(1) {
+    }
+
+    void first(function<void()> printFirst) {
+        unique_lock<mutex> lock(mut);
+        printFirst();
+        ++i;
+        con_var1.notify_one();
+    }
+
+    void second(function<void()> printSecond) {
+        unique_lock<mutex> lock(mut);
+        con_var1.wait(lock, [this]() { return i == 2; });
+        printSecond();
+        ++i;
+        con_var2.notify_one();
+    }
+
+    void third(function<void()> printThird) {
+        unique_lock<mutex> lock(mut);
+        con_var2.wait(lock, [this]() { return i == 3; });
+        printThird();
+    }
+};
+C++ atomic
+class Foo {
+    atomic_int i;
+public:
+    Foo() : i(1) {
+    }
+
+    void first(function<void()> printFirst) {
+        printFirst();
+        ++i;
+    }
+
+    void second(function<void()> printSecond) {
+        while (i != 2) {}
+        printSecond();
+        ++i;
+    }
+
+    void third(function<void()> printThird) {
+        while (i != 3) {}
+        printThird();
+        i = 1;
+    }
+};
+C++ promise
+class Foo {
+    promise<void> pro1, pro2;
+
+public:
+    Foo() {
+    }
+
+    void first(function<void()> printFirst) {
+        printFirst();
+        pro1.set_value();
+    }
+
+    void second(function<void()> printSecond) {
+        pro1.get_future().wait();
+        printSecond();
+        pro2.set_value();
+    }
+
+    void third(function<void()> printThird) {
+        pro2.get_future().wait();
+        printThird();
+    }
+};
+1115 交替打印FooBar
+C++ mutex
+class FooBar {
+private:
+    int n;
+    mutex mut1, mut2;
+public:
+    FooBar(int n) {
+        this->n = n;
+        mut2.lock();
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            mut1.lock();
+            printFoo();
+            mut2.unlock();
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            mut2.lock();
+            printBar();
+            mut1.unlock();
+        }
+    }
+};
+C++ condition_variable
+class FooBar {
+private:
+    int m, n;
+    mutex mut;
+    condition_variable con_var1, con_var2;
+
+public:
+    FooBar(int n) : n(n), m(0) {
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            unique_lock<mutex> lock(mut);
+            con_var1.wait(lock, [&]() { return m == 0; });
+            printFoo();
+            ++m;
+            con_var2.notify_one();
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            unique_lock<mutex> lock(mut);
+            con_var2.wait(lock, [&]() { return m == 1; });
+            printBar();
+            m = 0;
+            con_var1.notify_one();
+        }
+    }
+};
+C++ atomic
+class FooBar {
+private:
+    int n;
+    atomic_int m;
+
+public:
+    FooBar(int n) : n(n), m(0) {
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            while (m != 0) {}
+            printFoo();
+            m = 1;
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            while (m != 1) {}
+            printBar();
+            m = 0;
+        }
+    }
+};
+C++ promise
+class FooBar {
+private:
+    int n;
+    vector<promise<void>> pros1, pros2;
+
+public:
+    FooBar(int n) : n(n) {
+        for (int i = 0; i < n; ++i) {
+            pros1.push_back(promise<void>());
+            pros2.push_back(promise<void>());
+        }
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            if (i != 0)
+                pros1[i - 1].get_future().wait();
+            printFoo();
+            pros2[i].set_value();
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            pros2[i].get_future().wait();
+            printBar();
+            pros1[i].set_value();
+        }
+    }
+};
+1116 打印零与奇偶数
+C++ mutex
+class ZeroEvenOdd {
+private:
+    int m, n;
+    mutex mut_zero, mut_odd, mut_even;
+
+public:
+    ZeroEvenOdd(int n) {
+        this->m = 1;
+        this->n = n;
+        mut_odd.lock();
+        mut_even.lock();
+    }
+
+    void zero(function<void(int)> printNumber) {
+        for (int i = 0; i < n; ++i) {
+            mut_zero.lock();
+            printNumber(0);
+            if (this->m % 2 == 1)
+                mut_odd.unlock();
+            else
+                mut_even.unlock();
+        }
+    }
+
+    void even(function<void(int)> printNumber) {
+        for (int i = 0; i < n / 2; ++i) {
+            mut_even.lock();
+            printNumber(this->m);
+            ++this->m;
+            mut_zero.unlock();
+        }
+    }
+
+    void odd(function<void(int)> printNumber) {
+        for (int i = 0; i < (n + 1) / 2; ++i) {
+            mut_odd.lock();
+            printNumber(this->m);
+            ++this->m;
+            mut_zero.unlock();
+        }
+    }
+};
+1117 H2O 生成
+C++ condition variable
+class H2O {
+    int m = 1;
+    mutex mut;
+    condition_variable con_var;
+
+public:
+    void hydrogen(function<void()> releaseHydrogen) {
+        unique_lock<mutex> lock(mut);
+        con_var.wait(lock, [&]() { return m % 3 != 0; });
+        ++m;
+        releaseHydrogen();
+        con_var.notify_all();
+    }
+
+    void oxygen(function<void()> releaseOxygen) {
+        unique_lock<mutex> lock(mut);
+        con_var.wait(lock, [&]() { return m % 3 == 0; });
+        ++m;
+        releaseOxygen();
+        con_var.notify_all();
+    }
+};
+"><meta name=author content><link rel=canonical href=https://prov1dence.top/posts/leetcode/concurrency/><link crossorigin=anonymous href=/assets/css/stylesheet.45e028aa8ce0961349adf411b013ee39406be2c0bc80d4ea3fc04555f7f4611a.css integrity="sha256-ReAoqozglhNJrfQRsBPuOUBr4sC8gNTqP8BFVff0YRo=" rel="preload stylesheet" as=style><link rel=icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://prov1dence.top/posts/leetcode/concurrency/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://prov1dence.top/posts/leetcode/concurrency/"><meta property="og:site_name" content="Zhengyu Chen - 尾張"><meta property="og:title" content="LeetCode 并发"><meta property="og:description" content="LeetCode 并发 题目 1114 按序打印 C++ mutex class Foo { mutex lock1, lock2; public: Foo() { lock1.lock(); lock2.lock(); } void first(function<void()> printFirst) { printFirst(); lock1.unlock(); } void second(function<void()> printSecond) { lock1.lock(); printSecond(); lock1.unlock(); lock2.unlock(); } void third(function<void()> printThird) { lock2.lock(); printThird(); lock2.unlock(); } }; C++ condition_variable class Foo { int i; mutex mut; condition_variable con_var1, con_var2; public: Foo() : i(1) { } void first(function<void()> printFirst) { unique_lock<mutex> lock(mut); printFirst(); ++i; con_var1.notify_one(); } void second(function<void()> printSecond) { unique_lock<mutex> lock(mut); con_var1.wait(lock, [this]() { return i == 2; }); printSecond(); ++i; con_var2.notify_one(); } void third(function<void()> printThird) { unique_lock<mutex> lock(mut); con_var2.wait(lock, [this]() { return i == 3; }); printThird(); } }; C++ atomic class Foo { atomic_int i; public: Foo() : i(1) { } void first(function<void()> printFirst) { printFirst(); ++i; } void second(function<void()> printSecond) { while (i != 2) {} printSecond(); ++i; } void third(function<void()> printThird) { while (i != 3) {} printThird(); i = 1; } }; C++ promise class Foo { promise<void> pro1, pro2; public: Foo() { } void first(function<void()> printFirst) { printFirst(); pro1.set_value(); } void second(function<void()> printSecond) { pro1.get_future().wait(); printSecond(); pro2.set_value(); } void third(function<void()> printThird) { pro2.get_future().wait(); printThird(); } }; 1115 交替打印FooBar C++ mutex class FooBar { private: int n; mutex mut1, mut2; public: FooBar(int n) { this->n = n; mut2.lock(); } void foo(function<void()> printFoo) { for (int i = 0; i < n; i++) { mut1.lock(); printFoo(); mut2.unlock(); } } void bar(function<void()> printBar) { for (int i = 0; i < n; i++) { mut2.lock(); printBar(); mut1.unlock(); } } }; C++ condition_variable class FooBar { private: int m, n; mutex mut; condition_variable con_var1, con_var2; public: FooBar(int n) : n(n), m(0) { } void foo(function<void()> printFoo) { for (int i = 0; i < n; i++) { unique_lock<mutex> lock(mut); con_var1.wait(lock, [&]() { return m == 0; }); printFoo(); ++m; con_var2.notify_one(); } } void bar(function<void()> printBar) { for (int i = 0; i < n; i++) { unique_lock<mutex> lock(mut); con_var2.wait(lock, [&]() { return m == 1; }); printBar(); m = 0; con_var1.notify_one(); } } }; C++ atomic class FooBar { private: int n; atomic_int m; public: FooBar(int n) : n(n), m(0) { } void foo(function<void()> printFoo) { for (int i = 0; i < n; i++) { while (m != 0) {} printFoo(); m = 1; } } void bar(function<void()> printBar) { for (int i = 0; i < n; i++) { while (m != 1) {} printBar(); m = 0; } } }; C++ promise class FooBar { private: int n; vector<promise<void>> pros1, pros2; public: FooBar(int n) : n(n) { for (int i = 0; i < n; ++i) { pros1.push_back(promise<void>()); pros2.push_back(promise<void>()); } } void foo(function<void()> printFoo) { for (int i = 0; i < n; i++) { if (i != 0) pros1[i - 1].get_future().wait(); printFoo(); pros2[i].set_value(); } } void bar(function<void()> printBar) { for (int i = 0; i < n; i++) { pros2[i].get_future().wait(); printBar(); pros1[i].set_value(); } } }; 1116 打印零与奇偶数 C++ mutex class ZeroEvenOdd { private: int m, n; mutex mut_zero, mut_odd, mut_even; public: ZeroEvenOdd(int n) { this->m = 1; this->n = n; mut_odd.lock(); mut_even.lock(); } void zero(function<void(int)> printNumber) { for (int i = 0; i < n; ++i) { mut_zero.lock(); printNumber(0); if (this->m % 2 == 1) mut_odd.unlock(); else mut_even.unlock(); } } void even(function<void(int)> printNumber) { for (int i = 0; i < n / 2; ++i) { mut_even.lock(); printNumber(this->m); ++this->m; mut_zero.unlock(); } } void odd(function<void(int)> printNumber) { for (int i = 0; i < (n + 1) / 2; ++i) { mut_odd.lock(); printNumber(this->m); ++this->m; mut_zero.unlock(); } } }; 1117 H2O 生成 C++ condition variable class H2O { int m = 1; mutex mut; condition_variable con_var; public: void hydrogen(function<void()> releaseHydrogen) { unique_lock<mutex> lock(mut); con_var.wait(lock, [&]() { return m % 3 != 0; }); ++m; releaseHydrogen(); con_var.notify_all(); } void oxygen(function<void()> releaseOxygen) { unique_lock<mutex> lock(mut); con_var.wait(lock, [&]() { return m % 3 == 0; }); ++m; releaseOxygen(); con_var.notify_all(); } }; "><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-07-22T10:10:25+10:00"><meta property="article:modified_time" content="2019-07-22T10:10:25+10:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="LeetCode 并发"><meta name=twitter:description content="LeetCode 并发
+题目
+1114 按序打印
+C++ mutex
+class Foo {
+    mutex lock1, lock2;
+public:
+    Foo() {
+        lock1.lock();
+        lock2.lock();
+    }
+
+    void first(function<void()> printFirst) {
+        printFirst();
+        lock1.unlock();
+    }
+
+    void second(function<void()> printSecond) {
+        lock1.lock();
+        printSecond();
+        lock1.unlock();
+        lock2.unlock();
+    }
+
+    void third(function<void()> printThird) {
+        lock2.lock();
+        printThird();
+        lock2.unlock();
+    }
+};
+C++ condition_variable
+class Foo {
+    int i;
+    mutex mut;
+    condition_variable con_var1, con_var2;
+
+public:
+    Foo() : i(1) {
+    }
+
+    void first(function<void()> printFirst) {
+        unique_lock<mutex> lock(mut);
+        printFirst();
+        ++i;
+        con_var1.notify_one();
+    }
+
+    void second(function<void()> printSecond) {
+        unique_lock<mutex> lock(mut);
+        con_var1.wait(lock, [this]() { return i == 2; });
+        printSecond();
+        ++i;
+        con_var2.notify_one();
+    }
+
+    void third(function<void()> printThird) {
+        unique_lock<mutex> lock(mut);
+        con_var2.wait(lock, [this]() { return i == 3; });
+        printThird();
+    }
+};
+C++ atomic
+class Foo {
+    atomic_int i;
+public:
+    Foo() : i(1) {
+    }
+
+    void first(function<void()> printFirst) {
+        printFirst();
+        ++i;
+    }
+
+    void second(function<void()> printSecond) {
+        while (i != 2) {}
+        printSecond();
+        ++i;
+    }
+
+    void third(function<void()> printThird) {
+        while (i != 3) {}
+        printThird();
+        i = 1;
+    }
+};
+C++ promise
+class Foo {
+    promise<void> pro1, pro2;
+
+public:
+    Foo() {
+    }
+
+    void first(function<void()> printFirst) {
+        printFirst();
+        pro1.set_value();
+    }
+
+    void second(function<void()> printSecond) {
+        pro1.get_future().wait();
+        printSecond();
+        pro2.set_value();
+    }
+
+    void third(function<void()> printThird) {
+        pro2.get_future().wait();
+        printThird();
+    }
+};
+1115 交替打印FooBar
+C++ mutex
+class FooBar {
+private:
+    int n;
+    mutex mut1, mut2;
+public:
+    FooBar(int n) {
+        this->n = n;
+        mut2.lock();
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            mut1.lock();
+            printFoo();
+            mut2.unlock();
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            mut2.lock();
+            printBar();
+            mut1.unlock();
+        }
+    }
+};
+C++ condition_variable
+class FooBar {
+private:
+    int m, n;
+    mutex mut;
+    condition_variable con_var1, con_var2;
+
+public:
+    FooBar(int n) : n(n), m(0) {
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            unique_lock<mutex> lock(mut);
+            con_var1.wait(lock, [&]() { return m == 0; });
+            printFoo();
+            ++m;
+            con_var2.notify_one();
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            unique_lock<mutex> lock(mut);
+            con_var2.wait(lock, [&]() { return m == 1; });
+            printBar();
+            m = 0;
+            con_var1.notify_one();
+        }
+    }
+};
+C++ atomic
+class FooBar {
+private:
+    int n;
+    atomic_int m;
+
+public:
+    FooBar(int n) : n(n), m(0) {
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            while (m != 0) {}
+            printFoo();
+            m = 1;
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            while (m != 1) {}
+            printBar();
+            m = 0;
+        }
+    }
+};
+C++ promise
+class FooBar {
+private:
+    int n;
+    vector<promise<void>> pros1, pros2;
+
+public:
+    FooBar(int n) : n(n) {
+        for (int i = 0; i < n; ++i) {
+            pros1.push_back(promise<void>());
+            pros2.push_back(promise<void>());
+        }
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            if (i != 0)
+                pros1[i - 1].get_future().wait();
+            printFoo();
+            pros2[i].set_value();
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            pros2[i].get_future().wait();
+            printBar();
+            pros1[i].set_value();
+        }
+    }
+};
+1116 打印零与奇偶数
+C++ mutex
+class ZeroEvenOdd {
+private:
+    int m, n;
+    mutex mut_zero, mut_odd, mut_even;
+
+public:
+    ZeroEvenOdd(int n) {
+        this->m = 1;
+        this->n = n;
+        mut_odd.lock();
+        mut_even.lock();
+    }
+
+    void zero(function<void(int)> printNumber) {
+        for (int i = 0; i < n; ++i) {
+            mut_zero.lock();
+            printNumber(0);
+            if (this->m % 2 == 1)
+                mut_odd.unlock();
+            else
+                mut_even.unlock();
+        }
+    }
+
+    void even(function<void(int)> printNumber) {
+        for (int i = 0; i < n / 2; ++i) {
+            mut_even.lock();
+            printNumber(this->m);
+            ++this->m;
+            mut_zero.unlock();
+        }
+    }
+
+    void odd(function<void(int)> printNumber) {
+        for (int i = 0; i < (n + 1) / 2; ++i) {
+            mut_odd.lock();
+            printNumber(this->m);
+            ++this->m;
+            mut_zero.unlock();
+        }
+    }
+};
+1117 H2O 生成
+C++ condition variable
+class H2O {
+    int m = 1;
+    mutex mut;
+    condition_variable con_var;
+
+public:
+    void hydrogen(function<void()> releaseHydrogen) {
+        unique_lock<mutex> lock(mut);
+        con_var.wait(lock, [&]() { return m % 3 != 0; });
+        ++m;
+        releaseHydrogen();
+        con_var.notify_all();
+    }
+
+    void oxygen(function<void()> releaseOxygen) {
+        unique_lock<mutex> lock(mut);
+        con_var.wait(lock, [&]() { return m % 3 == 0; });
+        ++m;
+        releaseOxygen();
+        con_var.notify_all();
+    }
+};
+"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://prov1dence.top/posts/"},{"@type":"ListItem","position":2,"name":"LeetCode 并发","item":"https://prov1dence.top/posts/leetcode/concurrency/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"LeetCode 并发","name":"LeetCode 并发","description":"LeetCode 并发 题目 1114 按序打印 C++ mutex class Foo { mutex lock1, lock2; public: Foo() { lock1.lock(); lock2.lock(); } void first(function\u0026lt;void()\u0026gt; printFirst) { printFirst(); lock1.unlock(); } void second(function\u0026lt;void()\u0026gt; printSecond) { lock1.lock(); printSecond(); lock1.unlock(); lock2.unlock(); } void third(function\u0026lt;void()\u0026gt; printThird) { lock2.lock(); printThird(); lock2.unlock(); } }; C++ condition_variable class Foo { int i; mutex mut; condition_variable con_var1, con_var2; public: Foo() : i(1) { } void first(function\u0026lt;void()\u0026gt; printFirst) { unique_lock\u0026lt;mutex\u0026gt; lock(mut); printFirst(); ++i; con_var1.notify_one(); } void second(function\u0026lt;void()\u0026gt; printSecond) { unique_lock\u0026lt;mutex\u0026gt; lock(mut); con_var1.wait(lock, [this]() { return i == 2; }); printSecond(); ++i; con_var2.notify_one(); } void third(function\u0026lt;void()\u0026gt; printThird) { unique_lock\u0026lt;mutex\u0026gt; lock(mut); con_var2.wait(lock, [this]() { return i == 3; }); printThird(); } }; C++ atomic class Foo { atomic_int i; public: Foo() : i(1) { } void first(function\u0026lt;void()\u0026gt; printFirst) { printFirst(); ++i; } void second(function\u0026lt;void()\u0026gt; printSecond) { while (i != 2) {} printSecond(); ++i; } void third(function\u0026lt;void()\u0026gt; printThird) { while (i != 3) {} printThird(); i = 1; } }; C++ promise class Foo { promise\u0026lt;void\u0026gt; pro1, pro2; public: Foo() { } void first(function\u0026lt;void()\u0026gt; printFirst) { printFirst(); pro1.set_value(); } void second(function\u0026lt;void()\u0026gt; printSecond) { pro1.get_future().wait(); printSecond(); pro2.set_value(); } void third(function\u0026lt;void()\u0026gt; printThird) { pro2.get_future().wait(); printThird(); } }; 1115 交替打印FooBar C++ mutex class FooBar { private: int n; mutex mut1, mut2; public: FooBar(int n) { this-\u0026gt;n = n; mut2.lock(); } void foo(function\u0026lt;void()\u0026gt; printFoo) { for (int i = 0; i \u0026lt; n; i++) { mut1.lock(); printFoo(); mut2.unlock(); } } void bar(function\u0026lt;void()\u0026gt; printBar) { for (int i = 0; i \u0026lt; n; i++) { mut2.lock(); printBar(); mut1.unlock(); } } }; C++ condition_variable class FooBar { private: int m, n; mutex mut; condition_variable con_var1, con_var2; public: FooBar(int n) : n(n), m(0) { } void foo(function\u0026lt;void()\u0026gt; printFoo) { for (int i = 0; i \u0026lt; n; i++) { unique_lock\u0026lt;mutex\u0026gt; lock(mut); con_var1.wait(lock, [\u0026amp;]() { return m == 0; }); printFoo(); ++m; con_var2.notify_one(); } } void bar(function\u0026lt;void()\u0026gt; printBar) { for (int i = 0; i \u0026lt; n; i++) { unique_lock\u0026lt;mutex\u0026gt; lock(mut); con_var2.wait(lock, [\u0026amp;]() { return m == 1; }); printBar(); m = 0; con_var1.notify_one(); } } }; C++ atomic class FooBar { private: int n; atomic_int m; public: FooBar(int n) : n(n), m(0) { } void foo(function\u0026lt;void()\u0026gt; printFoo) { for (int i = 0; i \u0026lt; n; i++) { while (m != 0) {} printFoo(); m = 1; } } void bar(function\u0026lt;void()\u0026gt; printBar) { for (int i = 0; i \u0026lt; n; i++) { while (m != 1) {} printBar(); m = 0; } } }; C++ promise class FooBar { private: int n; vector\u0026lt;promise\u0026lt;void\u0026gt;\u0026gt; pros1, pros2; public: FooBar(int n) : n(n) { for (int i = 0; i \u0026lt; n; ++i) { pros1.push_back(promise\u0026lt;void\u0026gt;()); pros2.push_back(promise\u0026lt;void\u0026gt;()); } } void foo(function\u0026lt;void()\u0026gt; printFoo) { for (int i = 0; i \u0026lt; n; i++) { if (i != 0) pros1[i - 1].get_future().wait(); printFoo(); pros2[i].set_value(); } } void bar(function\u0026lt;void()\u0026gt; printBar) { for (int i = 0; i \u0026lt; n; i++) { pros2[i].get_future().wait(); printBar(); pros1[i].set_value(); } } }; 1116 打印零与奇偶数 C++ mutex class ZeroEvenOdd { private: int m, n; mutex mut_zero, mut_odd, mut_even; public: ZeroEvenOdd(int n) { this-\u0026gt;m = 1; this-\u0026gt;n = n; mut_odd.lock(); mut_even.lock(); } void zero(function\u0026lt;void(int)\u0026gt; printNumber) { for (int i = 0; i \u0026lt; n; ++i) { mut_zero.lock(); printNumber(0); if (this-\u0026gt;m % 2 == 1) mut_odd.unlock(); else mut_even.unlock(); } } void even(function\u0026lt;void(int)\u0026gt; printNumber) { for (int i = 0; i \u0026lt; n / 2; ++i) { mut_even.lock(); printNumber(this-\u0026gt;m); ++this-\u0026gt;m; mut_zero.unlock(); } } void odd(function\u0026lt;void(int)\u0026gt; printNumber) { for (int i = 0; i \u0026lt; (n + 1) / 2; ++i) { mut_odd.lock(); printNumber(this-\u0026gt;m); ++this-\u0026gt;m; mut_zero.unlock(); } } }; 1117 H2O 生成 C++ condition variable class H2O { int m = 1; mutex mut; condition_variable con_var; public: void hydrogen(function\u0026lt;void()\u0026gt; releaseHydrogen) { unique_lock\u0026lt;mutex\u0026gt; lock(mut); con_var.wait(lock, [\u0026amp;]() { return m % 3 != 0; }); ++m; releaseHydrogen(); con_var.notify_all(); } void oxygen(function\u0026lt;void()\u0026gt; releaseOxygen) { unique_lock\u0026lt;mutex\u0026gt; lock(mut); con_var.wait(lock, [\u0026amp;]() { return m % 3 == 0; }); ++m; releaseOxygen(); con_var.notify_all(); } }; ","keywords":[],"articleBody":"LeetCode 并发 题目 1114 按序打印 C++ mutex class Foo { mutex lock1, lock2; public: Foo() { lock1.lock(); lock2.lock(); } void first(function\u003cvoid()\u003e printFirst) { printFirst(); lock1.unlock(); } void second(function\u003cvoid()\u003e printSecond) { lock1.lock(); printSecond(); lock1.unlock(); lock2.unlock(); } void third(function\u003cvoid()\u003e printThird) { lock2.lock(); printThird(); lock2.unlock(); } }; C++ condition_variable class Foo { int i; mutex mut; condition_variable con_var1, con_var2; public: Foo() : i(1) { } void first(function\u003cvoid()\u003e printFirst) { unique_lock\u003cmutex\u003e lock(mut); printFirst(); ++i; con_var1.notify_one(); } void second(function\u003cvoid()\u003e printSecond) { unique_lock\u003cmutex\u003e lock(mut); con_var1.wait(lock, [this]() { return i == 2; }); printSecond(); ++i; con_var2.notify_one(); } void third(function\u003cvoid()\u003e printThird) { unique_lock\u003cmutex\u003e lock(mut); con_var2.wait(lock, [this]() { return i == 3; }); printThird(); } }; C++ atomic class Foo { atomic_int i; public: Foo() : i(1) { } void first(function\u003cvoid()\u003e printFirst) { printFirst(); ++i; } void second(function\u003cvoid()\u003e printSecond) { while (i != 2) {} printSecond(); ++i; } void third(function\u003cvoid()\u003e printThird) { while (i != 3) {} printThird(); i = 1; } }; C++ promise class Foo { promise\u003cvoid\u003e pro1, pro2; public: Foo() { } void first(function\u003cvoid()\u003e printFirst) { printFirst(); pro1.set_value(); } void second(function\u003cvoid()\u003e printSecond) { pro1.get_future().wait(); printSecond(); pro2.set_value(); } void third(function\u003cvoid()\u003e printThird) { pro2.get_future().wait(); printThird(); } }; 1115 交替打印FooBar C++ mutex class FooBar { private: int n; mutex mut1, mut2; public: FooBar(int n) { this-\u003en = n; mut2.lock(); } void foo(function\u003cvoid()\u003e printFoo) { for (int i = 0; i \u003c n; i++) { mut1.lock(); printFoo(); mut2.unlock(); } } void bar(function\u003cvoid()\u003e printBar) { for (int i = 0; i \u003c n; i++) { mut2.lock(); printBar(); mut1.unlock(); } } }; C++ condition_variable class FooBar { private: int m, n; mutex mut; condition_variable con_var1, con_var2; public: FooBar(int n) : n(n), m(0) { } void foo(function\u003cvoid()\u003e printFoo) { for (int i = 0; i \u003c n; i++) { unique_lock\u003cmutex\u003e lock(mut); con_var1.wait(lock, [\u0026]() { return m == 0; }); printFoo(); ++m; con_var2.notify_one(); } } void bar(function\u003cvoid()\u003e printBar) { for (int i = 0; i \u003c n; i++) { unique_lock\u003cmutex\u003e lock(mut); con_var2.wait(lock, [\u0026]() { return m == 1; }); printBar(); m = 0; con_var1.notify_one(); } } }; C++ atomic class FooBar { private: int n; atomic_int m; public: FooBar(int n) : n(n), m(0) { } void foo(function\u003cvoid()\u003e printFoo) { for (int i = 0; i \u003c n; i++) { while (m != 0) {} printFoo(); m = 1; } } void bar(function\u003cvoid()\u003e printBar) { for (int i = 0; i \u003c n; i++) { while (m != 1) {} printBar(); m = 0; } } }; C++ promise class FooBar { private: int n; vector\u003cpromise\u003cvoid\u003e\u003e pros1, pros2; public: FooBar(int n) : n(n) { for (int i = 0; i \u003c n; ++i) { pros1.push_back(promise\u003cvoid\u003e()); pros2.push_back(promise\u003cvoid\u003e()); } } void foo(function\u003cvoid()\u003e printFoo) { for (int i = 0; i \u003c n; i++) { if (i != 0) pros1[i - 1].get_future().wait(); printFoo(); pros2[i].set_value(); } } void bar(function\u003cvoid()\u003e printBar) { for (int i = 0; i \u003c n; i++) { pros2[i].get_future().wait(); printBar(); pros1[i].set_value(); } } }; 1116 打印零与奇偶数 C++ mutex class ZeroEvenOdd { private: int m, n; mutex mut_zero, mut_odd, mut_even; public: ZeroEvenOdd(int n) { this-\u003em = 1; this-\u003en = n; mut_odd.lock(); mut_even.lock(); } void zero(function\u003cvoid(int)\u003e printNumber) { for (int i = 0; i \u003c n; ++i) { mut_zero.lock(); printNumber(0); if (this-\u003em % 2 == 1) mut_odd.unlock(); else mut_even.unlock(); } } void even(function\u003cvoid(int)\u003e printNumber) { for (int i = 0; i \u003c n / 2; ++i) { mut_even.lock(); printNumber(this-\u003em); ++this-\u003em; mut_zero.unlock(); } } void odd(function\u003cvoid(int)\u003e printNumber) { for (int i = 0; i \u003c (n + 1) / 2; ++i) { mut_odd.lock(); printNumber(this-\u003em); ++this-\u003em; mut_zero.unlock(); } } }; 1117 H2O 生成 C++ condition variable class H2O { int m = 1; mutex mut; condition_variable con_var; public: void hydrogen(function\u003cvoid()\u003e releaseHydrogen) { unique_lock\u003cmutex\u003e lock(mut); con_var.wait(lock, [\u0026]() { return m % 3 != 0; }); ++m; releaseHydrogen(); con_var.notify_all(); } void oxygen(function\u003cvoid()\u003e releaseOxygen) { unique_lock\u003cmutex\u003e lock(mut); con_var.wait(lock, [\u0026]() { return m % 3 == 0; }); ++m; releaseOxygen(); con_var.notify_all(); } }; ","wordCount":"639","inLanguage":"en","datePublished":"2019-07-22T10:10:25+10:00","dateModified":"2019-07-22T10:10:25+10:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://prov1dence.top/posts/leetcode/concurrency/"},"publisher":{"@type":"Organization","name":"Zhengyu Chen - 尾張","logo":{"@type":"ImageObject","url":"https://prov1dence.top/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://prov1dence.top/ accesskey=h title="尾張 (Alt + H)">尾張</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://prov1dence.top/archives/ title=Posts><span>Posts</span></a></li><li><a href=https://prov1dence.top/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">LeetCode 并发</h1><div class=post-meta><span title='2019-07-22 10:10:25 +1000 +1000'>July 22, 2019</span>&nbsp;·&nbsp;3 min</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#leetcode-%e5%b9%b6%e5%8f%91httpsleetcode-cncomproblemsetconcurrency aria-label="LeetCode 并发">LeetCode 并发</a><ul><li><a href=#%e9%a2%98%e7%9b%ae aria-label=题目>题目</a><ul><ul><li><a href=#1114-%e6%8c%89%e5%ba%8f%e6%89%93%e5%8d%b0httpsleetcode-cncomproblemsprint-in-order aria-label="1114 按序打印">1114 按序打印</a><ul><li><a href=#c-mutex aria-label="C++ mutex">C++ mutex</a></li><li><a href=#c-condition_variable aria-label="C++ condition_variable">C++ condition_variable</a></li><li><a href=#c-atomic aria-label="C++ atomic">C++ atomic</a></li><li><a href=#c-promise aria-label="C++ promise">C++ promise</a></li></ul></li><li><a href=#1115-%e4%ba%a4%e6%9b%bf%e6%89%93%e5%8d%b0foobarhttpsleetcode-cncomproblemsprint-foobar-alternately aria-label="1115 交替打印FooBar">1115 交替打印FooBar</a><ul><li><a href=#c-mutex-1 aria-label="C++ mutex">C++ mutex</a></li><li><a href=#c-condition_variable-1 aria-label="C++ condition_variable">C++ condition_variable</a></li><li><a href=#c-atomic-1 aria-label="C++ atomic">C++ atomic</a></li><li><a href=#c-promise-1 aria-label="C++ promise">C++ promise</a></li></ul></li><li><a href=#1116-%e6%89%93%e5%8d%b0%e9%9b%b6%e4%b8%8e%e5%a5%87%e5%81%b6%e6%95%b0httpsleetcode-cncomproblemsprint-zero-even-odd aria-label="1116 打印零与奇偶数">1116 打印零与奇偶数</a><ul><li><a href=#c-mutex-2 aria-label="C++ mutex">C++ mutex</a></li></ul></li><li><a href=#1117-h2o-%e7%94%9f%e6%88%90httpsleetcode-cncomproblemsbuilding-h2osubmissions aria-label="1117 H2O 生成">1117 H2O 生成</a><ul><li><a href=#c-condition-variable aria-label="C++ condition variable">C++ condition variable</a></li></ul></li></ul></ul></li></ul></li></ul></div></details></div><div class=post-content><h1 id=leetcode-并发httpsleetcode-cncomproblemsetconcurrency><a href=https://leetcode-cn.com/problemset/concurrency/>LeetCode 并发</a><a hidden class=anchor aria-hidden=true href=#leetcode-并发httpsleetcode-cncomproblemsetconcurrency>#</a></h1><h2 id=题目>题目<a hidden class=anchor aria-hidden=true href=#题目>#</a></h2><h4 id=1114-按序打印httpsleetcode-cncomproblemsprint-in-order><a href=https://leetcode-cn.com/problems/print-in-order/>1114 按序打印</a><a hidden class=anchor aria-hidden=true href=#1114-按序打印httpsleetcode-cncomproblemsprint-in-order>#</a></h4><h5 id=c-mutex>C++ mutex<a hidden class=anchor aria-hidden=true href=#c-mutex>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Foo</span> {
+</span></span><span style=display:flex><span>    mutex lock1, lock2;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    Foo() {
+</span></span><span style=display:flex><span>        lock1.lock();
+</span></span><span style=display:flex><span>        lock2.lock();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>first</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printFirst) {
+</span></span><span style=display:flex><span>        printFirst();
+</span></span><span style=display:flex><span>        lock1.unlock();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>second</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printSecond) {
+</span></span><span style=display:flex><span>        lock1.lock();
+</span></span><span style=display:flex><span>        printSecond();
+</span></span><span style=display:flex><span>        lock1.unlock();
+</span></span><span style=display:flex><span>        lock2.unlock();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>third</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printThird) {
+</span></span><span style=display:flex><span>        lock2.lock();
+</span></span><span style=display:flex><span>        printThird();
+</span></span><span style=display:flex><span>        lock2.unlock();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h5 id=c-condition_variable>C++ condition_variable<a hidden class=anchor aria-hidden=true href=#c-condition_variable>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Foo</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> i;
+</span></span><span style=display:flex><span>    mutex mut;
+</span></span><span style=display:flex><span>    condition_variable con_var1, con_var2;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    Foo() <span style=color:#f92672>:</span> i(<span style=color:#ae81ff>1</span>) {
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>first</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printFirst) {
+</span></span><span style=display:flex><span>        unique_lock<span style=color:#f92672>&lt;</span>mutex<span style=color:#f92672>&gt;</span> lock(mut);
+</span></span><span style=display:flex><span>        printFirst();
+</span></span><span style=display:flex><span>        <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>        con_var1.notify_one();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>second</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printSecond) {
+</span></span><span style=display:flex><span>        unique_lock<span style=color:#f92672>&lt;</span>mutex<span style=color:#f92672>&gt;</span> lock(mut);
+</span></span><span style=display:flex><span>        con_var1.wait(lock, [<span style=color:#66d9ef>this</span>]() { <span style=color:#66d9ef>return</span> i <span style=color:#f92672>==</span> <span style=color:#ae81ff>2</span>; });
+</span></span><span style=display:flex><span>        printSecond();
+</span></span><span style=display:flex><span>        <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>        con_var2.notify_one();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>third</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printThird) {
+</span></span><span style=display:flex><span>        unique_lock<span style=color:#f92672>&lt;</span>mutex<span style=color:#f92672>&gt;</span> lock(mut);
+</span></span><span style=display:flex><span>        con_var2.wait(lock, [<span style=color:#66d9ef>this</span>]() { <span style=color:#66d9ef>return</span> i <span style=color:#f92672>==</span> <span style=color:#ae81ff>3</span>; });
+</span></span><span style=display:flex><span>        printThird();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h5 id=c-atomic>C++ atomic<a hidden class=anchor aria-hidden=true href=#c-atomic>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Foo</span> {
+</span></span><span style=display:flex><span>    atomic_int i;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    Foo() <span style=color:#f92672>:</span> i(<span style=color:#ae81ff>1</span>) {
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>first</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printFirst) {
+</span></span><span style=display:flex><span>        printFirst();
+</span></span><span style=display:flex><span>        <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>second</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printSecond) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (i <span style=color:#f92672>!=</span> <span style=color:#ae81ff>2</span>) {}
+</span></span><span style=display:flex><span>        printSecond();
+</span></span><span style=display:flex><span>        <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>third</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printThird) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (i <span style=color:#f92672>!=</span> <span style=color:#ae81ff>3</span>) {}
+</span></span><span style=display:flex><span>        printThird();
+</span></span><span style=display:flex><span>        i <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h5 id=c-promise>C++ promise<a hidden class=anchor aria-hidden=true href=#c-promise>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Foo</span> {
+</span></span><span style=display:flex><span>    promise<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span><span style=color:#f92672>&gt;</span> pro1, pro2;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    Foo() {
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>first</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printFirst) {
+</span></span><span style=display:flex><span>        printFirst();
+</span></span><span style=display:flex><span>        pro1.set_value();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>second</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printSecond) {
+</span></span><span style=display:flex><span>        pro1.get_future().wait();
+</span></span><span style=display:flex><span>        printSecond();
+</span></span><span style=display:flex><span>        pro2.set_value();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>third</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printThird) {
+</span></span><span style=display:flex><span>        pro2.get_future().wait();
+</span></span><span style=display:flex><span>        printThird();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=1115-交替打印foobarhttpsleetcode-cncomproblemsprint-foobar-alternately><a href=https://leetcode-cn.com/problems/print-foobar-alternately/>1115 交替打印FooBar</a><a hidden class=anchor aria-hidden=true href=#1115-交替打印foobarhttpsleetcode-cncomproblemsprint-foobar-alternately>#</a></h4><h5 id=c-mutex-1>C++ mutex<a hidden class=anchor aria-hidden=true href=#c-mutex-1>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>FooBar</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> n;
+</span></span><span style=display:flex><span>    mutex mut1, mut2;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    FooBar(<span style=color:#66d9ef>int</span> n) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>n <span style=color:#f92672>=</span> n;
+</span></span><span style=display:flex><span>        mut2.lock();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>foo</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printFoo) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>            mut1.lock();
+</span></span><span style=display:flex><span>            printFoo();
+</span></span><span style=display:flex><span>            mut2.unlock();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>bar</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printBar) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>            mut2.lock();
+</span></span><span style=display:flex><span>            printBar();
+</span></span><span style=display:flex><span>            mut1.unlock();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h5 id=c-condition_variable-1>C++ condition_variable<a hidden class=anchor aria-hidden=true href=#c-condition_variable-1>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>FooBar</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> m, n;
+</span></span><span style=display:flex><span>    mutex mut;
+</span></span><span style=display:flex><span>    condition_variable con_var1, con_var2;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    FooBar(<span style=color:#66d9ef>int</span> n) <span style=color:#f92672>:</span> n(n), m(<span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>foo</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printFoo) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>            unique_lock<span style=color:#f92672>&lt;</span>mutex<span style=color:#f92672>&gt;</span> lock(mut);
+</span></span><span style=display:flex><span>            con_var1.wait(lock, [<span style=color:#f92672>&amp;</span>]() { <span style=color:#66d9ef>return</span> m <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>; });
+</span></span><span style=display:flex><span>            printFoo();
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>m;
+</span></span><span style=display:flex><span>            con_var2.notify_one();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>bar</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printBar) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>            unique_lock<span style=color:#f92672>&lt;</span>mutex<span style=color:#f92672>&gt;</span> lock(mut);
+</span></span><span style=display:flex><span>            con_var2.wait(lock, [<span style=color:#f92672>&amp;</span>]() { <span style=color:#66d9ef>return</span> m <span style=color:#f92672>==</span> <span style=color:#ae81ff>1</span>; });
+</span></span><span style=display:flex><span>            printBar();
+</span></span><span style=display:flex><span>            m <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>            con_var1.notify_one();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h5 id=c-atomic-1>C++ atomic<a hidden class=anchor aria-hidden=true href=#c-atomic-1>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>FooBar</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> n;
+</span></span><span style=display:flex><span>    atomic_int m;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    FooBar(<span style=color:#66d9ef>int</span> n) <span style=color:#f92672>:</span> n(n), m(<span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>foo</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printFoo) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (m <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>) {}
+</span></span><span style=display:flex><span>            printFoo();
+</span></span><span style=display:flex><span>            m <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>bar</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printBar) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (m <span style=color:#f92672>!=</span> <span style=color:#ae81ff>1</span>) {}
+</span></span><span style=display:flex><span>            printBar();
+</span></span><span style=display:flex><span>            m <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h5 id=c-promise-1>C++ promise<a hidden class=anchor aria-hidden=true href=#c-promise-1>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>FooBar</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> n;
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span>promise<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span><span style=color:#f92672>&gt;&gt;</span> pros1, pros2;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    FooBar(<span style=color:#66d9ef>int</span> n) <span style=color:#f92672>:</span> n(n) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            pros1.push_back(promise<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span><span style=color:#f92672>&gt;</span>());
+</span></span><span style=display:flex><span>            pros2.push_back(promise<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span><span style=color:#f92672>&gt;</span>());
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>foo</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printFoo) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (i <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>                pros1[i <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>].get_future().wait();
+</span></span><span style=display:flex><span>            printFoo();
+</span></span><span style=display:flex><span>            pros2[i].set_value();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>bar</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> printBar) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>            pros2[i].get_future().wait();
+</span></span><span style=display:flex><span>            printBar();
+</span></span><span style=display:flex><span>            pros1[i].set_value();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=1116-打印零与奇偶数httpsleetcode-cncomproblemsprint-zero-even-odd><a href=https://leetcode-cn.com/problems/print-zero-even-odd/>1116 打印零与奇偶数</a><a hidden class=anchor aria-hidden=true href=#1116-打印零与奇偶数httpsleetcode-cncomproblemsprint-zero-even-odd>#</a></h4><h5 id=c-mutex-2>C++ mutex<a hidden class=anchor aria-hidden=true href=#c-mutex-2>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>ZeroEvenOdd</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> m, n;
+</span></span><span style=display:flex><span>    mutex mut_zero, mut_odd, mut_even;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    ZeroEvenOdd(<span style=color:#66d9ef>int</span> n) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>m <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>n <span style=color:#f92672>=</span> n;
+</span></span><span style=display:flex><span>        mut_odd.lock();
+</span></span><span style=display:flex><span>        mut_even.lock();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>zero</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>(<span style=color:#66d9ef>int</span>)<span style=color:#f92672>&gt;</span> printNumber) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            mut_zero.lock();
+</span></span><span style=display:flex><span>            printNumber(<span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>m <span style=color:#f92672>%</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>==</span> <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>                mut_odd.unlock();
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>                mut_even.unlock();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>even</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>(<span style=color:#66d9ef>int</span>)<span style=color:#f92672>&gt;</span> printNumber) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n <span style=color:#f92672>/</span> <span style=color:#ae81ff>2</span>; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            mut_even.lock();
+</span></span><span style=display:flex><span>            printNumber(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>m);
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span><span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>m;
+</span></span><span style=display:flex><span>            mut_zero.unlock();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>odd</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>(<span style=color:#66d9ef>int</span>)<span style=color:#f92672>&gt;</span> printNumber) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> (n <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>/</span> <span style=color:#ae81ff>2</span>; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            mut_odd.lock();
+</span></span><span style=display:flex><span>            printNumber(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>m);
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span><span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>m;
+</span></span><span style=display:flex><span>            mut_zero.unlock();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=1117-h2o-生成httpsleetcode-cncomproblemsbuilding-h2osubmissions><a href=https://leetcode-cn.com/problems/building-h2o/submissions/>1117 H2O 生成</a><a hidden class=anchor aria-hidden=true href=#1117-h2o-生成httpsleetcode-cncomproblemsbuilding-h2osubmissions>#</a></h4><h5 id=c-condition-variable>C++ condition variable<a hidden class=anchor aria-hidden=true href=#c-condition-variable>#</a></h5><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>H2O</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> m <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>    mutex mut;
+</span></span><span style=display:flex><span>    condition_variable con_var;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> hydrogen(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> releaseHydrogen) {
+</span></span><span style=display:flex><span>        unique_lock<span style=color:#f92672>&lt;</span>mutex<span style=color:#f92672>&gt;</span> lock(mut);
+</span></span><span style=display:flex><span>        con_var.wait(lock, [<span style=color:#f92672>&amp;</span>]() { <span style=color:#66d9ef>return</span> m <span style=color:#f92672>%</span> <span style=color:#ae81ff>3</span> <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>; });
+</span></span><span style=display:flex><span>        <span style=color:#f92672>++</span>m;
+</span></span><span style=display:flex><span>        releaseHydrogen();
+</span></span><span style=display:flex><span>        con_var.notify_all();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>oxygen</span>(function<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>void</span>()<span style=color:#f92672>&gt;</span> releaseOxygen) {
+</span></span><span style=display:flex><span>        unique_lock<span style=color:#f92672>&lt;</span>mutex<span style=color:#f92672>&gt;</span> lock(mut);
+</span></span><span style=display:flex><span>        con_var.wait(lock, [<span style=color:#f92672>&amp;</span>]() { <span style=color:#66d9ef>return</span> m <span style=color:#f92672>%</span> <span style=color:#ae81ff>3</span> <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>; });
+</span></span><span style=display:flex><span>        <span style=color:#f92672>++</span>m;
+</span></span><span style=display:flex><span>        releaseOxygen();
+</span></span><span style=display:flex><span>        con_var.notify_all();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=prev href=https://prov1dence.top/posts/leetcode/dfs/><span class=title>« Prev</span><br><span>LeetCode 深度优先搜索</span>
+</a><a class=next href=https://prov1dence.top/posts/leetcode/tree-2/><span class=title>Next »</span><br><span>LeetCode 树（2）</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://prov1dence.top/>Zhengyu Chen - 尾張</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

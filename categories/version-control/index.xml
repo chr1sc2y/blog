@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Version Control on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/version-control/</link>
+    <description>Recent content in Version Control on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 31 Mar 2022 19:29:39 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/version-control/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Git Reference</title>
+      <link>https://prov1dence.top/posts/version-control/git/</link>
+      <pubDate>Thu, 31 Mar 2022 19:29:39 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/version-control/git/</guid>
+      <description>&lt;h1 id=&#34;git-reference&#34;&gt;Git Reference&lt;/h1&gt;
+&lt;p&gt;&lt;img alt=&#34;git-basic&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/version-control/git-basic.jpeg&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;head-用法&#34;&gt;HEAD 用法&lt;/h2&gt;
+&lt;p&gt;HEAD 最后一次 commit&lt;/p&gt;
+&lt;p&gt;HEAD^ 倒数第二次 commit&lt;/p&gt;
+&lt;p&gt;HEAD^^ 倒数第三次 commit，以此类推&lt;/p&gt;
+&lt;p&gt;HEAD~0 最后一次 commit&lt;/p&gt;
+&lt;p&gt;HEAD~1 倒数第二次 commit&lt;/p&gt;
+&lt;p&gt;HEAD^2 倒数第三次 commit，以此类推&lt;/p&gt;
+&lt;h2 id=&#34;回到以前的某次-commit&#34;&gt;回到以前的某次 commit&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git reflog &lt;span style=&#34;color:#75715e&#34;&gt;# Reference logs 记录了本地仓库每一次更新分支的操作&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git reset HEAD@&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;index&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# 回到某一次提交，把文件修改留在工作区&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git reset hash --hard &lt;span style=&#34;color:#75715e&#34;&gt;# 加上 --hard 可以忽略掉所有文件修改&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;在最后一次-commit-的基础上添加部分改动&#34;&gt;在最后一次 commit 的基础上添加部分改动&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git add . &lt;span style=&#34;color:#75715e&#34;&gt;# 把改动添加到暂存区&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git commit --amend &lt;span style=&#34;color:#75715e&#34;&gt;#&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git commit --amend --no-edit &lt;span style=&#34;color:#75715e&#34;&gt;# 加上 --no-edit&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果最后一次 commit 已经 push 到 remote，那么在再次 push 的时候需要加上 -f&lt;/p&gt;
+&lt;h2 id=&#34;在以前的某次-commit-的基础上添加部分改动&#34;&gt;在以前的某次 commit 的基础上添加部分改动&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git log &lt;span style=&#34;color:#75715e&#34;&gt;# 找到要修改的 commit 的前一次&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git rebase -i hash &lt;span style=&#34;color:#75715e&#34;&gt;# 将 HEAD 移到需要修改的 commit 上&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;vim&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; R edit &lt;span style=&#34;color:#75715e&#34;&gt;# 将首行的 pick 改成 edit，保存退出&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 修改文件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git add .
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git commit --amend &lt;span style=&#34;color:#75715e&#34;&gt;# 追加改动到这次 commit 上&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git rebase --continue &lt;span style=&#34;color:#75715e&#34;&gt;# 恢复 HEAD&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;把未-commit-的修改移动到其他分支上&#34;&gt;把未 commit 的修改移动到其他分支上&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git reset HEAD~ --soft &lt;span style=&#34;color:#75715e&#34;&gt;# 撤销最后一次 commit 操作，但是保留文件修改&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git stash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git checkout another-branch
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git stash pop
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git add .
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git commit -m &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;your message here&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;把某一次-commit-添加到其他分支上&#34;&gt;把某一次 commit 添加到其他分支上&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git log &lt;span style=&#34;color:#75715e&#34;&gt;# 找到需要移动的 commit 的 hash&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git checkout another-branch
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git cherry-pick hash &lt;span style=&#34;color:#75715e&#34;&gt;# 把对应的 commit 应用到当前的 branch&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;撤销某次-commit&#34;&gt;撤销某次 commit&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git log &lt;span style=&#34;color:#75715e&#34;&gt;# 找到需要撤销的 commit 的 hash&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git revert hash &lt;span style=&#34;color:#75715e&#34;&gt;# 撤销对应的改动并直接 commit&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;撤销某次-commit-的某个文件&#34;&gt;撤销某次 commit 的某个文件&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git log &lt;span style=&#34;color:#75715e&#34;&gt;# 找到需要撤销的 commit 的 hash&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git checkout hash -- path/to/file &lt;span style=&#34;color:#75715e&#34;&gt;# 把修改之前的文件添加到工作区&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git commit -m &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;your message here&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;放弃治疗&#34;&gt;放弃治疗&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git fetch origin
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git checkout master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git reset --hard origin/master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clean -d --force &lt;span style=&#34;color:#75715e&#34;&gt;# 删除工作区所有 untracked 的文件和目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;或者&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

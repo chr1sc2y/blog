@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Network on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/network/</link>
+    <description>Recent content in Network on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 29 Jan 2022 17:45:52 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/network/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>《深入理解 RPC 框架原理与实现》读书笔记</title>
+      <link>https://prov1dence.top/posts/network/rpc/</link>
+      <pubDate>Sat, 29 Jan 2022 17:45:52 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/network/rpc/</guid>
+      <description>&lt;h1 id=&#34;深入理解-rpc-框架原理与实现读书笔记&#34;&gt;《深入理解 RPC 框架原理与实现》读书笔记&lt;/h1&gt;
+&lt;h2 id=&#34;概念&#34;&gt;概念&lt;/h2&gt;
+&lt;p&gt;RPC (Remote Procedure Call) 叫作远程过程调用，它是利用网络从远程计算机上请求服务：可以理解为把程序的一部分放到其他远程计算机上执行。通过网络通信将调用请求发送至远程计算机后，利用远程计算机的系统资源执行这部分程序，最终返回远程计算机上的执行结果。&lt;/p&gt;
+&lt;p&gt;将“远程过程调用”概念分解为“远程过程”和“过程调用”来理解更加直观：&lt;/p&gt;
+&lt;p&gt;远程过程：远程过程是相对于本地过程而言的，本地过程也可以认为是本地函数调用，发起调用的方法和被调用的方法都在同一个地址空间或者内存空间内。而远程过程是指把进程内的部分程序逻辑放到其他机器上，也就是现在常说的业务拆解，让每个服务仅对单个业务负责，让每个服务具备独立的可扩展性、可升级性，易维护。在每个机器上提供的服务被称为远程过程，这个概念使正确地构建分布式计算更加容易，为后续的服务化架构风格奠定了基础&lt;/p&gt;
+&lt;p&gt;过程调用：这个概念非常通俗易懂，它包含我们平时见到的方法调用、函数调用，并且用于程序的控制和数据的传输。而当“过程调用”遇到 “远程过程”时，意味着过程调用可以跨越机器、网络进行程序的控制和数据的传输&lt;/p&gt;
+&lt;h2 id=&#34;选型&#34;&gt;选型&lt;/h2&gt;
+&lt;p&gt;RPC 选型的衡量角度&lt;/p&gt;
+&lt;p&gt;使用 RPC 框架无非三个选择&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;自研RPC框架，可以从投开始设计一款符合业务特征和场景的 RPC 框架，但是自研框架需要有足够的资金和人力支持&lt;/li&gt;
+&lt;li&gt;基于开源的 RPC框架进行改造，让改造后的 RPC 框架更加适合业务场景。这种做法相较于第一种做法，人力成本没有那么高。但是这种做法需要经常与开源社区保持同步更新，一旦不再和社区版本同步，也许到某一个版本后，公司内部改造的 RPC 框架再也不能合并社区最新版本的特性，这种现象最终会导致慢慢向第一种选择选择靠近&lt;/li&gt;
+&lt;li&gt;完全使用开源的 RPC框架，并且定期与社区版本进行同步。这种选择的好处在于要投人的人力威本最低，一些问题可以借助社区的力量进行解决。但是由于业务场景的不同直接将开源的 RPC 框架拿过来用，这种选择往往存在很多局限性。框架各部分的设计都是为了更加优雅地解决业务场景的问题，而不是反过来让业务场景去适应 RPC 框架。而且 RPC 框架有自己的定位及未来的规划，所以很多规模不是太小的公司都选择在 RPC 框架上做些许改造来适应自己的业务场景&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;java-对-io-模型的封装&#34;&gt;Java 对 I/O 模型的封装&lt;/h2&gt;
+&lt;h3 id=&#34;nio&#34;&gt;NIO&lt;/h3&gt;
+&lt;p&gt;Java NIO 中最核心的就是 selector， 每当连接事件、接收连接事件、读事件和写事件中的一种事件就绪时，相关的事件处理器就会执行对应的逻辑，这种基于事件驱动的模式叫作 Reactor 模式。Reactor模式的核心思想就是减少线程的等待。当遇到需要等待的 IO 操作时，先释放资源，而在 IO 操作完成时，再通过事件驱动的方式，继续接下来的处理，这样从整体上减少了资源的消耗。&lt;/p&gt;
+&lt;p&gt;以下是 Reactor模式的五种重要角色：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Handle（在 Linux 下称为描述符）：它是资源在操作系统层面上的一种抽象，表示一种由操作系统提供的资源，比如前面提到的网络编程中的 socket 描达符或者文件描达符。该资源与事件绑定在一起，也可用于表示一个个事件，比如前面提到的客户端的连接事件、服务端的接收连接事件、写数据事件等&lt;/li&gt;
+&lt;li&gt;Synchronous Event Demultiplexer（同步事件分离器）：Handle 代表的事件会被班注册到同步事件分离器上，当事件就绪时，同步事件分离器会分发和处理这些事件。它的本质是一个系统调用，用于等待事件的发生。调用方在调用它的时候会被阻塞，一直到同步事件分离器上有时间就绪为止。在 Linux 中，同步事件分离器就是常用的 I/O 多路复用，比如 select, poll, epoll 等系统调用，用来等待一个或多个事件发生。在 Java NIO 领域中，同步事件分离器对应的组件就是 Selector，对应的阻塞方法就是 select 方法&lt;/li&gt;
+&lt;li&gt;Event Handler（事件处理器）：它由多个回调方法构成，这些回调方法就是对某个事件的逻辑反馈，事件处理器一般都是抽象接口。比如当 Channel 被注册到 Selector 时的回调方法、连接事件发生时的回调方法、写事件发生时的回调方法等都是事件处理器，我们可以实现这些回调方法来达到对某一个事件进行特定反馈的目的。在 Java NIO 中，并没有提供事件处理器的抽象供我们使用&lt;/li&gt;
+&lt;li&gt;Concrete Event Handler（具体的事件处理器)：它是事件处理器的实现。它本身实现了事件处理器所提供的各种回调方法，从而实现了特定的业务逻辑。比如针对连接事件需要打印一条日志，就可以在连接事件的回调方法里实现打印日志的逻辑&lt;/li&gt;
+&lt;li&gt;Initiation Dispatcher（初始分发器）：可以把它看作 Reactor， 它规定了事件的调度策略，并且用于管理事件处理器，提供了事件处理器的注册、删除等方法，事件处理器需要注册到 Initiation Dispatcher 上才能生效。它是整个事件处理器的核心，Initiation Dispatcher 会通过 Synchronous Event Demultiplexer来等待事件的发生。一旦事件发生，Initiation Dispatcher 首先会分离出每一个事件，然后找到相应的事件处理器，最后调用相关的回调方法处理这些事件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;reactor-的三种模型&#34;&gt;Reactor 的三种模型&lt;/h3&gt;
+&lt;h4 id=&#34;单-reactor-单线程模型&#34;&gt;单 Reactor 单线程模型&lt;/h4&gt;
+&lt;p&gt;单 Reactor 单线程模型就是在设计中只会有一个 Reactor，并且无论与 IO 相关的读/写，还
+是与 IO 无关的编/解码或计算，都在一个 Handler 线程上完成。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

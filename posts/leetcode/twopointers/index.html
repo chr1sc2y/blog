@@ -1,0 +1,425 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>LeetCode 双指针 | Zhengyu Chen - 尾張</title>
+<meta name=keywords content><meta name=description content="LeetCode DFS
+题目
+26 删除排序数组中的重复项
+用两个指针 len 和 i 分别表示没有重复的项的下标与遍历数组的下标，将没有重复的项拷贝到 nums[len] 下然后 ++len 即可。
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        int count = 0, len = 1, n = nums.size();
+        if (n == 0)
+            return 0;
+        for (int i = 1; i < n; ++i) {
+            if (nums[i] == nums[i - 1])
+                continue;
+            nums[len] = nums[i];
+            ++len;
+        }
+        return len;
+    }
+};
+80 删除排序数组中的重复项 II
+用两个指针 len 和 i 分别表示没有最多重复 2 次的项的下标与遍历数组的下标，将重复数小于等于 1 的项拷贝到 nums[len] 下然后 ++len 即可。
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        int count = 0, len = 1, n = nums.size();
+        if (n == 0)
+            return 0;
+        for (int i = 1; i < nums.size(); ++i) {
+            if (nums[i] == nums[i - 1]) {
+                if (count > 0)
+                    continue;
+                ++count;
+            }
+            else
+                count = 0;
+            nums[len] = nums[i];
+            ++len;
+        }
+        return len;
+    }
+};
+922 按奇偶排序数组 II
+用两个下标 i 和 j 分别表示偶数位和奇数位的下标，如果偶数位下标对应的数不是偶数那么将其与奇数位下标对应的数不是奇数的数进行交换。"><meta name=author content><link rel=canonical href=https://prov1dence.top/posts/leetcode/twopointers/><link crossorigin=anonymous href=/assets/css/stylesheet.45e028aa8ce0961349adf411b013ee39406be2c0bc80d4ea3fc04555f7f4611a.css integrity="sha256-ReAoqozglhNJrfQRsBPuOUBr4sC8gNTqP8BFVff0YRo=" rel="preload stylesheet" as=style><link rel=icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://prov1dence.top/posts/leetcode/twopointers/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://prov1dence.top/posts/leetcode/twopointers/"><meta property="og:site_name" content="Zhengyu Chen - 尾張"><meta property="og:title" content="LeetCode 双指针"><meta property="og:description" content="LeetCode DFS 题目 26 删除排序数组中的重复项 用两个指针 len 和 i 分别表示没有重复的项的下标与遍历数组的下标，将没有重复的项拷贝到 nums[len] 下然后 ++len 即可。
+class Solution { public: int removeDuplicates(vector<int>& nums) { int count = 0, len = 1, n = nums.size(); if (n == 0) return 0; for (int i = 1; i < n; ++i) { if (nums[i] == nums[i - 1]) continue; nums[len] = nums[i]; ++len; } return len; } }; 80 删除排序数组中的重复项 II 用两个指针 len 和 i 分别表示没有最多重复 2 次的项的下标与遍历数组的下标，将重复数小于等于 1 的项拷贝到 nums[len] 下然后 ++len 即可。
+class Solution { public: int removeDuplicates(vector<int>& nums) { int count = 0, len = 1, n = nums.size(); if (n == 0) return 0; for (int i = 1; i < nums.size(); ++i) { if (nums[i] == nums[i - 1]) { if (count > 0) continue; ++count; } else count = 0; nums[len] = nums[i]; ++len; } return len; } }; 922 按奇偶排序数组 II 用两个下标 i 和 j 分别表示偶数位和奇数位的下标，如果偶数位下标对应的数不是偶数那么将其与奇数位下标对应的数不是奇数的数进行交换。"><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-07-31T19:12:25+10:00"><meta property="article:modified_time" content="2019-07-31T19:12:25+10:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="LeetCode 双指针"><meta name=twitter:description content="LeetCode DFS
+题目
+26 删除排序数组中的重复项
+用两个指针 len 和 i 分别表示没有重复的项的下标与遍历数组的下标，将没有重复的项拷贝到 nums[len] 下然后 ++len 即可。
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        int count = 0, len = 1, n = nums.size();
+        if (n == 0)
+            return 0;
+        for (int i = 1; i < n; ++i) {
+            if (nums[i] == nums[i - 1])
+                continue;
+            nums[len] = nums[i];
+            ++len;
+        }
+        return len;
+    }
+};
+80 删除排序数组中的重复项 II
+用两个指针 len 和 i 分别表示没有最多重复 2 次的项的下标与遍历数组的下标，将重复数小于等于 1 的项拷贝到 nums[len] 下然后 ++len 即可。
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        int count = 0, len = 1, n = nums.size();
+        if (n == 0)
+            return 0;
+        for (int i = 1; i < nums.size(); ++i) {
+            if (nums[i] == nums[i - 1]) {
+                if (count > 0)
+                    continue;
+                ++count;
+            }
+            else
+                count = 0;
+            nums[len] = nums[i];
+            ++len;
+        }
+        return len;
+    }
+};
+922 按奇偶排序数组 II
+用两个下标 i 和 j 分别表示偶数位和奇数位的下标，如果偶数位下标对应的数不是偶数那么将其与奇数位下标对应的数不是奇数的数进行交换。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://prov1dence.top/posts/"},{"@type":"ListItem","position":2,"name":"LeetCode 双指针","item":"https://prov1dence.top/posts/leetcode/twopointers/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"LeetCode 双指针","name":"LeetCode 双指针","description":"LeetCode DFS 题目 26 删除排序数组中的重复项 用两个指针 len 和 i 分别表示没有重复的项的下标与遍历数组的下标，将没有重复的项拷贝到 nums[len] 下然后 ++len 即可。\nclass Solution { public: int removeDuplicates(vector\u0026lt;int\u0026gt;\u0026amp; nums) { int count = 0, len = 1, n = nums.size(); if (n == 0) return 0; for (int i = 1; i \u0026lt; n; ++i) { if (nums[i] == nums[i - 1]) continue; nums[len] = nums[i]; ++len; } return len; } }; 80 删除排序数组中的重复项 II 用两个指针 len 和 i 分别表示没有最多重复 2 次的项的下标与遍历数组的下标，将重复数小于等于 1 的项拷贝到 nums[len] 下然后 ++len 即可。\nclass Solution { public: int removeDuplicates(vector\u0026lt;int\u0026gt;\u0026amp; nums) { int count = 0, len = 1, n = nums.size(); if (n == 0) return 0; for (int i = 1; i \u0026lt; nums.size(); ++i) { if (nums[i] == nums[i - 1]) { if (count \u0026gt; 0) continue; ++count; } else count = 0; nums[len] = nums[i]; ++len; } return len; } }; 922 按奇偶排序数组 II 用两个下标 i 和 j 分别表示偶数位和奇数位的下标，如果偶数位下标对应的数不是偶数那么将其与奇数位下标对应的数不是奇数的数进行交换。\n","keywords":[],"articleBody":"LeetCode DFS 题目 26 删除排序数组中的重复项 用两个指针 len 和 i 分别表示没有重复的项的下标与遍历数组的下标，将没有重复的项拷贝到 nums[len] 下然后 ++len 即可。\nclass Solution { public: int removeDuplicates(vector\u003cint\u003e\u0026 nums) { int count = 0, len = 1, n = nums.size(); if (n == 0) return 0; for (int i = 1; i \u003c n; ++i) { if (nums[i] == nums[i - 1]) continue; nums[len] = nums[i]; ++len; } return len; } }; 80 删除排序数组中的重复项 II 用两个指针 len 和 i 分别表示没有最多重复 2 次的项的下标与遍历数组的下标，将重复数小于等于 1 的项拷贝到 nums[len] 下然后 ++len 即可。\nclass Solution { public: int removeDuplicates(vector\u003cint\u003e\u0026 nums) { int count = 0, len = 1, n = nums.size(); if (n == 0) return 0; for (int i = 1; i \u003c nums.size(); ++i) { if (nums[i] == nums[i - 1]) { if (count \u003e 0) continue; ++count; } else count = 0; nums[len] = nums[i]; ++len; } return len; } }; 922 按奇偶排序数组 II 用两个下标 i 和 j 分别表示偶数位和奇数位的下标，如果偶数位下标对应的数不是偶数那么将其与奇数位下标对应的数不是奇数的数进行交换。\nclass Solution { public: vector\u003cint\u003e sortArrayByParityII(vector\u003cint\u003e\u0026 A) { for (int i = 0, j = 1; i \u003c A.size(); i += 2) if (A[i] % 2 != 0) { while (j \u003c A.size() \u0026\u0026 A[j] % 2 != 0) j += 2; swap(A[i], A[j]); } return A; } }; 11 盛最多水的容器 用两个指针分别表示数组的头和尾，每次将高度较低的元素的下标往中间移动，同时更新结果。\nclass Solution { public: int maxArea(vector\u003cint\u003e\u0026 h) { int i = 0, j = h.size() - 1, res = 0; while (i \u003c j) { res = max(res, min(h[i], h[j]) * (j - i)); if (h[i] \u003c h[j]) ++i; else --j; } return res; } }; 287 寻找重复数 将出现的数字的绝对值 - 1 作为下标，把对应位置的数字乘以 -1 进行标记，因为只有一个数字重复了，所以如果在标记时如果发现对应位置的数字已经是负数则说明出现过相同的下标，返回该数字即可。\nclass Solution { public: int findDuplicate(vector\u003cint\u003e\u0026 nums) { for (int i = 0; i \u003c nums.size(); ++i) { int index = abs(nums[i]) - 1; if (nums[index] \u003c 0) return abs(nums[i]); nums[index] *= -1; } return 0; } }; 75 颜色分类 类似于只有两个数的数组排序，只需要用两个变量 idx_0 = 0, idx_2 = n - 1 分别表示两端的下标，将 0 和 2 分别替换到数组的两端，将 1 留在中间即可。\nclass Solution { public: void sortColors(vector\u003cint\u003e \u0026nums) { int n = nums.size(), idx_0 = 0, idx_2 = n - 1; for (int i = 0; i \u003c= idx_2; ++i) { if (nums[i] == 2) { swap(nums[i], nums[idx_2]); --idx_2, --i; } else if (nums[i] == 0) { swap(nums[i], nums[idx_0]); ++idx_0; } } } }; 15 三数之和 首先明确两数之和的做法：排序后用两个指针分别从头和尾往中间遍历，根据大小关系移动指针。三数之和无非就是先固定一个数，使得另外两个数之和等于这个数的负数，因此仍然要先对数组进行排序，为了固定一个数需要用一个 for 循环遍历数组，对于其后的所有元素用两数之和的方法进行求和。为了防止出现重复需要在计算两数之和后不断地移动指针直到当前元素与其前/后一个元素不相同。时间复杂度是 O(n ^ 2)，空间复杂度是 O(1)。\nclass Solution { public: vector\u003cvector\u003cint\u003e\u003e threeSum(vector\u003cint\u003e \u0026nums) { sort(nums.begin(), nums.end()); vector\u003cvector\u003cint\u003e\u003e res; int n = nums.size(), i = 0; while (i \u003c n) { int j = i + 1, k = n - 1, target = -nums[i]; while (j \u003c k) { if (nums[j] + nums[k] == target) { res.push_back({nums[i], nums[j], nums[k]}); do ++j; while (j \u003c k \u0026\u0026 nums[j] == nums[j - 1]); do --k; while (j \u003c k \u0026\u0026 nums[k] == nums[k + 1]); } else if (nums[j] + nums[k] \u003c target) ++j; else --k; } do ++i; while (i \u003c n \u0026\u0026 nums[i] == nums[i - 1]); } return res; } }; 424 替换后的最长重复字符 对于一个子串，我们只需要知道这个子串中出现次数最多的字符的出现次数，就可以根据 j - i + 1 - max_count \u003c= k 知道这个子串是否能被替换为重复子串，因此用滑动窗口的方法固定一个子串，如果这个子串满足条件，那么我们将滑动窗口的右端 j 继续往后移动，否则需要将左端往后移动直到这个子串满足条件，j - i + 1 就是可能的最长重复子串的长度。时间复杂度是 O(n)，空间复杂度是 O(1)。\nclass Solution { public: int characterReplacement(string s, int k) { int i = 0, j = 0, res = 0, n = s.size(), max_count = 0; vector\u003cint\u003e count(26, 0); while (j \u003c n) { ++count[s[j] - 'A']; max_count = max(max_count, count[s[j] - 'A']); while (j - i + 1 - max_count \u003e k) { --count[s[i] - 'A']; ++i; for (auto \u0026c:count) max_count = max(max_count, c); } res = max(res, j - i + 1); ++j; } return res; } }; 1004 最大连续 1 的个数 III 用左右两个指针保证滑动窗口中有小于等于 K 个 0，如果当前位是 1 那么右边的指针继续向后移动，如果当前位是 0 并且已经有 K 个 0，那么左边的指针往右移动直到出现 0，跳过这一位 0，将右边指针的 0 视作 1，更新结果。\nclass Solution { public: int longestOnes(vector\u003cint\u003e \u0026A, int K) { int i = 0, res = 0; for (int j = 0; j \u003c A.size(); ++j) { if (A[j] == 0) { if (K \u003e 0) --K; else { while (A[i] == 1) ++i; ++i; } } res = max(res, j - i + 1); } return res; } }; 42 接雨水 可以先将每个位置左边和右边最高的柱子高度都保存下来，再计算两者中较低的减去当前位置的柱子数量得到当前位置能够接住的雨水数量。\nclass Solution { public: int trap(vector\u003cint\u003e \u0026height) { int n = height.size(), res = 0; vector\u003cint\u003e left(n, 0), right(n, 0); for (int i = 1; i \u003c n; ++i) left[i] = max(left[i - 1], height[i - 1]); for (int i = n - 2; i \u003e= 0; --i) right[i] = max(right[i + 1], height[i + 1]); for (int i = 0; i \u003c n; ++i) res += max(0, min(left[i], right[i]) - height[i]); return res; } }; 也可以用两个变量 l_max 和 r_max 分别记录左边和右边到目前为止最高的柱子高度，每次检查较低的一边，能够接住的雨水数量等于 min(l_max, r_max) 减去当前的柱子高度，同时更新柱子的最高高度。\nclass Solution { public: int trap(vector\u003cint\u003e \u0026height) { int n = height.size(), res = 0, l_max = 0, r_max = 0, i = 0, j = n - 1; while (i \u003c= j) { if (l_max \u003c= r_max) { res += max(0, min(l_max, r_max) - height[i]); l_max = max(l_max, height[i]); ++i; } else { res += max(0, min(l_max, r_max) - height[j]); r_max = max(r_max, height[j]); --j; } } return res; } }; 632 最小区间 比较容易想到的方法是从每个数组的第一个元素开始遍历，使用一个数组 idx 存储每一个数组当前遍历到的元素的下标，每次取这些元素中的最大最小值进行更新，这样做时间复杂度是 O(m * n)，其中 m 是数组的个数，n 是所有元素的个数，但是这样做会 TLE。相较于每次都遍历一遍整个二维数组，我们可以用一个小根堆把所有当前遍历到的元素中的最小值连带其数组下标及其下标保存下来，这样就能每次以 O(1) 的时间复杂度取到所有数组中当前元素的最小值，再用一个变量 max_val 存储所有数组中当前元素的最大值，每次从小根堆 pop 出堆顶元素后，先更新 res 结果数组，然后用这个元素对应下标的后一个下标的值更新 max_val，直到堆顶元素已经是数组的最后一个元素。时间复杂度是 O(m * logn)。\nclass Solution { struct element { int val; int vec_idx; int idx; element(int val, int vec_idx, int idx) : val(val), vec_idx(vec_idx), idx(idx) {} }; struct Compare { bool operator()(const element \u0026e1, const element \u0026e2) { return e1.val \u003e e2.val; } }; public: vector\u003cint\u003e smallestRange(vector\u003cvector\u003cint\u003e\u003e \u0026nums) { int n = nums.size(), max_val = INT_MIN; vector\u003cint\u003e res(2, 0); res[1] = INT_MAX; priority_queue\u003celement, vector\u003celement\u003e, Compare\u003e heap; for (int i = 0; i \u003c n; ++i) { heap.push(element(nums[i][0], i, 0)); max_val = max(max_val, nums[i][0]); } while (true) { element e = heap.top(); heap.pop(); if (res[1] - res[0] \u003e max_val - e.val) res[0] = e.val, res[1] = max_val; if (e.idx == nums[e.vec_idx].size() - 1) break; ++e.idx; e.val = nums[e.vec_idx][e.idx]; heap.push(e); max_val = max(max_val, e.val); } return res; } }; 76 最小覆盖子串 先从左往右找到一个符合条件的字符串，然后用滑动窗口的做法每次在左边去掉一个字符，往右边找到一个未被使用过的对应的字符，如果长度小于之前得到的字符串则更新结果。\nclass Solution { struct Element { int pos; char c; Element(int pos, char c) : pos(pos), c(c) {} }; public: string minWindow(string s, string t) { string res; unordered_map\u003cchar, int\u003e count; vector\u003cElement\u003e ele; unordered_set\u003cint\u003e used; for (auto c:t) ++count[c]; for (int i = 0; i \u003c s.size(); ++i) if (count.find(s[i]) != count.end()) ele.push_back(Element(i, s[i])); int i = 0, j = 0, n = ele.size(), pos = 0, l = n, start = 0, end = 0; while (j \u003c n \u0026\u0026 !count.empty()) { if (count.find(ele[j].c) != count.end()) { --count[ele[j].c]; used.insert(j); end = max(end,j); if (count[ele[j].c] == 0) count.erase(ele[j].c); } ++j; } if (!count.empty()) return res; res = s.substr(ele[i].pos, ele[j - 1].pos - ele[i].pos + 1); while (start \u003c n) { char target = ele[start].c; used.erase(start); ++start; int k = start; while (k \u003c n) { if (ele[k].c == target \u0026\u0026 used.find(k) == used.end()) { used.insert(k); end = min(n - 1, max(end, k)); if (res.size() \u003e ele[end].pos - ele[start].pos + 1) res = s.substr(ele[start].pos, ele[end].pos - ele[start].pos + 1); break; } ++k; } if (k == n) break; } return res; } }; 992 K 个不同整数的子数组 用两个指针 left 和 right 保证滑动窗口内子数组中不同的整数有 K 个，当最左边数的计数大于 1 时代表由 [left, right] 组成的数组和 [left + 1, right] 组成的数组都是符合题意的含有 K 个不同整数的子数组，并且如果 [left + 1, right + 1] 也是符合题意的数组的话那么 [left, right + 1] 也是符合题意的数组，因此 ++acc 并 ++left，当哈希表的 size 等于 K 时将现在 acc 加到结果上去即可。时间复杂度是 O(n)，空间复杂度是 O(n)。\nclass Solution { public: int subarraysWithKDistinct(vector\u003cint\u003e \u0026A, int K) { unordered_map\u003cint, int\u003e count; int acc = 1, res = 0, left = 0; for (int right = 0; right \u003c A.size(); ++right) { ++count[A[right]]; while (count.size() \u003e K) { --count[A[left]]; if (count[A[left]] == 0) count.erase(A[left]); ++left; acc = 1; } while (count[A[left]] \u003e 1) { --count[A[left]]; ++left; ++acc; } if (count.size() == K) res += acc; } return res; } }; 239 滑动窗口最大值 用一个类似单调栈的双端队列存储滑动窗口中的元素，当需要 push_back 进来的数大于其前面的数时，不断的将小于它的数 pop_back，这样一来双端队列的 front 位置一定是当前滑动窗口里最大的数，当滑动窗口移动时最左边的数如果等于双端队列中 front 位置的数时则 pop_front，这样一来 front 位置的数仍然是当前滑动窗口里最大的数。这样做时间复杂度是 O(n)，空间复杂度是 O(n)。\nclass Solution { public: vector\u003cint\u003e maxSlidingWindow(vector\u003cint\u003e \u0026nums, int k) { int n = nums.size(); deque\u003cint\u003e d; vector\u003cint\u003e res; if (n == 0) return res; for (int i = 0; i \u003c k; ++i) { while (!d.empty() \u0026\u0026 d.back() \u003c nums[i]) d.pop_back(); d.push_back(nums[i]); } res.push_back(d.front()); for (int i = k; i \u003c n; ++i) { if (!d.empty() \u0026\u0026 nums[i - k] == d.front()) d.pop_front(); while (!d.empty() \u0026\u0026 d.back() \u003c nums[i]) d.pop_back(); d.push_back(nums[i]); res.push_back(d.front()); } return res; } }; ","wordCount":"1362","inLanguage":"en","datePublished":"2019-07-31T19:12:25+10:00","dateModified":"2019-07-31T19:12:25+10:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://prov1dence.top/posts/leetcode/twopointers/"},"publisher":{"@type":"Organization","name":"Zhengyu Chen - 尾張","logo":{"@type":"ImageObject","url":"https://prov1dence.top/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://prov1dence.top/ accesskey=h title="尾張 (Alt + H)">尾張</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://prov1dence.top/archives/ title=Posts><span>Posts</span></a></li><li><a href=https://prov1dence.top/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">LeetCode 双指针</h1><div class=post-meta><span title='2019-07-31 19:12:25 +1000 +1000'>July 31, 2019</span>&nbsp;·&nbsp;7 min</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#leetcode-dfshttpsleetcode-cncomtagtwo-pointers aria-label="LeetCode DFS">LeetCode DFS</a><ul><li><a href=#%e9%a2%98%e7%9b%ae aria-label=题目>题目</a><ul><ul><li><a href=#26-%e5%88%a0%e9%99%a4%e6%8e%92%e5%ba%8f%e6%95%b0%e7%bb%84%e4%b8%ad%e7%9a%84%e9%87%8d%e5%a4%8d%e9%a1%b9httpsleetcode-cncomproblemsremove-duplicates-from-sorted-array aria-label="26 删除排序数组中的重复项">26 删除排序数组中的重复项</a></li><li><a href=#80-%e5%88%a0%e9%99%a4%e6%8e%92%e5%ba%8f%e6%95%b0%e7%bb%84%e4%b8%ad%e7%9a%84%e9%87%8d%e5%a4%8d%e9%a1%b9-iihttpsleetcode-cncomproblemsremove-duplicates-from-sorted-array-ii aria-label="80 删除排序数组中的重复项 II">80 删除排序数组中的重复项 II</a></li><li><a href=#922-%e6%8c%89%e5%a5%87%e5%81%b6%e6%8e%92%e5%ba%8f%e6%95%b0%e7%bb%84-iihttpsleetcode-cncomproblemssort-array-by-parity-ii aria-label="922 按奇偶排序数组 II">922 按奇偶排序数组 II</a></li><li><a href=#11-%e7%9b%9b%e6%9c%80%e5%a4%9a%e6%b0%b4%e7%9a%84%e5%ae%b9%e5%99%a8httpsleetcode-cncomproblemscontainer-with-most-water aria-label="11 盛最多水的容器">11 盛最多水的容器</a></li><li><a href=#287-%e5%af%bb%e6%89%be%e9%87%8d%e5%a4%8d%e6%95%b0httpsleetcode-cncomproblemsfind-the-duplicate-numbersubmissions aria-label="287 寻找重复数">287 寻找重复数</a></li><li><a href=#75-%e9%a2%9c%e8%89%b2%e5%88%86%e7%b1%bbhttpsleetcode-cncomproblemssort-colors aria-label="75 颜色分类">75 颜色分类</a></li><li><a href=#15-%e4%b8%89%e6%95%b0%e4%b9%8b%e5%92%8chttpsleetcode-cncomproblems3sum aria-label="15 三数之和">15 三数之和</a></li><li><a href=#424-%e6%9b%bf%e6%8d%a2%e5%90%8e%e7%9a%84%e6%9c%80%e9%95%bf%e9%87%8d%e5%a4%8d%e5%ad%97%e7%ac%a6httpsleetcode-cncomproblemslongest-repeating-character-replacement aria-label="424 替换后的最长重复字符">424 替换后的最长重复字符</a></li><li><a href=#1004-%e6%9c%80%e5%a4%a7%e8%bf%9e%e7%bb%ad-1-%e7%9a%84%e4%b8%aa%e6%95%b0-iiihttpsleetcode-cncomproblemsmax-consecutive-ones-iii aria-label="1004 最大连续 1 的个数 III">1004 最大连续 1 的个数 III</a></li><li><a href=#42-%e6%8e%a5%e9%9b%a8%e6%b0%b4httpsleetcode-cncomproblemstrapping-rain-watersubmissions aria-label="42 接雨水">42 接雨水</a></li><li><a href=#632-%e6%9c%80%e5%b0%8f%e5%8c%ba%e9%97%b4httpsleetcode-cncomproblemssmallest-range aria-label="632 最小区间">632 最小区间</a></li><li><a href=#76-%e6%9c%80%e5%b0%8f%e8%a6%86%e7%9b%96%e5%ad%90%e4%b8%b2httpsleetcode-cncomproblemsminimum-window-substring aria-label="76 最小覆盖子串">76 最小覆盖子串</a></li><li><a href=#992-k-%e4%b8%aa%e4%b8%8d%e5%90%8c%e6%95%b4%e6%95%b0%e7%9a%84%e5%ad%90%e6%95%b0%e7%bb%84httpsleetcode-cncomproblemssubarrays-with-k-different-integers aria-label="992 K 个不同整数的子数组">992 K 个不同整数的子数组</a></li><li><a href=#239-%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3%e6%9c%80%e5%a4%a7%e5%80%bchttpsleetcode-cncomproblemssliding-window-maximum aria-label="239 滑动窗口最大值">239 滑动窗口最大值</a></li></ul></li></ul></ul></li></ul></div></details></div><div class=post-content><h1 id=leetcode-dfshttpsleetcode-cncomtagtwo-pointers><a href=https://leetcode-cn.com/tag/two-pointers/>LeetCode DFS</a><a hidden class=anchor aria-hidden=true href=#leetcode-dfshttpsleetcode-cncomtagtwo-pointers>#</a></h1><h2 id=题目>题目<a hidden class=anchor aria-hidden=true href=#题目>#</a></h2><h4 id=26-删除排序数组中的重复项httpsleetcode-cncomproblemsremove-duplicates-from-sorted-array><a href=https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/>26 删除排序数组中的重复项</a><a hidden class=anchor aria-hidden=true href=#26-删除排序数组中的重复项httpsleetcode-cncomproblemsremove-duplicates-from-sorted-array>#</a></h4><p>用两个指针 len 和 i 分别表示没有重复的项的下标与遍历数组的下标，将没有重复的项拷贝到 nums[len] 下然后 ++len 即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> removeDuplicates(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&amp;</span> nums) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> count <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, len <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>, n <span style=color:#f92672>=</span> nums.size();
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (n <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>; i <span style=color:#f92672>&lt;</span> n; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (nums[i] <span style=color:#f92672>==</span> nums[i <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>])
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>continue</span>;
+</span></span><span style=display:flex><span>            nums[len] <span style=color:#f92672>=</span> nums[i];
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>len;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> len;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=80-删除排序数组中的重复项-iihttpsleetcode-cncomproblemsremove-duplicates-from-sorted-array-ii><a href=https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/>80 删除排序数组中的重复项 II</a><a hidden class=anchor aria-hidden=true href=#80-删除排序数组中的重复项-iihttpsleetcode-cncomproblemsremove-duplicates-from-sorted-array-ii>#</a></h4><p>用两个指针 len 和 i 分别表示没有最多重复 2 次的项的下标与遍历数组的下标，将重复数小于等于 1 的项拷贝到 nums[len] 下然后 ++len 即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> removeDuplicates(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&amp;</span> nums) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> count <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, len <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>, n <span style=color:#f92672>=</span> nums.size();
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (n <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>; i <span style=color:#f92672>&lt;</span> nums.size(); <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (nums[i] <span style=color:#f92672>==</span> nums[i <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> (count <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>continue</span>;
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>count;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>                count <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>            nums[len] <span style=color:#f92672>=</span> nums[i];
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>len;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> len;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=922-按奇偶排序数组-iihttpsleetcode-cncomproblemssort-array-by-parity-ii><a href=https://leetcode-cn.com/problems/sort-array-by-parity-ii/>922 按奇偶排序数组 II</a><a hidden class=anchor aria-hidden=true href=#922-按奇偶排序数组-iihttpsleetcode-cncomproblemssort-array-by-parity-ii>#</a></h4><p>用两个下标 i 和 j 分别表示偶数位和奇数位的下标，如果偶数位下标对应的数不是偶数那么将其与奇数位下标对应的数不是奇数的数进行交换。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> sortArrayByParityII(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&amp;</span> A) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, j <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>; i <span style=color:#f92672>&lt;</span> A.size(); i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (A[i] <span style=color:#f92672>%</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>while</span> (j <span style=color:#f92672>&lt;</span> A.size() <span style=color:#f92672>&amp;&amp;</span> A[j] <span style=color:#f92672>%</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>                    j <span style=color:#f92672>+=</span> <span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span>                swap(A[i], A[j]);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> A;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=11-盛最多水的容器httpsleetcode-cncomproblemscontainer-with-most-water><a href=https://leetcode-cn.com/problems/container-with-most-water/>11 盛最多水的容器</a><a hidden class=anchor aria-hidden=true href=#11-盛最多水的容器httpsleetcode-cncomproblemscontainer-with-most-water>#</a></h4><p>用两个指针分别表示数组的头和尾，每次将高度较低的元素的下标往中间移动，同时更新结果。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> maxArea(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&amp;</span> h) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, j <span style=color:#f92672>=</span> h.size() <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, res <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (i <span style=color:#f92672>&lt;</span> j) {
+</span></span><span style=display:flex><span>            res <span style=color:#f92672>=</span> max(res, min(h[i], h[j]) <span style=color:#f92672>*</span> (j <span style=color:#f92672>-</span> i));
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (h[i] <span style=color:#f92672>&lt;</span> h[j])
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>--</span>j;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=287-寻找重复数httpsleetcode-cncomproblemsfind-the-duplicate-numbersubmissions><a href=https://leetcode-cn.com/problems/find-the-duplicate-number/submissions/>287 寻找重复数</a><a hidden class=anchor aria-hidden=true href=#287-寻找重复数httpsleetcode-cncomproblemsfind-the-duplicate-numbersubmissions>#</a></h4><p>将出现的数字的绝对值 - 1 作为下标，把对应位置的数字乘以 -1 进行标记，因为只有一个数字重复了，所以如果在标记时如果发现对应位置的数字已经是负数则说明出现过相同的下标，返回该数字即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> findDuplicate(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&amp;</span> nums) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> nums.size(); <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>int</span> index <span style=color:#f92672>=</span> abs(nums[i]) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (nums[index] <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>return</span> abs(nums[i]);
+</span></span><span style=display:flex><span>            nums[index] <span style=color:#f92672>*=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=75-颜色分类httpsleetcode-cncomproblemssort-colors><a href=https://leetcode-cn.com/problems/sort-colors/>75 颜色分类</a><a hidden class=anchor aria-hidden=true href=#75-颜色分类httpsleetcode-cncomproblemssort-colors>#</a></h4><p>类似于只有两个数的数组排序，只需要用两个变量 idx_0 = 0, idx_2 = n - 1 分别表示两端的下标，将 0 和 2 分别替换到数组的两端，将 1 留在中间即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> sortColors(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>nums) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> n <span style=color:#f92672>=</span> nums.size(), idx_0 <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, idx_2 <span style=color:#f92672>=</span> n <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;=</span> idx_2; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (nums[i] <span style=color:#f92672>==</span> <span style=color:#ae81ff>2</span>) {
+</span></span><span style=display:flex><span>                swap(nums[i], nums[idx_2]);
+</span></span><span style=display:flex><span>                <span style=color:#f92672>--</span>idx_2, <span style=color:#f92672>--</span>i;
+</span></span><span style=display:flex><span>            } <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (nums[i] <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>                swap(nums[i], nums[idx_0]);
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>idx_0;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=15-三数之和httpsleetcode-cncomproblems3sum><a href=https://leetcode-cn.com/problems/3sum/>15 三数之和</a><a hidden class=anchor aria-hidden=true href=#15-三数之和httpsleetcode-cncomproblems3sum>#</a></h4><p>首先明确两数之和的做法：排序后用两个指针分别从头和尾往中间遍历，根据大小关系移动指针。三数之和无非就是先固定一个数，使得另外两个数之和等于这个数的负数，因此仍然要先对数组进行排序，为了固定一个数需要用一个 for 循环遍历数组，对于其后的所有元素用两数之和的方法进行求和。为了防止出现重复需要在计算两数之和后不断地移动指针直到当前元素与其前/后一个元素不相同。时间复杂度是 O(n ^ 2)，空间复杂度是 O(1)。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span>vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&gt;</span> threeSum(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>nums) {
+</span></span><span style=display:flex><span>        sort(nums.begin(), nums.end());
+</span></span><span style=display:flex><span>        vector<span style=color:#f92672>&lt;</span>vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&gt;</span> res;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> n <span style=color:#f92672>=</span> nums.size(), i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (i <span style=color:#f92672>&lt;</span> n) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>int</span> j <span style=color:#f92672>=</span> i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>, k <span style=color:#f92672>=</span> n <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, target <span style=color:#f92672>=</span> <span style=color:#f92672>-</span>nums[i];
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (j <span style=color:#f92672>&lt;</span> k) {
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> (nums[j] <span style=color:#f92672>+</span> nums[k] <span style=color:#f92672>==</span> target) {
+</span></span><span style=display:flex><span>                    res.push_back({nums[i], nums[j], nums[k]});
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>do</span>
+</span></span><span style=display:flex><span>                        <span style=color:#f92672>++</span>j;
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>while</span> (j <span style=color:#f92672>&lt;</span> k <span style=color:#f92672>&amp;&amp;</span> nums[j] <span style=color:#f92672>==</span> nums[j <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>do</span>
+</span></span><span style=display:flex><span>                        <span style=color:#f92672>--</span>k;
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>while</span> (j <span style=color:#f92672>&lt;</span> k <span style=color:#f92672>&amp;&amp;</span> nums[k] <span style=color:#f92672>==</span> nums[k <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>                } <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (nums[j] <span style=color:#f92672>+</span> nums[k] <span style=color:#f92672>&lt;</span> target)
+</span></span><span style=display:flex><span>                    <span style=color:#f92672>++</span>j;
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>                    <span style=color:#f92672>--</span>k;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>do</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (i <span style=color:#f92672>&lt;</span> n <span style=color:#f92672>&amp;&amp;</span> nums[i] <span style=color:#f92672>==</span> nums[i <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=424-替换后的最长重复字符httpsleetcode-cncomproblemslongest-repeating-character-replacement><a href=https://leetcode-cn.com/problems/longest-repeating-character-replacement/>424 替换后的最长重复字符</a><a hidden class=anchor aria-hidden=true href=#424-替换后的最长重复字符httpsleetcode-cncomproblemslongest-repeating-character-replacement>#</a></h4><p>对于一个子串，我们只需要知道这个子串中出现次数最多的字符的出现次数，就可以根据 j - i + 1 - max_count &lt;= k 知道这个子串是否能被替换为重复子串，因此用滑动窗口的方法固定一个子串，如果这个子串满足条件，那么我们将滑动窗口的右端 j 继续往后移动，否则需要将左端往后移动直到这个子串满足条件，j - i + 1 就是可能的最长重复子串的长度。时间复杂度是 O(n)，空间复杂度是 O(1)。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> characterReplacement(string s, <span style=color:#66d9ef>int</span> k) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, j <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, res <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, n <span style=color:#f92672>=</span> s.size(), max_count <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> count(<span style=color:#ae81ff>26</span>, <span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (j <span style=color:#f92672>&lt;</span> n) {
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>count[s[j] <span style=color:#f92672>-</span> <span style=color:#e6db74>&#39;A&#39;</span>];
+</span></span><span style=display:flex><span>            max_count <span style=color:#f92672>=</span> max(max_count, count[s[j] <span style=color:#f92672>-</span> <span style=color:#e6db74>&#39;A&#39;</span>]);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (j <span style=color:#f92672>-</span> i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span> <span style=color:#f92672>-</span> max_count <span style=color:#f92672>&gt;</span> k) {
+</span></span><span style=display:flex><span>                <span style=color:#f92672>--</span>count[s[i] <span style=color:#f92672>-</span> <span style=color:#e6db74>&#39;A&#39;</span>];
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>auto</span> <span style=color:#f92672>&amp;</span>c:count)
+</span></span><span style=display:flex><span>                    max_count <span style=color:#f92672>=</span> max(max_count, c);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            res <span style=color:#f92672>=</span> max(res, j <span style=color:#f92672>-</span> i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>j;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=1004-最大连续-1-的个数-iiihttpsleetcode-cncomproblemsmax-consecutive-ones-iii><a href=https://leetcode-cn.com/problems/max-consecutive-ones-iii/>1004 最大连续 1 的个数 III</a><a hidden class=anchor aria-hidden=true href=#1004-最大连续-1-的个数-iiihttpsleetcode-cncomproblemsmax-consecutive-ones-iii>#</a></h4><p>用左右两个指针保证滑动窗口中有小于等于 K 个 0，如果当前位是 1 那么右边的指针继续向后移动，如果当前位是 0 并且已经有 K 个 0，那么左边的指针往右移动直到出现 0，跳过这一位 0，将右边指针的 0 视作 1，更新结果。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> longestOnes(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>A, <span style=color:#66d9ef>int</span> K) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, res <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> j <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; j <span style=color:#f92672>&lt;</span> A.size(); <span style=color:#f92672>++</span>j) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (A[j] <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> (K <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>                    <span style=color:#f92672>--</span>K;
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>while</span> (A[i] <span style=color:#f92672>==</span> <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>                        <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>                    <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            res <span style=color:#f92672>=</span> max(res, j <span style=color:#f92672>-</span> i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=42-接雨水httpsleetcode-cncomproblemstrapping-rain-watersubmissions><a href=https://leetcode-cn.com/problems/trapping-rain-water/submissions/>42 接雨水</a><a hidden class=anchor aria-hidden=true href=#42-接雨水httpsleetcode-cncomproblemstrapping-rain-watersubmissions>#</a></h4><p>可以先将每个位置左边和右边最高的柱子高度都保存下来，再计算两者中较低的减去当前位置的柱子数量得到当前位置能够接住的雨水数量。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> trap(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>height) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> n <span style=color:#f92672>=</span> height.size(), res <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> left(n, <span style=color:#ae81ff>0</span>), right(n, <span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>; i <span style=color:#f92672>&lt;</span> n; <span style=color:#f92672>++</span>i)
+</span></span><span style=display:flex><span>            left[i] <span style=color:#f92672>=</span> max(left[i <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>], height[i <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> n <span style=color:#f92672>-</span> <span style=color:#ae81ff>2</span>; i <span style=color:#f92672>&gt;=</span> <span style=color:#ae81ff>0</span>; <span style=color:#f92672>--</span>i)
+</span></span><span style=display:flex><span>            right[i] <span style=color:#f92672>=</span> max(right[i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>], height[i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; <span style=color:#f92672>++</span>i)
+</span></span><span style=display:flex><span>            res <span style=color:#f92672>+=</span> max(<span style=color:#ae81ff>0</span>, min(left[i], right[i]) <span style=color:#f92672>-</span> height[i]);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><p>也可以用两个变量 l_max 和 r_max 分别记录左边和右边到目前为止最高的柱子高度，每次检查较低的一边，能够接住的雨水数量等于 min(l_max, r_max) 减去当前的柱子高度，同时更新柱子的最高高度。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> trap(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>height) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> n <span style=color:#f92672>=</span> height.size(), res <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, l_max <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, r_max <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, j <span style=color:#f92672>=</span> n <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (i <span style=color:#f92672>&lt;=</span> j) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (l_max <span style=color:#f92672>&lt;=</span> r_max) {
+</span></span><span style=display:flex><span>                res <span style=color:#f92672>+=</span> max(<span style=color:#ae81ff>0</span>, min(l_max, r_max) <span style=color:#f92672>-</span> height[i]);
+</span></span><span style=display:flex><span>                l_max <span style=color:#f92672>=</span> max(l_max, height[i]);
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>i;
+</span></span><span style=display:flex><span>            } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>                res <span style=color:#f92672>+=</span> max(<span style=color:#ae81ff>0</span>, min(l_max, r_max) <span style=color:#f92672>-</span> height[j]);
+</span></span><span style=display:flex><span>                r_max <span style=color:#f92672>=</span> max(r_max, height[j]);
+</span></span><span style=display:flex><span>                <span style=color:#f92672>--</span>j;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=632-最小区间httpsleetcode-cncomproblemssmallest-range><a href=https://leetcode-cn.com/problems/smallest-range/>632 最小区间</a><a hidden class=anchor aria-hidden=true href=#632-最小区间httpsleetcode-cncomproblemssmallest-range>#</a></h4><p>比较容易想到的方法是从每个数组的第一个元素开始遍历，使用一个数组 idx 存储每一个数组当前遍历到的元素的下标，每次取这些元素中的最大最小值进行更新，这样做时间复杂度是 O(m * n)，其中 m 是数组的个数，n 是所有元素的个数，但是这样做会 TLE。相较于每次都遍历一遍整个二维数组，我们可以用一个小根堆把所有当前遍历到的元素中的最小值连带其数组下标及其下标保存下来，这样就能每次以 O(1) 的时间复杂度取到所有数组中当前元素的最小值，再用一个变量 max_val 存储所有数组中当前元素的最大值，每次从小根堆 pop 出堆顶元素后，先更新 res 结果数组，然后用这个元素对应下标的后一个下标的值更新 max_val，直到堆顶元素已经是数组的最后一个元素。时间复杂度是 O(m * logn)。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>element</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> val;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> vec_idx;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> idx;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        element(<span style=color:#66d9ef>int</span> val, <span style=color:#66d9ef>int</span> vec_idx, <span style=color:#66d9ef>int</span> idx) <span style=color:#f92672>:</span> val(val), vec_idx(vec_idx), idx(idx) {}
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Compare</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>bool</span> <span style=color:#a6e22e>operator</span>()(<span style=color:#66d9ef>const</span> element <span style=color:#f92672>&amp;</span>e1, <span style=color:#66d9ef>const</span> element <span style=color:#f92672>&amp;</span>e2) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> e1.val <span style=color:#f92672>&gt;</span> e2.val;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> smallestRange(vector<span style=color:#f92672>&lt;</span>vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;&gt;</span> <span style=color:#f92672>&amp;</span>nums) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> n <span style=color:#f92672>=</span> nums.size(), max_val <span style=color:#f92672>=</span> INT_MIN;
+</span></span><span style=display:flex><span>        vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> res(<span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>        res[<span style=color:#ae81ff>1</span>] <span style=color:#f92672>=</span> INT_MAX;
+</span></span><span style=display:flex><span>        priority_queue<span style=color:#f92672>&lt;</span>element, vector<span style=color:#f92672>&lt;</span>element<span style=color:#f92672>&gt;</span>, Compare<span style=color:#f92672>&gt;</span> heap;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            heap.push(element(nums[i][<span style=color:#ae81ff>0</span>], i, <span style=color:#ae81ff>0</span>));
+</span></span><span style=display:flex><span>            max_val <span style=color:#f92672>=</span> max(max_val, nums[i][<span style=color:#ae81ff>0</span>]);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (true) {
+</span></span><span style=display:flex><span>            element e <span style=color:#f92672>=</span> heap.top();
+</span></span><span style=display:flex><span>            heap.pop();
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (res[<span style=color:#ae81ff>1</span>] <span style=color:#f92672>-</span> res[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>&gt;</span> max_val <span style=color:#f92672>-</span> e.val)
+</span></span><span style=display:flex><span>                res[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>=</span> e.val, res[<span style=color:#ae81ff>1</span>] <span style=color:#f92672>=</span> max_val;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (e.idx <span style=color:#f92672>==</span> nums[e.vec_idx].size() <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>e.idx;
+</span></span><span style=display:flex><span>            e.val <span style=color:#f92672>=</span> nums[e.vec_idx][e.idx];
+</span></span><span style=display:flex><span>            heap.push(e);
+</span></span><span style=display:flex><span>            max_val <span style=color:#f92672>=</span> max(max_val, e.val);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=76-最小覆盖子串httpsleetcode-cncomproblemsminimum-window-substring><a href=https://leetcode-cn.com/problems/minimum-window-substring/>76 最小覆盖子串</a><a hidden class=anchor aria-hidden=true href=#76-最小覆盖子串httpsleetcode-cncomproblemsminimum-window-substring>#</a></h4><p>先从左往右找到一个符合条件的字符串，然后用滑动窗口的做法每次在左边去掉一个字符，往右边找到一个未被使用过的对应的字符，如果长度小于之前得到的字符串则更新结果。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Element</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> pos;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>char</span> c;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        Element(<span style=color:#66d9ef>int</span> pos, <span style=color:#66d9ef>char</span> c) <span style=color:#f92672>:</span> pos(pos), c(c) {}
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    string minWindow(string s, string t) {
+</span></span><span style=display:flex><span>        string res;
+</span></span><span style=display:flex><span>        unordered_map<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>char</span>, <span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> count;
+</span></span><span style=display:flex><span>        vector<span style=color:#f92672>&lt;</span>Element<span style=color:#f92672>&gt;</span> ele;
+</span></span><span style=display:flex><span>        unordered_set<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> used;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>auto</span> c:t)
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>count[c];
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> s.size(); <span style=color:#f92672>++</span>i)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (count.find(s[i]) <span style=color:#f92672>!=</span> count.end())
+</span></span><span style=display:flex><span>                ele.push_back(Element(i, s[i]));
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, j <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, n <span style=color:#f92672>=</span> ele.size(), pos <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, l <span style=color:#f92672>=</span> n, start <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, end <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (j <span style=color:#f92672>&lt;</span> n <span style=color:#f92672>&amp;&amp;</span> <span style=color:#f92672>!</span>count.empty()) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (count.find(ele[j].c) <span style=color:#f92672>!=</span> count.end()) {
+</span></span><span style=display:flex><span>                <span style=color:#f92672>--</span>count[ele[j].c];
+</span></span><span style=display:flex><span>                used.insert(j);
+</span></span><span style=display:flex><span>                end <span style=color:#f92672>=</span> max(end,j);
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> (count[ele[j].c] <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>                    count.erase(ele[j].c);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>j;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>count.empty())
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>        res <span style=color:#f92672>=</span> s.substr(ele[i].pos, ele[j <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>].pos <span style=color:#f92672>-</span> ele[i].pos <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (start <span style=color:#f92672>&lt;</span> n) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>char</span> target <span style=color:#f92672>=</span> ele[start].c;
+</span></span><span style=display:flex><span>            used.erase(start);
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>start;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>int</span> k <span style=color:#f92672>=</span> start;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (k <span style=color:#f92672>&lt;</span> n) {
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> (ele[k].c <span style=color:#f92672>==</span> target <span style=color:#f92672>&amp;&amp;</span> used.find(k) <span style=color:#f92672>==</span> used.end()) {
+</span></span><span style=display:flex><span>                    used.insert(k);
+</span></span><span style=display:flex><span>                    end <span style=color:#f92672>=</span> min(n <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, max(end, k));
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> (res.size() <span style=color:#f92672>&gt;</span> ele[end].pos <span style=color:#f92672>-</span> ele[start].pos <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>                        res <span style=color:#f92672>=</span> s.substr(ele[start].pos, ele[end].pos <span style=color:#f92672>-</span> ele[start].pos <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>k;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (k <span style=color:#f92672>==</span> n)
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=992-k-个不同整数的子数组httpsleetcode-cncomproblemssubarrays-with-k-different-integers><a href=https://leetcode-cn.com/problems/subarrays-with-k-different-integers/>992 K 个不同整数的子数组</a><a hidden class=anchor aria-hidden=true href=#992-k-个不同整数的子数组httpsleetcode-cncomproblemssubarrays-with-k-different-integers>#</a></h4><p>用两个指针 left 和 right 保证滑动窗口内子数组中不同的整数有 K 个，当最左边数的计数大于 1 时代表由 [left, right] 组成的数组和 [left + 1, right] 组成的数组都是符合题意的含有 K 个不同整数的子数组，并且如果 [left + 1, right + 1] 也是符合题意的数组的话那么 [left, right + 1] 也是符合题意的数组，因此 ++acc 并 ++left，当哈希表的 size 等于 K 时将现在 acc 加到结果上去即可。时间复杂度是 O(n)，空间复杂度是 O(n)。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> subarraysWithKDistinct(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>A, <span style=color:#66d9ef>int</span> K) {
+</span></span><span style=display:flex><span>        unordered_map<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span>, <span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> count;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> acc <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>, res <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, left <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> right <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; right <span style=color:#f92672>&lt;</span> A.size(); <span style=color:#f92672>++</span>right) {
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>count[A[right]];
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (count.size() <span style=color:#f92672>&gt;</span> K) {
+</span></span><span style=display:flex><span>                <span style=color:#f92672>--</span>count[A[left]];
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> (count[A[left]] <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>                    count.erase(A[left]);
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>left;
+</span></span><span style=display:flex><span>                acc <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (count[A[left]] <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#f92672>--</span>count[A[left]];
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>left;
+</span></span><span style=display:flex><span>                <span style=color:#f92672>++</span>acc;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (count.size() <span style=color:#f92672>==</span> K)
+</span></span><span style=display:flex><span>                res <span style=color:#f92672>+=</span> acc;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=239-滑动窗口最大值httpsleetcode-cncomproblemssliding-window-maximum><a href=https://leetcode-cn.com/problems/sliding-window-maximum/>239 滑动窗口最大值</a><a hidden class=anchor aria-hidden=true href=#239-滑动窗口最大值httpsleetcode-cncomproblemssliding-window-maximum>#</a></h4><p>用一个类似单调栈的双端队列存储滑动窗口中的元素，当需要 push_back 进来的数大于其前面的数时，不断的将小于它的数 pop_back，这样一来双端队列的 front 位置一定是当前滑动窗口里最大的数，当滑动窗口移动时最左边的数如果等于双端队列中 front 位置的数时则 pop_front，这样一来 front 位置的数仍然是当前滑动窗口里最大的数。这样做时间复杂度是 O(n)，空间复杂度是 O(n)。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> maxSlidingWindow(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>nums, <span style=color:#66d9ef>int</span> k) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> n <span style=color:#f92672>=</span> nums.size();
+</span></span><span style=display:flex><span>        deque<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> d;
+</span></span><span style=display:flex><span>        vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> res;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (n <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> k; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (<span style=color:#f92672>!</span>d.empty() <span style=color:#f92672>&amp;&amp;</span> d.back() <span style=color:#f92672>&lt;</span> nums[i])
+</span></span><span style=display:flex><span>                d.pop_back();
+</span></span><span style=display:flex><span>            d.push_back(nums[i]);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        res.push_back(d.front());
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> k; i <span style=color:#f92672>&lt;</span> n; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>d.empty() <span style=color:#f92672>&amp;&amp;</span> nums[i <span style=color:#f92672>-</span> k] <span style=color:#f92672>==</span> d.front())
+</span></span><span style=display:flex><span>                d.pop_front();
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (<span style=color:#f92672>!</span>d.empty() <span style=color:#f92672>&amp;&amp;</span> d.back() <span style=color:#f92672>&lt;</span> nums[i])
+</span></span><span style=display:flex><span>                d.pop_back();
+</span></span><span style=display:flex><span>            d.push_back(nums[i]);
+</span></span><span style=display:flex><span>            res.push_back(d.front());
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=prev href=https://prov1dence.top/posts/leetcode/heap/><span class=title>« Prev</span><br><span>LeetCode 堆</span>
+</a><a class=next href=https://prov1dence.top/posts/leetcode/dfs/><span class=title>Next »</span><br><span>LeetCode 深度优先搜索</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://prov1dence.top/>Zhengyu Chen - 尾張</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

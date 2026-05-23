@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Deep Learning on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/deep-learning/</link>
+    <description>Recent content in Deep Learning on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 19 May 2019 19:40:23 +1000</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/deep-learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Object Detection</title>
+      <link>https://prov1dence.top/posts/deep-learning/object-detection-yolo/</link>
+      <pubDate>Sun, 19 May 2019 19:40:23 +1000</pubDate>
+      <guid>https://prov1dence.top/posts/deep-learning/object-detection-yolo/</guid>
+      <description>&lt;h1 id=&#34;object-detection&#34;&gt;Object Detection&lt;/h1&gt;
+&lt;p&gt;Object detection deals with detecting instances of objects of a certain class, such as humans, animals, etc, in digital images and videos. Object detection has applications in many areas of computer vision, including image retrieval, face detection, video surveillance, and self-driving, etc. Current detection systems repurpose classifiers to perform detection. To detect an object, these systems take a classifier for that object and evaluate it at various locations and scales in a test image.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Methods to Prevent Overfitting in Deep Learning</title>
+      <link>https://prov1dence.top/posts/deep-learning/methods-to-prevent-overfitting-in-deep-learning/</link>
+      <pubDate>Wed, 20 Mar 2019 09:55:04 +1100</pubDate>
+      <guid>https://prov1dence.top/posts/deep-learning/methods-to-prevent-overfitting-in-deep-learning/</guid>
+      <description>&lt;h1 id=&#34;methods-to-prevent-overfitting-in-deep-learning&#34;&gt;Methods to Prevent Overfitting in Deep Learning&lt;/h1&gt;
+&lt;h2 id=&#34;overfitting&#34;&gt;Overfitting&lt;/h2&gt;
+&lt;p&gt;Overfitting refers to that when a model fits the training data well but cannot predict the test data correctly, we may say that the model lacks the ability of generalization. It is important to figure out how it happens, and how we can prevent overfitting from the very beginning.&lt;/p&gt;
+&lt;h2 id=&#34;detect-overfitting&#34;&gt;Detect Overfitting&lt;/h2&gt;
+&lt;p&gt;The simplest way to detect overfitting is to split the dataset into two parts: the training set for training the model, and the test set for testing the accuracy of the model on a dataset that it has never seen before. Of course, we will also partition part of the training set to be the validation set for fine-tuning hyper-parameters. Note that it is necessary to shuffle all the data before splitting.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

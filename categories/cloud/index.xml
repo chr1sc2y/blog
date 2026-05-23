@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Cloud on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/cloud/</link>
+    <description>Recent content in Cloud on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 21 Oct 2021 18:01:12 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/cloud/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Prometheus 入门</title>
+      <link>https://prov1dence.top/posts/cloud/intro-to-prometheus/</link>
+      <pubDate>Thu, 21 Oct 2021 18:01:12 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cloud/intro-to-prometheus/</guid>
+      <description>&lt;h1 id=&#34;prometheus-入门&#34;&gt;Prometheus 入门&lt;/h1&gt;
+&lt;p&gt;Prometheus 是一个开源的监控解决方案，也是云原生基金会 CNCF 的毕业项目，它能够提供指标数据的采集、存储、查询、告警等功能。本文主要介绍 Prometheus 的基础概念和应用中需要注意的一些问题。&lt;/p&gt;
+&lt;h2 id=&#34;1-监控系统&#34;&gt;1 监控系统&lt;/h2&gt;
+&lt;h3 id=&#34;11-监控模式&#34;&gt;1.1 监控模式&lt;/h3&gt;
+&lt;p&gt;监控系统执行监控检查的模式有两种，分别是 &lt;strong&gt;pull&lt;/strong&gt; 和 &lt;strong&gt;push&lt;/strong&gt;。Prometheus 采用了 pull 模式进行数据收集，同时也支持使用 Pushgateway 的 push 模式进行数据中转。&lt;/p&gt;
+&lt;p&gt;pull 方式的特点是有拉取间隔，不能及时获取数值的变化，因此需要进一步的数据处理；它的优点是在告警时可以按照策略分片，仅拉取需要的数据，并且支持聚合场景；缺点是监控的数据量庞大，对存储有较高的要求，切需要考虑数据的冷热分离。&lt;/p&gt;
+&lt;p&gt;push 方式的特点是由服务主动将数据推向监控系统，实时性更高；它的缺点是推送数据的不可预知性，因为当大量数据被推送到监控系统时，数据的缓存和解析会消耗大量资源，此时如果因为网络原因数据的收发没有得到确认，很容易产生数据的重发和重复，因此需要进行去重等操作。&lt;/p&gt;
+&lt;p&gt;pull 模式在云原生环境中更有优势，因为我们可以通过服务发现对所有需要进行监控的节点进行统一的数据拉取，如果使用 push 模式则需要在每个被监控的服务中部署上报数据的客户端，并配置监控服务器的信息，这会加大部署的难度。&lt;/p&gt;
+&lt;h3 id=&#34;12-prometheus&#34;&gt;1.2 Prometheus&lt;/h3&gt;
+&lt;p&gt;Prometheus 是一套开源的数据采集与监控框架，可以做后台服务器的监控告警，此处用来采集被测服务的性能指标数据，包括CPU占用比率、内存消耗、网络IO等。&lt;/p&gt;
+&lt;h4 id=&#34;特点&#34;&gt;特点&lt;/h4&gt;
+&lt;p&gt;Prometheus 最主要的特点有 4 个：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;通过 PromQL 实现多维度数据模型的灵活查询；这使得监控指标可以关联到多个标签，并对时间序列进行切片和切块，以支持各种查询和告警场景&lt;/li&gt;
+&lt;li&gt;定义了开放指标数据的标准，可以方便地自定义探针（exporter）&lt;/li&gt;
+&lt;li&gt;利用 Pushgateway 组件可以以 push 的方式接收监控数据&lt;/li&gt;
+&lt;li&gt;提供了容器化版本&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;架构&#34;&gt;架构&lt;/h4&gt;
+&lt;p&gt;&lt;img alt=&#34;prometheus-architecture&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/data/prometheus-architecture.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Prometheus 的架构主要由以下部分组成：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Prometheus Server&lt;/p&gt;
+&lt;p&gt;Prometheus 服务器主要包含了使用 pull 模式抓取监控数据，通过本地存储（本地磁盘）和远程存储（OpenTSDB, InfluxDB, ElasticSearch 等）保存数据，使用 PromQL 查询数据三大功能。&lt;/p&gt;
+&lt;p&gt;PromQL (Prometheus Query Language) 是 Prometheus 内置的数据查询语言，提供了对时间序列数据的查询，聚合和逻辑运算等操作的支持，被广泛地应用在数据的查询，可视化和告警中。关于 PromQL 的相关操作可以参考 &lt;a href=&#34;https://yunlzheng.gitbook.io/prometheus-book/parti-prometheus-ji-chu/promql/prometheus-query-language&#34;&gt;探索PromQL&lt;/a&gt;。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>在Google Cloud Platform上运行Jupyter Notebook</title>
+      <link>https://prov1dence.top/posts/cloud/run-jupyter-notebook-on-gcp/</link>
+      <pubDate>Fri, 14 Dec 2018 17:03:12 +1100</pubDate>
+      <guid>https://prov1dence.top/posts/cloud/run-jupyter-notebook-on-gcp/</guid>
+      <description>&lt;h1 id=&#34;在google-cloud-platform上运行jupyter-notebook&#34;&gt;在Google Cloud Platform上运行Jupyter Notebook&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本文取材自 &lt;a href=&#34;https://towardsdatascience.com/@aankul.a&#34;&gt;Amulya Aankul&lt;/a&gt; 发布在 &lt;a href=&#34;https://medium.com/&#34;&gt;Medium&lt;/a&gt; 的 &lt;a href=&#34;https://towardsdatascience.com/running-jupyter-notebook-in-google-cloud-platform-in-15-min-61e16da34d52&#34;&gt;Running Jupyter Notebook on Google Cloud Platform in 15 min&lt;/a&gt;，主要介绍如何在Google Cloud Platform上搭建服务器，并在服务器上安装和运行Jupyter Notebook。&lt;/p&gt;
+&lt;h2 id=&#34;服务器搭建&#34;&gt;服务器搭建&lt;/h2&gt;
+&lt;h3 id=&#34;创建账号&#34;&gt;创建账号&lt;/h3&gt;
+&lt;p&gt;首先在&lt;a href=&#34;https://cloud.google.com/&#34;&gt;Google Cloud Platform&lt;/a&gt;上创建一个账号。&lt;/p&gt;
+&lt;h3 id=&#34;创建新项目&#34;&gt;创建新项目&lt;/h3&gt;
+&lt;p&gt;点击左上角&amp;quot;Google Cloud Platform&amp;quot;右边的三个点，点击&amp;quot;NEW PROJECT&amp;quot;创建新项目。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;1&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/Run-Jupyter-Notebook-on-GCP/1.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;2&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/Run-Jupyter-Notebook-on-GCP/2.png&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;创建虚拟机&#34;&gt;创建虚拟机&lt;/h3&gt;
+&lt;p&gt;进入刚才创建的项目，从左侧边栏点击 Compute Engine -&amp;gt; VM instances 进入虚拟机页面。点击Create创建一个新的虚拟机实例（VM instance）&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;3&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/Run-Jupyter-Notebook-on-GCP/3.png&#34;&gt;)&lt;/p&gt;
+&lt;p&gt;根据需求填写和选择 Name, Region, Zone, Machine Type和Boot Disk。在 Firewall 选项中选中 Allow HTTP traffic 和 Allow HTTPS traffic, 在下方的 Disks 选项卡中取消勾选 Delete boot disk when instance is deleted。最后点击 Create，虚拟机实例就创建好了。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

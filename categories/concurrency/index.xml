@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Concurrency on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/concurrency/</link>
+    <description>Recent content in Concurrency on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 30 Sep 2020 16:20:25 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/concurrency/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43; 并发入门：以 LeetCode 1114 为例</title>
+      <link>https://prov1dence.top/posts/cpp/concurrency/introduction-to-concurrency/</link>
+      <pubDate>Wed, 30 Sep 2020 16:20:25 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/concurrency/introduction-to-concurrency/</guid>
+      <description>&lt;h1 id=&#34;c-并发入门以-leetcode-1114-为例&#34;&gt;C++ 并发入门：以 LeetCode 1114 为例&lt;/h1&gt;
+&lt;h2 id=&#34;题目&#34;&gt;题目&lt;/h2&gt;
+&lt;p&gt;直接做题：&lt;a href=&#34;https://leetcode.com/problems/print-in-order/&#34;&gt;1114 按序打印&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;解法&#34;&gt;解法&lt;/h2&gt;
+&lt;h3 id=&#34;1-stdmutex&#34;&gt;1. std::mutex&lt;/h3&gt;
+&lt;p&gt;如果你对 c++ 11 略为熟悉的话，应该能够想到用 &lt;a href=&#34;https://en.cppreference.com/w/cpp/thread/mutex&#34;&gt;&lt;code&gt;std::mutex&lt;/code&gt;&lt;/a&gt; 来解这道题，在函数构造时（主线程）对 &lt;code&gt;std::mutex&lt;/code&gt; 进行 &lt;code&gt;lock&lt;/code&gt;，然后在各个线程调用的函数中依次对 &lt;code&gt;std::mutex&lt;/code&gt; 对象进行 &lt;code&gt;unlock&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    mutex mtx1, mtx2;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Foo() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        mtx1.lock(), mtx2.lock();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;first&lt;/span&gt;(function&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt;()&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; printFirst) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        printFirst();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        mtx1.unlock();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;second&lt;/span&gt;(function&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt;()&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; printSecond) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        mtx1.lock();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        printSecond();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        mtx1.unlock();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        mtx2.unlock();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;third&lt;/span&gt;(function&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt;()&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; printThird) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        mtx2.lock();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        printThird();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        mtx2.unlock();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Mutex 即 &lt;strong&gt;mutual exclusion&lt;/strong&gt;，是用来防止多个线程同时访问共享资源对象的机制，在同一时间只有一个线程可以拥有一个 &lt;code&gt;mutex&lt;/code&gt; 对象，其他线程调用 &lt;code&gt;std::mutex::lock&lt;/code&gt; 函数时会阻塞直到其获取锁资源。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

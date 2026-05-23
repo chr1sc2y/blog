@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Proxy on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/proxy/</link>
+    <description>Recent content in Proxy on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 27 Feb 2022 14:08:30 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/proxy/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用 Mac Mini M1 作为软路由让全家设备科学上网</title>
+      <link>https://prov1dence.top/posts/proxy/soft-router/</link>
+      <pubDate>Sun, 27 Feb 2022 14:08:30 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/proxy/soft-router/</guid>
+      <description>&lt;h1 id=&#34;使用-mac-mini-m1-作为软路由让全家设备出国&#34;&gt;使用 Mac Mini M1 作为软路由让全家设备出国&lt;/h1&gt;
+&lt;p&gt;[TOC]&lt;/p&gt;
+&lt;p&gt;本文介绍如何将功耗超低的 Mac Mini M1 改造为软路由，让局域网内连上 Wi-Fi 的所有家庭设备都可以免设置直接出国。&lt;/p&gt;
+&lt;h2 id=&#34;代理客户端&#34;&gt;代理客户端&lt;/h2&gt;
+&lt;p&gt;首先需要下载一个可以运行在 M1 上的代理客户端，推荐使用 Surge 或者 &lt;a href=&#34;https://install.appcenter.ms/users/clashx/apps/clashx-pro/distribution_groups/public&#34;&gt;ClashX Pro&lt;/a&gt;，前者买断价格较贵（每个 Mac 设备 $49.99），后者免费，本文以后者为例。&lt;/p&gt;
+&lt;h2 id=&#34;配置&#34;&gt;配置&lt;/h2&gt;
+&lt;p&gt;一般机场会提供 Clash 的订阅链接，如果没有可以自行搜索 ssr/v2ray 转 clash 的第三方订阅转换服务，生成 Clash 订阅链接。&lt;/p&gt;
+&lt;p&gt;有了订阅链接之后，点击顶部菜单栏的 Clash 图标 -&amp;gt; Config -&amp;gt; Remote config -&amp;gt; Manage 管理订阅。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;ClashX Pro config manage&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/proxy/ClashX-Pro-config-manage.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;点击 Add，在 Url 中输入订阅链接，Config Name 可以任意填。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Add a remote config&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/proxy/Add-a-remote-config.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;除此之外还要勾选 Clash 图标里的 Set as system proxy 和 Enhanced Mode 两个选项，这样才能保证 Mac Mini M1 能够成为网关。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>小米 AX1800 使用 ShellClash 科学上网</title>
+      <link>https://prov1dence.top/posts/proxy/ax1800/</link>
+      <pubDate>Tue, 18 Jan 2022 22:29:36 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/proxy/ax1800/</guid>
+      <description>&lt;h1 id=&#34;小米-ax1800-使用-shellclash-科学上网&#34;&gt;小米 AX1800 使用 ShellClash 科学上网&lt;/h1&gt;
+&lt;p&gt;本文介绍如何在小米 AX1800 上使用 ShellClash 科学上网。&lt;/p&gt;
+&lt;h2 id=&#34;1-固件降级&#34;&gt;1 固件降级&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/chr1sc2y/warehouse-deprecated/raw/refs/heads/main/resources/proxy/miwifi_rm1800_firmware_fafda_1.0.336.bin&#34;&gt;小米 AX1800 1.0.336 版本固件&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;在 MiWiFi 后台的常用设置 -&amp;gt; 系统状态中点击&lt;strong&gt;手动升级&lt;/strong&gt;，使用 1.0.336 版本的固件对路由器进行降级，整个过程不需要任何额外的操作。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;firmware&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/proxy/firmware.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;完成后第一次进入后台配置时选择不自动更新，或在小米 Wi-Fi 手机 App 中关闭自动更新功能。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;firmware-update&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/proxy/firmware-update.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;更新完成后路由器会重置为路由器底部贴条的设置。&lt;/p&gt;
+&lt;h2 id=&#34;2-解锁-ssh&#34;&gt;2 解锁 SSH&lt;/h2&gt;
+&lt;p&gt;首先登陆小米路由器后台 192.168.31.1，将浏览器地址栏中 &lt;code&gt;stok=&lt;/code&gt; 后面的一部分的即为拷贝下来。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;firmware-update&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/proxy/stok.png&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;获取-ssh-权限&#34;&gt;获取 SSH 权限&lt;/h3&gt;
+&lt;p&gt;在浏览器中打开一个新页签，在地址栏中输入下面的链接，将其中 &lt;code&gt;stok=......&lt;/code&gt; 中后半部分的六个点换成刚才拷贝的内容，页面上显示 &lt;code&gt;{&amp;quot;code&amp;quot;:0}&lt;/code&gt; 即代表成功，这样就解锁了 SSH 到路由器上的权限。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;http://192.168.31.1/cgi-bin/luci/;stok=....../api/misystem/set_config_iotdev?bssid=Xiaomi&amp;amp;user_id=longdike&amp;amp;ssid=-h%3B%20nvram%20set%20ssh_en%3D1%3B%20nvram%20commit%3B%20sed%20-i%20&amp;#39;s%2Fchannel%3D.*%2Fchannel%3D%5C%22debug%5C%22%2Fg&amp;#39;%20%2Fetc%2Finit.d%2Fdropbear%3B%20%2Fetc%2Finit.d%2Fdropbear%20start%3B
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img alt=&#34;response&#34; loading=&#34;lazy&#34; src=&#34;https://raw.githubusercontent.com/chr1sc2y/warehouse-deprecated/refs/heads/main/resources/proxy/response.png&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;修改-root-密码&#34;&gt;修改 root 密码&lt;/h3&gt;
+&lt;p&gt;在浏览器中打开一个新页签，在地址栏中输入下面的链接，将其中 &lt;code&gt;stok=......&lt;/code&gt; 中后半部分的六个点换成刚才拷贝的内容，页面上显示 &lt;code&gt;{&amp;quot;code&amp;quot;:0}&lt;/code&gt; 即代表成功，这样就将路由器上 root 账户的密码改为了 admin。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;http://192.168.31.1/cgi-bin/luci/;stok=....../api/misystem/set_config_iotdev?bssid=Xiaomi&amp;amp;user_id=longdike&amp;amp;ssid=-h%3B%20echo%20-e%20&amp;#39;admin%5Cnadmin&amp;#39;%20%7C%20passwd%20root%3B
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;连接-ssh&#34;&gt;连接 SSH&lt;/h3&gt;
+&lt;p&gt;打开 terminal 或者 powershell，ssh 到路由器的 root 账户上，密码是 admin。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

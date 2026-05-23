@@ -1,0 +1,723 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>C++ 智能指针（2）：unique_ptr | Zhengyu Chen - 尾張</title>
+<meta name=keywords content><meta name=description content='C++智能指针（2）：unique_ptr
+分析
+在使用 AutoPointer 的时候会发生所有权转移和内存泄漏的问题，所以我们可以对 AutoPointer 类稍加修改，修复这两个问题。
+所有权转移
+为了规避可能发生所有权转移的情况，我们可以直接禁止它使用拷贝构造函数和赋值操作符。
+    UniquePointer(UniquePointer<T> &amp;other) = delete;
+
+    UniquePointer<T> &amp;operator=(const UniquePointer<T> &amp;other) = delete;
+但很多时候我们都需要使用到传递指针的操作，如果只是使用 deleted 函数禁止拷贝构造函数和赋值操作符，那么这个智能指针存在的意义就不大了，我们可以通过 move 语义来实现移动构造函数和移动赋值操作符，从而在使用 UniquePointer 的时候可以在特定情况下进行所有权转移。
+    UniquePointer(UniquePointer<T> &&amp;other) noexcept;
+
+    UniquePointer &amp;operator=(UniquePointer &&amp;other) noexcept;
+内存泄漏
+为了防止发生内存泄漏，我们可以在UniquePointer的私有成员中增加一个删除器，并根据当前指针对象的类型指定删除器，从而防止发生内存泄漏。
+class Deleter {
+    template<typename T>
+    void operator()(T *p) {
+        if (p)
+            delete p;
+    }
+};
+
+template<typename T, typename D>
+class UniquePointer {
+  ...
+private:
+    T *pointer;
+    Deleter deleter;
+};
+实现
+根据unique_ptr的源码，能够大致实现UniquePointer类
+template<typename T, typename D>
+class UniquePointer {
+public:
+    explicit UniquePointer(T *t, const D &amp;d);
+
+    ~UniquePointer();
+
+    T &amp;operator*();
+
+    T *operator->();
+
+    T *release();
+
+    void reset(T *p);
+
+    UniquePointer(UniquePointer &&amp;other) noexcept;
+
+    UniquePointer &amp;operator=(UniquePointer &&amp;other) noexcept;
+
+    UniquePointer(const UniquePointer &amp;other) = delete;
+
+    UniquePointer &amp;operator=(const UniquePointer &amp;other) = delete;
+
+private:
+    T *pointer;
+    D deleter;
+};
+
+template<typename T, typename D>
+UniquePointer<T, D>::UniquePointer(T *t, const D &amp;d) {
+    std::cout << "UniquePointer " << this << " constructor called." << std::endl;
+    this->pointer = t;
+    this->deleter = d;
+}
+
+template<typename T, typename D>
+UniquePointer<T, D>::~UniquePointer() {
+    std::cout << "UniquePointer " << this << " destructor called." << std::endl;
+    deleter(this->pointer);
+}
+
+template<typename T, typename D>
+T &amp;UniquePointer<T, D>::operator*() {
+    return *this->pointer;
+}
+
+template<typename T, typename D>
+T *UniquePointer<T, D>::operator->() {
+    return this->pointer;
+}
+
+template<typename T, typename D>
+T *UniquePointer<T, D>::release() {
+    T *new_pointer = this->pointer;
+    this->pointer = nullptr;
+    return new_pointer;
+}
+
+template<typename T, typename D>
+void UniquePointer<T, D>::reset(T *p) {
+    if (this->pointer != p) {
+        deleter(this->pointer);
+        this->pointer = p;
+    }
+}
+
+template<typename T, typename D>
+UniquePointer<T, D>::UniquePointer(UniquePointer<T, D> &&amp;other) noexcept {
+    std::cout << "UniquePointer " << this << " move constructor called." << std::endl;
+    this->pointer = other.release();
+    deleter(std::move(other.deleter));
+}
+
+template<typename T, typename D>
+UniquePointer<T, D> &amp;UniquePointer<T, D>::operator=(UniquePointer<T, D> &&amp;other) noexcept {
+    std::cout << "UniquePointer " << this << " assignment operator called." << std::endl;
+    if (this->pointer != other.pointer) {
+        reset(other.release());
+        deleter = std::move(other.deleter);
+    }
+    return *this;
+}
+测试
+尝试使用移动构造函数'><meta name=author content><link rel=canonical href=https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-2/><link crossorigin=anonymous href=/assets/css/stylesheet.45e028aa8ce0961349adf411b013ee39406be2c0bc80d4ea3fc04555f7f4611a.css integrity="sha256-ReAoqozglhNJrfQRsBPuOUBr4sC8gNTqP8BFVff0YRo=" rel="preload stylesheet" as=style><link rel=icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-2/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-2/"><meta property="og:site_name" content="Zhengyu Chen - 尾張"><meta property="og:title" content="C++ 智能指针（2）：unique_ptr"><meta property="og:description" content='C++智能指针（2）：unique_ptr 分析 在使用 AutoPointer 的时候会发生所有权转移和内存泄漏的问题，所以我们可以对 AutoPointer 类稍加修改，修复这两个问题。
+所有权转移 为了规避可能发生所有权转移的情况，我们可以直接禁止它使用拷贝构造函数和赋值操作符。
+UniquePointer(UniquePointer<T> &amp;other) = delete; UniquePointer<T> &amp;operator=(const UniquePointer<T> &amp;other) = delete; 但很多时候我们都需要使用到传递指针的操作，如果只是使用 deleted 函数禁止拷贝构造函数和赋值操作符，那么这个智能指针存在的意义就不大了，我们可以通过 move 语义来实现移动构造函数和移动赋值操作符，从而在使用 UniquePointer 的时候可以在特定情况下进行所有权转移。
+UniquePointer(UniquePointer<T> &&amp;other) noexcept; UniquePointer &amp;operator=(UniquePointer &&amp;other) noexcept; 内存泄漏 为了防止发生内存泄漏，我们可以在UniquePointer的私有成员中增加一个删除器，并根据当前指针对象的类型指定删除器，从而防止发生内存泄漏。
+class Deleter { template<typename T> void operator()(T *p) { if (p) delete p; } }; template<typename T, typename D> class UniquePointer { ... private: T *pointer; Deleter deleter; }; 实现 根据unique_ptr的源码，能够大致实现UniquePointer类
+template<typename T, typename D> class UniquePointer { public: explicit UniquePointer(T *t, const D &amp;d); ~UniquePointer(); T &amp;operator*(); T *operator->(); T *release(); void reset(T *p); UniquePointer(UniquePointer &&amp;other) noexcept; UniquePointer &amp;operator=(UniquePointer &&amp;other) noexcept; UniquePointer(const UniquePointer &amp;other) = delete; UniquePointer &amp;operator=(const UniquePointer &amp;other) = delete; private: T *pointer; D deleter; }; template<typename T, typename D> UniquePointer<T, D>::UniquePointer(T *t, const D &amp;d) { std::cout << "UniquePointer " << this << " constructor called." << std::endl; this->pointer = t; this->deleter = d; } template<typename T, typename D> UniquePointer<T, D>::~UniquePointer() { std::cout << "UniquePointer " << this << " destructor called." << std::endl; deleter(this->pointer); } template<typename T, typename D> T &amp;UniquePointer<T, D>::operator*() { return *this->pointer; } template<typename T, typename D> T *UniquePointer<T, D>::operator->() { return this->pointer; } template<typename T, typename D> T *UniquePointer<T, D>::release() { T *new_pointer = this->pointer; this->pointer = nullptr; return new_pointer; } template<typename T, typename D> void UniquePointer<T, D>::reset(T *p) { if (this->pointer != p) { deleter(this->pointer); this->pointer = p; } } template<typename T, typename D> UniquePointer<T, D>::UniquePointer(UniquePointer<T, D> &&amp;other) noexcept { std::cout << "UniquePointer " << this << " move constructor called." << std::endl; this->pointer = other.release(); deleter(std::move(other.deleter)); } template<typename T, typename D> UniquePointer<T, D> &amp;UniquePointer<T, D>::operator=(UniquePointer<T, D> &&amp;other) noexcept { std::cout << "UniquePointer " << this << " assignment operator called." << std::endl; if (this->pointer != other.pointer) { reset(other.release()); deleter = std::move(other.deleter); } return *this; } 测试 尝试使用移动构造函数'><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-01-19T01:02:02+11:00"><meta property="article:modified_time" content="2019-01-19T01:02:02+11:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="C++ 智能指针（2）：unique_ptr"><meta name=twitter:description content='C++智能指针（2）：unique_ptr
+分析
+在使用 AutoPointer 的时候会发生所有权转移和内存泄漏的问题，所以我们可以对 AutoPointer 类稍加修改，修复这两个问题。
+所有权转移
+为了规避可能发生所有权转移的情况，我们可以直接禁止它使用拷贝构造函数和赋值操作符。
+    UniquePointer(UniquePointer<T> &amp;other) = delete;
+
+    UniquePointer<T> &amp;operator=(const UniquePointer<T> &amp;other) = delete;
+但很多时候我们都需要使用到传递指针的操作，如果只是使用 deleted 函数禁止拷贝构造函数和赋值操作符，那么这个智能指针存在的意义就不大了，我们可以通过 move 语义来实现移动构造函数和移动赋值操作符，从而在使用 UniquePointer 的时候可以在特定情况下进行所有权转移。
+    UniquePointer(UniquePointer<T> &&amp;other) noexcept;
+
+    UniquePointer &amp;operator=(UniquePointer &&amp;other) noexcept;
+内存泄漏
+为了防止发生内存泄漏，我们可以在UniquePointer的私有成员中增加一个删除器，并根据当前指针对象的类型指定删除器，从而防止发生内存泄漏。
+class Deleter {
+    template<typename T>
+    void operator()(T *p) {
+        if (p)
+            delete p;
+    }
+};
+
+template<typename T, typename D>
+class UniquePointer {
+  ...
+private:
+    T *pointer;
+    Deleter deleter;
+};
+实现
+根据unique_ptr的源码，能够大致实现UniquePointer类
+template<typename T, typename D>
+class UniquePointer {
+public:
+    explicit UniquePointer(T *t, const D &amp;d);
+
+    ~UniquePointer();
+
+    T &amp;operator*();
+
+    T *operator->();
+
+    T *release();
+
+    void reset(T *p);
+
+    UniquePointer(UniquePointer &&amp;other) noexcept;
+
+    UniquePointer &amp;operator=(UniquePointer &&amp;other) noexcept;
+
+    UniquePointer(const UniquePointer &amp;other) = delete;
+
+    UniquePointer &amp;operator=(const UniquePointer &amp;other) = delete;
+
+private:
+    T *pointer;
+    D deleter;
+};
+
+template<typename T, typename D>
+UniquePointer<T, D>::UniquePointer(T *t, const D &amp;d) {
+    std::cout << "UniquePointer " << this << " constructor called." << std::endl;
+    this->pointer = t;
+    this->deleter = d;
+}
+
+template<typename T, typename D>
+UniquePointer<T, D>::~UniquePointer() {
+    std::cout << "UniquePointer " << this << " destructor called." << std::endl;
+    deleter(this->pointer);
+}
+
+template<typename T, typename D>
+T &amp;UniquePointer<T, D>::operator*() {
+    return *this->pointer;
+}
+
+template<typename T, typename D>
+T *UniquePointer<T, D>::operator->() {
+    return this->pointer;
+}
+
+template<typename T, typename D>
+T *UniquePointer<T, D>::release() {
+    T *new_pointer = this->pointer;
+    this->pointer = nullptr;
+    return new_pointer;
+}
+
+template<typename T, typename D>
+void UniquePointer<T, D>::reset(T *p) {
+    if (this->pointer != p) {
+        deleter(this->pointer);
+        this->pointer = p;
+    }
+}
+
+template<typename T, typename D>
+UniquePointer<T, D>::UniquePointer(UniquePointer<T, D> &&amp;other) noexcept {
+    std::cout << "UniquePointer " << this << " move constructor called." << std::endl;
+    this->pointer = other.release();
+    deleter(std::move(other.deleter));
+}
+
+template<typename T, typename D>
+UniquePointer<T, D> &amp;UniquePointer<T, D>::operator=(UniquePointer<T, D> &&amp;other) noexcept {
+    std::cout << "UniquePointer " << this << " assignment operator called." << std::endl;
+    if (this->pointer != other.pointer) {
+        reset(other.release());
+        deleter = std::move(other.deleter);
+    }
+    return *this;
+}
+测试
+尝试使用移动构造函数'><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://prov1dence.top/posts/"},{"@type":"ListItem","position":2,"name":"C++ 智能指针（2）：unique_ptr","item":"https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-2/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++ 智能指针（2）：unique_ptr","name":"C\u002b\u002b 智能指针（2）：unique_ptr","description":"C++智能指针（2）：unique_ptr 分析 在使用 AutoPointer 的时候会发生所有权转移和内存泄漏的问题，所以我们可以对 AutoPointer 类稍加修改，修复这两个问题\b。\n所有权转移 为了规避可能发生所有权转移的情况，我们可以直接禁止它使用拷贝构造函数和赋值操作符。\nUniquePointer(UniquePointer\u0026lt;T\u0026gt; \u0026amp;other) = delete; UniquePointer\u0026lt;T\u0026gt; \u0026amp;operator=(const UniquePointer\u0026lt;T\u0026gt; \u0026amp;other) = delete; \b但很多时候我们都需要使用到传递指针的操作，如果只是使用 deleted 函数禁止拷贝构造函数和赋值操作符，那么这个智能指针存在的意义就不大了，我们可以通过 move 语义来实现移动构造函数和移动赋值操作符，从而在使用 UniquePointer 的时候可以在特定情况下进行所有权转移。\nUniquePointer(UniquePointer\u0026lt;T\u0026gt; \u0026amp;\u0026amp;other) noexcept; UniquePointer \u0026amp;operator=(UniquePointer \u0026amp;\u0026amp;other) noexcept; 内存泄漏 为了防止发生内存泄漏，我们可以在UniquePointer的私有成员中增加一个删除器，并\b根据当前指针对象的类型指定删除器，从而防止发生内存泄漏。\nclass Deleter { template\u0026lt;typename T\u0026gt; void operator()(T *p) { if (p) delete p; } }; template\u0026lt;typename T, typename D\u0026gt; class UniquePointer { ... private: T *pointer; Deleter deleter; }; 实现 根据unique_ptr的源码，能够大致实现UniquePointer类\ntemplate\u0026lt;typename T, typename D\u0026gt; class UniquePointer { public: explicit UniquePointer(T *t, const D \u0026amp;d); ~UniquePointer(); T \u0026amp;operator*(); T *operator-\u0026gt;(); T *release(); void reset(T *p); UniquePointer(UniquePointer \u0026amp;\u0026amp;other) noexcept; UniquePointer \u0026amp;operator=(UniquePointer \u0026amp;\u0026amp;other) noexcept; UniquePointer(const UniquePointer \u0026amp;other) = delete; UniquePointer \u0026amp;operator=(const UniquePointer \u0026amp;other) = delete; private: T *pointer; D deleter; }; template\u0026lt;typename T, typename D\u0026gt; UniquePointer\u0026lt;T, D\u0026gt;::UniquePointer(T *t, const D \u0026amp;d) { std::cout \u0026lt;\u0026lt; \u0026#34;UniquePointer \u0026#34; \u0026lt;\u0026lt; this \u0026lt;\u0026lt; \u0026#34; constructor called.\u0026#34; \u0026lt;\u0026lt; std::endl; this-\u0026gt;pointer = t; this-\u0026gt;deleter = d; } template\u0026lt;typename T, typename D\u0026gt; UniquePointer\u0026lt;T, D\u0026gt;::~UniquePointer() { std::cout \u0026lt;\u0026lt; \u0026#34;UniquePointer \u0026#34; \u0026lt;\u0026lt; this \u0026lt;\u0026lt; \u0026#34; destructor called.\u0026#34; \u0026lt;\u0026lt; std::endl; deleter(this-\u0026gt;pointer); } template\u0026lt;typename T, typename D\u0026gt; T \u0026amp;UniquePointer\u0026lt;T, D\u0026gt;::operator*() { return *this-\u0026gt;pointer; } template\u0026lt;typename T, typename D\u0026gt; T *UniquePointer\u0026lt;T, D\u0026gt;::operator-\u0026gt;() { return this-\u0026gt;pointer; } template\u0026lt;typename T, typename D\u0026gt; T *UniquePointer\u0026lt;T, D\u0026gt;::release() { T *new_pointer = this-\u0026gt;pointer; this-\u0026gt;pointer = nullptr; return new_pointer; } template\u0026lt;typename T, typename D\u0026gt; void UniquePointer\u0026lt;T, D\u0026gt;::reset(T *p) { if (this-\u0026gt;pointer != p) { deleter(this-\u0026gt;pointer); this-\u0026gt;pointer = p; } } template\u0026lt;typename T, typename D\u0026gt; UniquePointer\u0026lt;T, D\u0026gt;::UniquePointer(UniquePointer\u0026lt;T, D\u0026gt; \u0026amp;\u0026amp;other) noexcept { std::cout \u0026lt;\u0026lt; \u0026#34;UniquePointer \u0026#34; \u0026lt;\u0026lt; this \u0026lt;\u0026lt; \u0026#34; move constructor called.\u0026#34; \u0026lt;\u0026lt; std::endl; this-\u0026gt;pointer = other.release(); deleter(std::move(other.deleter)); } template\u0026lt;typename T, typename D\u0026gt; UniquePointer\u0026lt;T, D\u0026gt; \u0026amp;UniquePointer\u0026lt;T, D\u0026gt;::operator=(UniquePointer\u0026lt;T, D\u0026gt; \u0026amp;\u0026amp;other) noexcept { std::cout \u0026lt;\u0026lt; \u0026#34;UniquePointer \u0026#34; \u0026lt;\u0026lt; this \u0026lt;\u0026lt; \u0026#34; assignment operator called.\u0026#34; \u0026lt;\u0026lt; std::endl; if (this-\u0026gt;pointer != other.pointer) { reset(other.release()); deleter = std::move(other.deleter); } return *this; } 测试 尝试使用移动构造函数\n","keywords":[],"articleBody":"C++智能指针（2）：unique_ptr 分析 在使用 AutoPointer 的时候会发生所有权转移和内存泄漏的问题，所以我们可以对 AutoPointer 类稍加修改，修复这两个问题\b。\n所有权转移 为了规避可能发生所有权转移的情况，我们可以直接禁止它使用拷贝构造函数和赋值操作符。\nUniquePointer(UniquePointer\u003cT\u003e \u0026other) = delete; UniquePointer\u003cT\u003e \u0026operator=(const UniquePointer\u003cT\u003e \u0026other) = delete; \b但很多时候我们都需要使用到传递指针的操作，如果只是使用 deleted 函数禁止拷贝构造函数和赋值操作符，那么这个智能指针存在的意义就不大了，我们可以通过 move 语义来实现移动构造函数和移动赋值操作符，从而在使用 UniquePointer 的时候可以在特定情况下进行所有权转移。\nUniquePointer(UniquePointer\u003cT\u003e \u0026\u0026other) noexcept; UniquePointer \u0026operator=(UniquePointer \u0026\u0026other) noexcept; 内存泄漏 为了防止发生内存泄漏，我们可以在UniquePointer的私有成员中增加一个删除器，并\b根据当前指针对象的类型指定删除器，从而防止发生内存泄漏。\nclass Deleter { template\u003ctypename T\u003e void operator()(T *p) { if (p) delete p; } }; template\u003ctypename T, typename D\u003e class UniquePointer { ... private: T *pointer; Deleter deleter; }; 实现 根据unique_ptr的源码，能够大致实现UniquePointer类\ntemplate\u003ctypename T, typename D\u003e class UniquePointer { public: explicit UniquePointer(T *t, const D \u0026d); ~UniquePointer(); T \u0026operator*(); T *operator-\u003e(); T *release(); void reset(T *p); UniquePointer(UniquePointer \u0026\u0026other) noexcept; UniquePointer \u0026operator=(UniquePointer \u0026\u0026other) noexcept; UniquePointer(const UniquePointer \u0026other) = delete; UniquePointer \u0026operator=(const UniquePointer \u0026other) = delete; private: T *pointer; D deleter; }; template\u003ctypename T, typename D\u003e UniquePointer\u003cT, D\u003e::UniquePointer(T *t, const D \u0026d) { std::cout \u003c\u003c \"UniquePointer \" \u003c\u003c this \u003c\u003c \" constructor called.\" \u003c\u003c std::endl; this-\u003epointer = t; this-\u003edeleter = d; } template\u003ctypename T, typename D\u003e UniquePointer\u003cT, D\u003e::~UniquePointer() { std::cout \u003c\u003c \"UniquePointer \" \u003c\u003c this \u003c\u003c \" destructor called.\" \u003c\u003c std::endl; deleter(this-\u003epointer); } template\u003ctypename T, typename D\u003e T \u0026UniquePointer\u003cT, D\u003e::operator*() { return *this-\u003epointer; } template\u003ctypename T, typename D\u003e T *UniquePointer\u003cT, D\u003e::operator-\u003e() { return this-\u003epointer; } template\u003ctypename T, typename D\u003e T *UniquePointer\u003cT, D\u003e::release() { T *new_pointer = this-\u003epointer; this-\u003epointer = nullptr; return new_pointer; } template\u003ctypename T, typename D\u003e void UniquePointer\u003cT, D\u003e::reset(T *p) { if (this-\u003epointer != p) { deleter(this-\u003epointer); this-\u003epointer = p; } } template\u003ctypename T, typename D\u003e UniquePointer\u003cT, D\u003e::UniquePointer(UniquePointer\u003cT, D\u003e \u0026\u0026other) noexcept { std::cout \u003c\u003c \"UniquePointer \" \u003c\u003c this \u003c\u003c \" move constructor called.\" \u003c\u003c std::endl; this-\u003epointer = other.release(); deleter(std::move(other.deleter)); } template\u003ctypename T, typename D\u003e UniquePointer\u003cT, D\u003e \u0026UniquePointer\u003cT, D\u003e::operator=(UniquePointer\u003cT, D\u003e \u0026\u0026other) noexcept { std::cout \u003c\u003c \"UniquePointer \" \u003c\u003c this \u003c\u003c \" assignment operator called.\" \u003c\u003c std::endl; if (this-\u003epointer != other.pointer) { reset(other.release()); deleter = std::move(other.deleter); } return *this; } 测试 尝试使用移动构造函数\nclass Deleter { public: template\u003ctypename T\u003e void operator()(T *p) { if (p) delete p; } }; int main() { Deleter deleter; Obj *o = new Obj(); UniquePointer\u003cObj, Deleter\u003e u1(o, deleter); UniquePointer\u003cObj, Deleter\u003e u2(move(u1)); return 0; } /* output: Construct UniquePointer 0x7ffee7dada08 constructor called. UniquePointer 0x7ffee7dad9f8 move constructor called. UniquePointer 0x7ffee7dad9f8 destructor called. Destruct UniquePointer 0x7ffee7dada08 destructor called. */ 尝试使用移动赋值操作符\nclass Deleter { public: template void operator()(T *p) { if (p) delete p; } }; int main() { Deleter deleter; Obj *o = new Obj(); UniquePointer u1(o, deleter); UniquePointer u2(nullptr, deleter); u2 = move(u1); return 0; } /* output: Construct UniquePointer 0x7ffee915da08 constructor called. UniquePointer 0x7ffee915d9f8 constructor called. UniquePointer 0x7ffee915d9f8 assignment operator called. UniquePointer 0x7ffee915d9f8 destructor called. Destruct UniquePointer 0x7ffee915da08 destructor called. */ 定义一个数组删除器，尝试\b以数组指针初始化UniquePointer类对象\nclass ArrayDeleter { public: template void operator()(T *p) { if (p) delete[] p; } }; int main() { ArrayDeleter array_deleter; Obj *o = new Obj[3]; UniquePointer u(o, array_deleter); return 0; } /* output: Construct Construct Construct UniquePointer 0x7ffeed926a08 constructor called. UniquePointer 0x7ffeed926a08 destructor called. Destruct Destruct Destruct */ 作为对比，如果使用默认删除器作为数组指针的删除器\nclass Deleter { public: template void operator()(T *p) { if (p) delete p; } }; int main() { Deleter deleter; Obj *o = new Obj[3]; UniquePointer u(o, deleter); return 0; } /* output: Construct Construct Construct UniquePointer 0x7ffee8f85a10 constructor called. UniquePointer 0x7ffee8f85a10 destructor called. Destruct */ 说明删除器能够正确地修复内存泄漏的问题。\n尝试将两个UniquePointer的对象指向同一个指针\nint main() { Deleter deleter; Obj *o = new Obj(); UniquePointer u1(o, deleter); UniquePointer u2(o, deleter); return 0; } /* output: (19576,0x10e00a5c0) malloc: *** error for object 0x7fcfe8c02ab0: pointer being freed was not allocated (19576,0x10e00a5c0) malloc: *** set a breakpoint in malloc_error_break to debug Construct UniquePointer 0x7ffee28a9a10 constructor called. UniquePointer 0x7ffee28a9a00 constructor called. UniquePointer 0x7ffee28a9a00 destructor called. Destruct UniquePointer 0x7ffee28a9a10 destructor called. Destruct */ 还是产生调用两次析构函数的错误。\n总结 UniquePointer成功地解决了所有权转移和内存泄漏的问题，但还有诸如重复析构的问题存在。\nunique_ptr源码 template \u003e class _LIBCPP_TEMPLATE_VIS unique_ptr { public: typedef _Tp element_type; typedef _Dp deleter_type; typedef typename __pointer_type\u003c_Tp, deleter_type\u003e::type pointer; static_assert(!is_rvalue_reference::value, \"the specified deleter type cannot be an rvalue reference\"); private: __compressed_pair __ptr_; struct __nat { int __for_bool_; }; #ifndef _LIBCPP_CXX03_LANG typedef __unique_ptr_deleter_sfinae\u003c_Dp\u003e _DeleterSFINAE; template using _LValRefType = typename __dependent_type\u003c_DeleterSFINAE, _Dummy\u003e::__lval_ref_type; template using _GoodRValRefType = typename __dependent_type\u003c_DeleterSFINAE, _Dummy\u003e::__good_rval_ref_type; template using _BadRValRefType = typename __dependent_type\u003c_DeleterSFINAE, _Dummy\u003e::__bad_rval_ref_type; template ","wordCount":"1209","inLanguage":"en","datePublished":"2019-01-19T01:02:02+11:00","dateModified":"2019-01-19T01:02:02+11:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-2/"},"publisher":{"@type":"Organization","name":"Zhengyu Chen - 尾張","logo":{"@type":"ImageObject","url":"https://prov1dence.top/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://prov1dence.top/ accesskey=h title="尾張 (Alt + H)">尾張</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://prov1dence.top/archives/ title=Posts><span>Posts</span></a></li><li><a href=https://prov1dence.top/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">C++ 智能指针（2）：unique_ptr</h1><div class=post-meta><span title='2019-01-19 01:02:02 +1100 +1100'>January 19, 2019</span>&nbsp;·&nbsp;6 min</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#c%e6%99%ba%e8%83%bd%e6%8c%87%e9%92%882unique_ptr aria-label=C++智能指针（2）：unique_ptr>C++智能指针（2）：unique_ptr</a><ul><li><a href=#%e5%88%86%e6%9e%90 aria-label=分析>分析</a><ul><li><a href=#%e6%89%80%e6%9c%89%e6%9d%83%e8%bd%ac%e7%a7%bb aria-label=所有权转移>所有权转移</a></li><li><a href=#%e5%86%85%e5%ad%98%e6%b3%84%e6%bc%8f aria-label=内存泄漏>内存泄漏</a></li></ul></li><li><a href=#%e5%ae%9e%e7%8e%b0 aria-label=实现>实现</a></li><li><a href=#%e6%b5%8b%e8%af%95 aria-label=测试>测试</a></li><li><a href=#%e6%80%bb%e7%bb%93 aria-label=总结>总结</a></li><li><a href=#unique_ptr%e6%ba%90%e7%a0%81 aria-label=unique_ptr源码>unique_ptr源码</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=c智能指针2unique_ptr>C++智能指针（2）：unique_ptr<a hidden class=anchor aria-hidden=true href=#c智能指针2unique_ptr>#</a></h1><h2 id=分析>分析<a hidden class=anchor aria-hidden=true href=#分析>#</a></h2><p>在使用 AutoPointer 的时候会发生所有权转移和内存泄漏的问题，所以我们可以对 AutoPointer 类稍加修改，修复这两个问题。</p><h3 id=所有权转移>所有权转移<a hidden class=anchor aria-hidden=true href=#所有权转移>#</a></h3><p>为了规避可能发生所有权转移的情况，我们可以直接禁止它使用拷贝构造函数和赋值操作符。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>    UniquePointer(UniquePointer<span style=color:#f92672>&lt;</span>T<span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>other) <span style=color:#f92672>=</span> <span style=color:#66d9ef>delete</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    UniquePointer<span style=color:#f92672>&lt;</span>T<span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>=</span>(<span style=color:#66d9ef>const</span> UniquePointer<span style=color:#f92672>&lt;</span>T<span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>other) <span style=color:#f92672>=</span> <span style=color:#66d9ef>delete</span>;
+</span></span></code></pre></div><p>但很多时候我们都需要使用到传递指针的操作，如果只是使用 deleted 函数禁止拷贝构造函数和赋值操作符，那么这个智能指针存在的意义就不大了，我们可以通过 move 语义来实现移动构造函数和移动赋值操作符，从而在使用 UniquePointer 的时候可以在特定情况下进行所有权转移。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>    UniquePointer(UniquePointer<span style=color:#f92672>&lt;</span>T<span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;&amp;</span>other) <span style=color:#66d9ef>noexcept</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    UniquePointer <span style=color:#f92672>&amp;</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>=</span>(UniquePointer <span style=color:#f92672>&amp;&amp;</span>other) <span style=color:#66d9ef>noexcept</span>;
+</span></span></code></pre></div><h3 id=内存泄漏>内存泄漏<a hidden class=anchor aria-hidden=true href=#内存泄漏>#</a></h3><p>为了防止发生内存泄漏，我们可以在UniquePointer的私有成员中增加一个删除器，并根据当前指针对象的类型指定删除器，从而防止发生内存泄漏。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Deleter</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#66d9ef>operator</span>()(T <span style=color:#f92672>*</span>p) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (p)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>delete</span> p;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>UniquePointer</span> {
+</span></span><span style=display:flex><span>  ...
+</span></span><span style=display:flex><span><span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    T <span style=color:#f92672>*</span>pointer;
+</span></span><span style=display:flex><span>    Deleter deleter;
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h2 id=实现>实现<a hidden class=anchor aria-hidden=true href=#实现>#</a></h2><p>根据unique_ptr的源码，能够大致实现UniquePointer类</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>UniquePointer</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>explicit</span> UniquePointer(T <span style=color:#f92672>*</span>t, <span style=color:#66d9ef>const</span> D <span style=color:#f92672>&amp;</span>d);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>~</span>UniquePointer();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    T <span style=color:#f92672>&amp;</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>*</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    T <span style=color:#f92672>*</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>-&gt;</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    T <span style=color:#f92672>*</span><span style=color:#a6e22e>release</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>reset</span>(T <span style=color:#f92672>*</span>p);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    UniquePointer(UniquePointer <span style=color:#f92672>&amp;&amp;</span>other) <span style=color:#66d9ef>noexcept</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    UniquePointer <span style=color:#f92672>&amp;</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>=</span>(UniquePointer <span style=color:#f92672>&amp;&amp;</span>other) <span style=color:#66d9ef>noexcept</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    UniquePointer(<span style=color:#66d9ef>const</span> UniquePointer <span style=color:#f92672>&amp;</span>other) <span style=color:#f92672>=</span> <span style=color:#66d9ef>delete</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    UniquePointer <span style=color:#f92672>&amp;</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>=</span>(<span style=color:#66d9ef>const</span> UniquePointer <span style=color:#f92672>&amp;</span>other) <span style=color:#f92672>=</span> <span style=color:#66d9ef>delete</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    T <span style=color:#f92672>*</span>pointer;
+</span></span><span style=display:flex><span>    D deleter;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;::</span>UniquePointer(T <span style=color:#f92672>*</span>t, <span style=color:#66d9ef>const</span> D <span style=color:#f92672>&amp;</span>d) {
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;UniquePointer &#34;</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#66d9ef>this</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34; constructor called.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer <span style=color:#f92672>=</span> t;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>deleter <span style=color:#f92672>=</span> d;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;::~</span>UniquePointer() {
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;UniquePointer &#34;</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#66d9ef>this</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34; destructor called.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    deleter(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>T <span style=color:#f92672>&amp;</span>UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;::</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>*</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>T <span style=color:#f92672>*</span>UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;::</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>-&gt;</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>T <span style=color:#f92672>*</span>UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;::</span>release() {
+</span></span><span style=display:flex><span>    T <span style=color:#f92672>*</span>new_pointer <span style=color:#f92672>=</span> <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> new_pointer;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;::</span>reset(T <span style=color:#f92672>*</span>p) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer <span style=color:#f92672>!=</span> p) {
+</span></span><span style=display:flex><span>        deleter(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer <span style=color:#f92672>=</span> p;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;::</span>UniquePointer(UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;&amp;</span>other) <span style=color:#66d9ef>noexcept</span> {
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;UniquePointer &#34;</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#66d9ef>this</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34; move constructor called.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer <span style=color:#f92672>=</span> other.release();
+</span></span><span style=display:flex><span>    deleter(std<span style=color:#f92672>::</span>move(other.deleter));
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T, <span style=color:#66d9ef>typename</span> D<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;::</span><span style=color:#66d9ef>operator</span><span style=color:#f92672>=</span>(UniquePointer<span style=color:#f92672>&lt;</span>T, D<span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;&amp;</span>other) <span style=color:#66d9ef>noexcept</span> {
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;UniquePointer &#34;</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#66d9ef>this</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34; assignment operator called.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>pointer <span style=color:#f92672>!=</span> other.pointer) {
+</span></span><span style=display:flex><span>        reset(other.release());
+</span></span><span style=display:flex><span>        deleter <span style=color:#f92672>=</span> std<span style=color:#f92672>::</span>move(other.deleter);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>this</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=测试>测试<a hidden class=anchor aria-hidden=true href=#测试>#</a></h2><p>尝试使用移动构造函数</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Deleter</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>typename</span> T<span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#66d9ef>operator</span>()(T <span style=color:#f92672>*</span>p) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (p)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>delete</span> p;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    Deleter deleter;
+</span></span><span style=display:flex><span>    Obj <span style=color:#f92672>*</span>o <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> Obj();
+</span></span><span style=display:flex><span>    UniquePointer<span style=color:#f92672>&lt;</span>Obj, Deleter<span style=color:#f92672>&gt;</span> u1(o, deleter);
+</span></span><span style=display:flex><span>    UniquePointer<span style=color:#f92672>&lt;</span>Obj, Deleter<span style=color:#f92672>&gt;</span> u2(move(u1));
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>/*
+</span></span></span><span style=display:flex><span><span style=color:#75715e>output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>Construct
+</span></span></span><span style=display:flex><span><span style=color:#75715e>UniquePointer 0x7ffee7dada08 constructor called.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>UniquePointer 0x7ffee7dad9f8 move constructor called.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>UniquePointer 0x7ffee7dad9f8 destructor called.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>Destruct
+</span></span></span><span style=display:flex><span><span style=color:#75715e>UniquePointer 0x7ffee7dada08 destructor called.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><p>尝试使用移动赋值操作符</p><pre tabindex=0><code>class Deleter {
+public:
+    template&lt;typename T&gt;
+    void operator()(T *p) {
+        if (p)
+            delete p;
+    }
+};
+
+int main() {
+    Deleter deleter;
+    Obj *o = new Obj();
+    UniquePointer&lt;Obj, Deleter&gt; u1(o, deleter);
+    UniquePointer&lt;Obj, Deleter&gt; u2(nullptr, deleter);
+    u2 = move(u1);
+    return 0;
+}
+/*
+output:
+Construct
+UniquePointer 0x7ffee915da08 constructor called.
+UniquePointer 0x7ffee915d9f8 constructor called.
+UniquePointer 0x7ffee915d9f8 assignment operator called.
+UniquePointer 0x7ffee915d9f8 destructor called.
+Destruct
+UniquePointer 0x7ffee915da08 destructor called.
+*/
+</code></pre><p>定义一个数组删除器，尝试以数组指针初始化UniquePointer类对象</p><pre tabindex=0><code>class ArrayDeleter {
+public:
+    template&lt;typename T&gt;
+    void operator()(T *p) {
+        if (p)
+            delete[] p;
+    }
+};
+
+int main() {
+    ArrayDeleter array_deleter;
+    Obj *o = new Obj[3];
+    UniquePointer&lt;Obj, ArrayDeleter&gt; u(o, array_deleter);
+    return 0;
+}
+/*
+output:
+Construct
+Construct
+Construct
+UniquePointer 0x7ffeed926a08 constructor called.
+UniquePointer 0x7ffeed926a08 destructor called.
+Destruct
+Destruct
+Destruct
+*/
+</code></pre><p>作为对比，如果使用默认删除器作为数组指针的删除器</p><pre tabindex=0><code>class Deleter {
+public:
+    template&lt;typename T&gt;
+    void operator()(T *p) {
+        if (p)
+            delete p;
+    }
+};
+
+int main() {
+    Deleter deleter;
+    Obj *o = new Obj[3];
+    UniquePointer&lt;Obj, Deleter&gt; u(o, deleter);
+    return 0;
+}
+/*
+output:
+Construct
+Construct
+Construct
+UniquePointer 0x7ffee8f85a10 constructor called.
+UniquePointer 0x7ffee8f85a10 destructor called.
+Destruct
+*/
+</code></pre><p>说明删除器能够正确地修复内存泄漏的问题。</p><p>尝试将两个UniquePointer的对象指向同一个指针</p><pre tabindex=0><code>int main() {
+    Deleter deleter;
+    Obj *o = new Obj();
+    UniquePointer&lt;Obj, Deleter&gt; u1(o, deleter);
+    UniquePointer&lt;Obj, Deleter&gt; u2(o, deleter);
+    return 0;
+}
+/*
+output:
+(19576,0x10e00a5c0) malloc: *** error for object 0x7fcfe8c02ab0: pointer being freed was not allocated
+(19576,0x10e00a5c0) malloc: *** set a breakpoint in malloc_error_break to debug
+Construct
+UniquePointer 0x7ffee28a9a10 constructor called.
+UniquePointer 0x7ffee28a9a00 constructor called.
+UniquePointer 0x7ffee28a9a00 destructor called.
+Destruct
+UniquePointer 0x7ffee28a9a10 destructor called.
+Destruct
+*/
+</code></pre><p>还是产生调用两次析构函数的错误。</p><h2 id=总结>总结<a hidden class=anchor aria-hidden=true href=#总结>#</a></h2><p>UniquePointer成功地解决了所有权转移和内存泄漏的问题，但还有诸如重复析构的问题存在。</p><h2 id=unique_ptr源码>unique_ptr源码<a hidden class=anchor aria-hidden=true href=#unique_ptr源码>#</a></h2><pre tabindex=0><code>template &lt;class _Tp, class _Dp = default_delete&lt;_Tp&gt; &gt;
+class _LIBCPP_TEMPLATE_VIS unique_ptr {
+public:
+  typedef _Tp element_type;
+  typedef _Dp deleter_type;
+  typedef typename __pointer_type&lt;_Tp, deleter_type&gt;::type pointer;
+
+  static_assert(!is_rvalue_reference&lt;deleter_type&gt;::value,
+                &#34;the specified deleter type cannot be an rvalue reference&#34;);
+
+private:
+  __compressed_pair&lt;pointer, deleter_type&gt; __ptr_;
+
+  struct __nat { int __for_bool_; };
+
+#ifndef _LIBCPP_CXX03_LANG
+  typedef __unique_ptr_deleter_sfinae&lt;_Dp&gt; _DeleterSFINAE;
+
+  template &lt;bool _Dummy&gt;
+  using _LValRefType =
+      typename __dependent_type&lt;_DeleterSFINAE, _Dummy&gt;::__lval_ref_type;
+
+  template &lt;bool _Dummy&gt;
+  using _GoodRValRefType =
+      typename __dependent_type&lt;_DeleterSFINAE, _Dummy&gt;::__good_rval_ref_type;
+
+  template &lt;bool _Dummy&gt;
+  using _BadRValRefType =
+      typename __dependent_type&lt;_DeleterSFINAE, _Dummy&gt;::__bad_rval_ref_type;
+
+  template &lt;bool _Dummy, class _Deleter = typename __dependent_type&lt;
+                             __identity&lt;deleter_type&gt;, _Dummy&gt;::type&gt;
+  using _EnableIfDeleterDefaultConstructible =
+      typename enable_if&lt;is_default_constructible&lt;_Deleter&gt;::value &amp;&amp;
+                         !is_pointer&lt;_Deleter&gt;::value&gt;::type;
+
+  template &lt;class _ArgType&gt;
+  using _EnableIfDeleterConstructible =
+      typename enable_if&lt;is_constructible&lt;deleter_type, _ArgType&gt;::value&gt;::type;
+
+  template &lt;class _UPtr, class _Up&gt;
+  using _EnableIfMoveConvertible = typename enable_if&lt;
+      is_convertible&lt;typename _UPtr::pointer, pointer&gt;::value &amp;&amp;
+      !is_array&lt;_Up&gt;::value
+  &gt;::type;
+
+  template &lt;class _UDel&gt;
+  using _EnableIfDeleterConvertible = typename enable_if&lt;
+      (is_reference&lt;_Dp&gt;::value &amp;&amp; is_same&lt;_Dp, _UDel&gt;::value) ||
+      (!is_reference&lt;_Dp&gt;::value &amp;&amp; is_convertible&lt;_UDel, _Dp&gt;::value)
+    &gt;::type;
+
+  template &lt;class _UDel&gt;
+  using _EnableIfDeleterAssignable = typename enable_if&lt;
+      is_assignable&lt;_Dp&amp;, _UDel&amp;&amp;&gt;::value
+    &gt;::type;
+
+public:
+  template &lt;bool _Dummy = true,
+            class = _EnableIfDeleterDefaultConstructible&lt;_Dummy&gt;&gt;
+  _LIBCPP_INLINE_VISIBILITY
+  constexpr unique_ptr() noexcept : __ptr_(pointer()) {}
+
+  template &lt;bool _Dummy = true,
+            class = _EnableIfDeleterDefaultConstructible&lt;_Dummy&gt;&gt;
+  _LIBCPP_INLINE_VISIBILITY
+  constexpr unique_ptr(nullptr_t) noexcept : __ptr_(pointer()) {}
+
+  template &lt;bool _Dummy = true,
+            class = _EnableIfDeleterDefaultConstructible&lt;_Dummy&gt;&gt;
+  _LIBCPP_INLINE_VISIBILITY
+  explicit unique_ptr(pointer __p) noexcept : __ptr_(__p) {}
+
+  template &lt;bool _Dummy = true,
+            class = _EnableIfDeleterConstructible&lt;_LValRefType&lt;_Dummy&gt;&gt;&gt;
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(pointer __p, _LValRefType&lt;_Dummy&gt; __d) noexcept
+      : __ptr_(__p, __d) {}
+
+  template &lt;bool _Dummy = true,
+            class = _EnableIfDeleterConstructible&lt;_GoodRValRefType&lt;_Dummy&gt;&gt;&gt;
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(pointer __p, _GoodRValRefType&lt;_Dummy&gt; __d) noexcept
+      : __ptr_(__p, _VSTD::move(__d)) {
+    static_assert(!is_reference&lt;deleter_type&gt;::value,
+                  &#34;rvalue deleter bound to reference&#34;);
+  }
+
+  template &lt;bool _Dummy = true,
+            class = _EnableIfDeleterConstructible&lt;_BadRValRefType&lt;_Dummy&gt;&gt;&gt;
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(pointer __p, _BadRValRefType&lt;_Dummy&gt; __d) = delete;
+
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(unique_ptr&amp;&amp; __u) noexcept
+      : __ptr_(__u.release(), _VSTD::forward&lt;deleter_type&gt;(__u.get_deleter())) {
+  }
+
+  template &lt;class _Up, class _Ep,
+      class = _EnableIfMoveConvertible&lt;unique_ptr&lt;_Up, _Ep&gt;, _Up&gt;,
+      class = _EnableIfDeleterConvertible&lt;_Ep&gt;
+  &gt;
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(unique_ptr&lt;_Up, _Ep&gt;&amp;&amp; __u) _NOEXCEPT
+      : __ptr_(__u.release(), _VSTD::forward&lt;_Ep&gt;(__u.get_deleter())) {}
+
+#if _LIBCPP_STD_VER &lt;= 14 || defined(_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR)
+  template &lt;class _Up&gt;
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(auto_ptr&lt;_Up&gt;&amp;&amp; __p,
+             typename enable_if&lt;is_convertible&lt;_Up*, _Tp*&gt;::value &amp;&amp;
+                                    is_same&lt;_Dp, default_delete&lt;_Tp&gt;&gt;::value,
+                                __nat&gt;::type = __nat()) _NOEXCEPT
+      : __ptr_(__p.release()) {}
+#endif
+
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr&amp; operator=(unique_ptr&amp;&amp; __u) _NOEXCEPT {
+    reset(__u.release());
+    __ptr_.second() = _VSTD::forward&lt;deleter_type&gt;(__u.get_deleter());
+    return *this;
+  }
+
+  template &lt;class _Up, class _Ep,
+      class = _EnableIfMoveConvertible&lt;unique_ptr&lt;_Up, _Ep&gt;, _Up&gt;,
+      class = _EnableIfDeleterAssignable&lt;_Ep&gt;
+  &gt;
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr&amp; operator=(unique_ptr&lt;_Up, _Ep&gt;&amp;&amp; __u) _NOEXCEPT {
+    reset(__u.release());
+    __ptr_.second() = _VSTD::forward&lt;_Ep&gt;(__u.get_deleter());
+    return *this;
+  }
+
+#else  // _LIBCPP_CXX03_LANG
+private:
+  unique_ptr(unique_ptr&amp;);
+  template &lt;class _Up, class _Ep&gt; unique_ptr(unique_ptr&lt;_Up, _Ep&gt;&amp;);
+
+  unique_ptr&amp; operator=(unique_ptr&amp;);
+  template &lt;class _Up, class _Ep&gt; unique_ptr&amp; operator=(unique_ptr&lt;_Up, _Ep&gt;&amp;);
+
+public:
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr() : __ptr_(pointer())
+  {
+    static_assert(!is_pointer&lt;deleter_type&gt;::value,
+                  &#34;unique_ptr constructed with null function pointer deleter&#34;);
+    static_assert(is_default_constructible&lt;deleter_type&gt;::value,
+                  &#34;unique_ptr::deleter_type is not default constructible&#34;);
+  }
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(nullptr_t) : __ptr_(pointer())
+  {
+    static_assert(!is_pointer&lt;deleter_type&gt;::value,
+                  &#34;unique_ptr constructed with null function pointer deleter&#34;);
+  }
+  _LIBCPP_INLINE_VISIBILITY
+  explicit unique_ptr(pointer __p)
+      : __ptr_(_VSTD::move(__p)) {
+    static_assert(!is_pointer&lt;deleter_type&gt;::value,
+                  &#34;unique_ptr constructed with null function pointer deleter&#34;);
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  operator __rv&lt;unique_ptr&gt;() {
+    return __rv&lt;unique_ptr&gt;(*this);
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(__rv&lt;unique_ptr&gt; __u)
+      : __ptr_(__u-&gt;release(),
+               _VSTD::forward&lt;deleter_type&gt;(__u-&gt;get_deleter())) {}
+
+  template &lt;class _Up, class _Ep&gt;
+  _LIBCPP_INLINE_VISIBILITY
+  typename enable_if&lt;
+      !is_array&lt;_Up&gt;::value &amp;&amp;
+          is_convertible&lt;typename unique_ptr&lt;_Up, _Ep&gt;::pointer,
+                         pointer&gt;::value &amp;&amp;
+          is_assignable&lt;deleter_type&amp;, _Ep&amp;&gt;::value,
+      unique_ptr&amp;&gt;::type
+  operator=(unique_ptr&lt;_Up, _Ep&gt; __u) {
+    reset(__u.release());
+    __ptr_.second() = _VSTD::forward&lt;_Ep&gt;(__u.get_deleter());
+    return *this;
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr(pointer __p, deleter_type __d)
+      : __ptr_(_VSTD::move(__p), _VSTD::move(__d)) {}
+#endif // _LIBCPP_CXX03_LANG
+
+#if _LIBCPP_STD_VER &lt;= 14 || defined(_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR)
+  template &lt;class _Up&gt;
+  _LIBCPP_INLINE_VISIBILITY
+      typename enable_if&lt;is_convertible&lt;_Up*, _Tp*&gt;::value &amp;&amp;
+                             is_same&lt;_Dp, default_delete&lt;_Tp&gt; &gt;::value,
+                         unique_ptr&amp;&gt;::type
+      operator=(auto_ptr&lt;_Up&gt; __p) {
+    reset(__p.release());
+    return *this;
+  }
+#endif
+
+  _LIBCPP_INLINE_VISIBILITY
+  ~unique_ptr() { reset(); }
+
+  _LIBCPP_INLINE_VISIBILITY
+  unique_ptr&amp; operator=(nullptr_t) _NOEXCEPT {
+    reset();
+    return *this;
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  typename add_lvalue_reference&lt;_Tp&gt;::type
+  operator*() const {
+    return *__ptr_.first();
+  }
+  _LIBCPP_INLINE_VISIBILITY
+  pointer operator-&gt;() const _NOEXCEPT {
+    return __ptr_.first();
+  }
+  _LIBCPP_INLINE_VISIBILITY
+  pointer get() const _NOEXCEPT {
+    return __ptr_.first();
+  }
+  _LIBCPP_INLINE_VISIBILITY
+  deleter_type&amp; get_deleter() _NOEXCEPT {
+    return __ptr_.second();
+  }
+  _LIBCPP_INLINE_VISIBILITY
+  const deleter_type&amp; get_deleter() const _NOEXCEPT {
+    return __ptr_.second();
+  }
+  _LIBCPP_INLINE_VISIBILITY
+  _LIBCPP_EXPLICIT operator bool() const _NOEXCEPT {
+    return __ptr_.first() != nullptr;
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  pointer release() _NOEXCEPT {
+    pointer __t = __ptr_.first();
+    __ptr_.first() = pointer();
+    return __t;
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  void reset(pointer __p = pointer()) _NOEXCEPT {
+    pointer __tmp = __ptr_.first();
+    __ptr_.first() = __p;
+    if (__tmp)
+      __ptr_.second()(__tmp);
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  void swap(unique_ptr&amp; __u) _NOEXCEPT {
+    __ptr_.swap(__u.__ptr_);
+  }
+};
+</code></pre></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=prev href=https://prov1dence.top/posts/cpp/smart-pointer/c++-smart-pointer-3/><span class=title>« Prev</span><br><span>C++ 智能指针（3）：shared_ptr</span>
+</a><a class=next href=https://prov1dence.top/posts/leetcode-archiver/leetcode-archiver3/><span class=title>Next »</span><br><span>LeetCode Archiver(3)： 登录</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://prov1dence.top/>Zhengyu Chen - 尾張</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

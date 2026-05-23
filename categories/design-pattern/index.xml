@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Design Pattern on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/design-pattern/</link>
+    <description>Recent content in Design Pattern on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 10 Sep 2020 21:25:43 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/design-pattern/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43; 单例模式的模板实现</title>
+      <link>https://prov1dence.top/posts/design-pattern/c&#43;&#43;-template-singleton/</link>
+      <pubDate>Thu, 10 Sep 2020 21:25:43 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/design-pattern/c&#43;&#43;-template-singleton/</guid>
+      <description>&lt;h1 id=&#34;c-单例模式的模板实现&#34;&gt;C++ 单例模式的模板实现&lt;/h1&gt;
+&lt;p&gt;单例模式是一种创建型的设计模式（creational design patterns），使用单例模式进行设计的类在程序中只拥有一个实例（single instance），这个类称为单例类，它会提供一个全局的访问入口（global access point），关于单例模式的讨论可以参考&lt;a href=&#34;http://www.italiancpp.org/2017/03/19/singleton-revisited-eng/&#34;&gt;Singleton revisited&lt;/a&gt;；基于这两个特点，单例模式可以有以下几种实现：&lt;/p&gt;
+&lt;h2 id=&#34;meyers-singleton&#34;&gt;Meyer’s Singleton&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Scott Meyers&lt;/em&gt; 在 &lt;em&gt;Effective C++&lt;/em&gt; 的 &lt;em&gt;Item 4: Make sure that objects are initialized before they&amp;rsquo;re used&lt;/em&gt; 里面提出了一种利用 C++ 的 &lt;code&gt;static&lt;/code&gt; 关键字来实现的单例模式，这种实现非常简洁高效，它的特点是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;仅当程序第一次执行到 &lt;code&gt;GetInstance&lt;/code&gt; 函数时，执行 &lt;code&gt;instance&lt;/code&gt; 对象的初始化；&lt;/li&gt;
+&lt;li&gt;在 C++ 11 之后，被 &lt;code&gt;static&lt;/code&gt; 修饰的变量可以保证是线程安全的；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Singleton&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt; GetInstance()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; T instance;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; instance;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Singleton(T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;delete&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Singleton(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;delete&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;delete&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;protected&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Singleton() &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;Singleton() &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过禁用单例类的 copy constructor，move constructor 和 operator= 可以防止类的唯一实例被拷贝或移动；不暴露单例类的 constructor 和 destructor 可以保证单例类不会通过其他途径被实例化，同时将两者定义为 protected 可以让其被子类继承并使用。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

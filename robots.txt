@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://prov1dence.top/sitemap.xml

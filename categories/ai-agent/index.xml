@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>AI Agent on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/ai-agent/</link>
+    <description>Recent content in AI Agent on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 18 May 2026 10:00:00 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/ai-agent/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Harness Engineering 解析：AI Coding Agent 的可靠性工程</title>
+      <link>https://prov1dence.top/posts/harness-engineering/harness-engineering-architecture/</link>
+      <pubDate>Mon, 18 May 2026 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/harness-engineering/harness-engineering-architecture/</guid>
+      <description>&lt;h1 id=&#34;harness-engineering-解析ai-coding-agent-的可靠性工程&#34;&gt;Harness Engineering 解析：AI Coding Agent 的可靠性工程&lt;/h1&gt;
+&lt;p&gt;一个开发团队在用 Claude Code 重构认证模块时记录了这样一个过程：第一个 Agent 会话完成了 JWT 登录逻辑，干净地提交了代码；第二个会话接手时，Agent 读不到上一次的决策上下文，重新推断了一套 HS256 方案，与第一个会话的 RS256 实现产生了冲突；第三个会话在修复冲突时又顺手重构了不在任务范围内的密码哈希模块，把一个已经通过测试的部分改出了新的 bug。三个会话，每个单独看都显示&amp;quot;任务完成&amp;quot;，合在一起却是一片混乱。&lt;/p&gt;
+&lt;p&gt;这不是一个极端案例。AI 编程 Agent 当前最普遍的失效模式不是推理错误，而是&lt;strong&gt;环境问题&lt;/strong&gt;——多会话之间状态不衔接，任务边界不清晰，完成标准没有外部锚点。同一个 Claude Code，在精心设计的环境里能连续完成数十步骤的复杂重构，在另一个项目里却在第三步就开始偏轨。模型没变，变的是工作环境。&lt;/p&gt;
+&lt;p&gt;Walkinglabs 的 Learn Harness Engineering 正是针对这个问题构建的工程体系。它的核心主张可以用一句话概括：与其让模型更聪明，不如把模型的工作环境设计得更可靠。这个主张背后有一套完整的方法论，涵盖 AI Agent 从指令设计、状态管理、验证机制到会话生命周期的全链路约束。本文将逐层拆解这套方法论的设计逻辑，并在必要的地方指出它与现有实践之间的分歧与权衡。&lt;/p&gt;
+&lt;h2 id=&#34;1-能力与可靠性之间的裂缝&#34;&gt;1 能力与可靠性之间的裂缝&lt;/h2&gt;
+&lt;h3 id=&#34;11-失效的根源不在模型&#34;&gt;1.1 失效的根源不在模型&lt;/h3&gt;
+&lt;p&gt;当一个 AI Agent 在项目中频繁失效时，直觉上的归因通常落在模型能力上。但如果仔细审视失效的具体场景，会发现大多数问题指向的是另一个方向。&lt;/p&gt;
+&lt;p&gt;第一类是&lt;strong&gt;任务欠规格&lt;/strong&gt;（underspecification）。&amp;ldquo;实现用户认证功能&amp;quot;对模型来说是一个开放空间：使用哪个框架、认证状态存在哪里、哪些文件不应该被改、&amp;ldquo;完成&amp;quot;意味着 happy path 跑通还是含错误处理的全流程——这些信息都缺失。模型会用统计先验填空，填空的结果可能合理，也可能偏离预期，而模型在两种情况下的表现一样自信。&lt;/p&gt;
+&lt;p&gt;第二类是&lt;strong&gt;跨会话状态丢失&lt;/strong&gt;。真实开发任务很少能在单次会话里完成。上一次会话确定的技术选型、做出的妥协决定、标记为&amp;quot;暂不处理&amp;quot;的边缘案例——会话结束后全部消失。下一次 Agent 启动时，需要重新建立这些上下文，而重建的结果不一定与原来一致，不一致的决定在代码库里积累，就成了开篇那个案例的样子。&lt;/p&gt;
+&lt;p&gt;第三类是&lt;strong&gt;提前宣告完成&lt;/strong&gt;（premature victory declaration）。Agent 完成了任务的核心路径后，将其汇报为整体完成。这不是欺骗，而是对&amp;quot;完成&amp;quot;边界的不同理解——模型基于它看到的信息做出判断，但它不知道自己遗漏了什么。在没有外部验证机制的情况下，这个误判只能在代码审查或 QA 阶段才能被发现。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;失效类型          根源                    通常的归因误区
+────────────      ──────────────────      ──────────────────
+任务欠规格        意图传递有损            &amp;#34;模型理解能力不够&amp;#34;
+跨会话状态丢失    环境无持久化机制        &amp;#34;上下文窗口太短&amp;#34;
+提前宣告完成      无外部完成标准          &amp;#34;模型不够严谨&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这三类失效指向的不是模型能力，而是&lt;strong&gt;意图传递机制&lt;/strong&gt;和&lt;strong&gt;环境设计&lt;/strong&gt;的缺陷。给模型更大的上下文窗口、更强的 RAG 检索，都不能从根本上解决任务边界模糊或完成标准缺失的问题，因为这些问题的根源在系统层面，不在模型层面。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Claude Code 架构解析：从源码看现代 AI Agent 的四大核心设计</title>
+      <link>https://prov1dence.top/posts/ai-agent/claude-code-architecture/</link>
+      <pubDate>Wed, 01 Apr 2026 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/ai-agent/claude-code-architecture/</guid>
+      <description>&lt;h1 id=&#34;claude-code-架构解析从源码看现代-ai-agent-的四大核心设计&#34;&gt;Claude Code 架构解析：从源码看现代 AI Agent 的四大核心设计&lt;/h1&gt;
+&lt;p&gt;Claude Code 是 Anthropic 于 2025 年 2 月发布的 AI 编程 Agent，内部代号 &lt;strong&gt;Tengu&lt;/strong&gt;（天狗）。从第一个 v0.2 beta 到泄露时的 v2.1.88，Claude Code 在一年多的时间里经历了快速迭代，陆续引入了后台 Agent 支持、auto 权限模式、MCP 服务器集成、Agent Teams 多 Agent 协作等功能。与 LangChain、Google ADK 等以&amp;quot;框架&amp;quot;自居的项目不同，Claude Code 本身是一个面向终端用户的产品，它不提供 SDK 让开发者构建自己的 Agent，而是直接作为一个可以在终端中运行的编程伙伴存在。这个定位差异决定了它的架构设计面临着一组完全不同的约束：不需要考虑可扩展性和可组合性这些框架层面的抽象问题，但必须在安全性、上下文管理、流式交互和错误恢复等工程维度上做到生产级可靠。&lt;/p&gt;
+&lt;p&gt;2026 年 3 月底，Claude Code 的完整 TypeScript 源码因一次 npm 发布配置失误而被公开。安全研究者 Chaofan Shou 发现 Anthropic 在向 npm 发布 v2.1.88 版本时，遗留了构建产物中的 &lt;code&gt;.map&lt;/code&gt; 文件（Source Map），该文件指向了 Cloudflare R2 存储桶上一份未经混淆的源码压缩包。多个 GitHub 镜像仓库迅速备份了代码，Anthropic 虽然在数小时内推送了更新并删除旧版本，但源码已无法收回。&lt;/p&gt;
+&lt;p&gt;这份意外泄露的代码库包含近 2000 个文件、超过 50 万行 TypeScript 代码，涵盖了完整的 Agent 循环、40 余种工具实现、权限管线、上下文压缩策略，以及 44 个内部 feature flag 背后的未发布功能。它为我们提供了一个从源码级别审视工业级 AI Agent 内部设计的罕见机会。Anthropic 在 Claude Code 上贯彻的核心设计哲学是 &lt;strong&gt;&amp;ldquo;Less scaffolding, more model&amp;rdquo;&lt;/strong&gt;，即尽可能信任模型的推理能力，将系统复杂度从编排层转移到模型自身。这意味着没有 DAG、没有分类器、没有 RAG 系统，整个架构的核心是一个朴素的推理-行动循环。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>LangChain 与 LangGraph 架构解析：从链式调用到图驱动的 Agent 编排</title>
+      <link>https://prov1dence.top/posts/ai-agent/langchain-langgraph-architecture/</link>
+      <pubDate>Tue, 03 Mar 2026 08:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/ai-agent/langchain-langgraph-architecture/</guid>
+      <description>&lt;h1 id=&#34;langchain-与-langgraph-架构解析从链式调用到图驱动的-agent-编排&#34;&gt;LangChain 与 LangGraph 架构解析：从链式调用到图驱动的 Agent 编排&lt;/h1&gt;
+&lt;p&gt;LangChain 是当前 LLM 应用开发领域中使用最广泛的开源框架之一，而 LangGraph 则是 LangChain 团队在 Agent 编排层面的第二次架构尝试——一个受 Google Pregel 和 Apache Beam 启发的、基于有向图的状态化工作流引擎。两者的关系并不是简单的替代，而是分层互补：LangChain 提供模型抽象、工具封装和高层 Agent 接口，LangGraph 则负责底层的执行编排、状态持久化和人在回路控制。理解这两个项目的架构设计，本质上是理解&amp;quot;如何用软件工程的方式构建可靠的 LLM 应用&amp;quot;这个问题在 2024-2026 年间的演进路径。&lt;/p&gt;
+&lt;p&gt;从宏观上看，LangChain 生态的整体分层结构如下：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;┌─────────────────────────────────────────────────────────────────┐
+│                      Application Layer                          │
+│         create_agent / Custom Graph / Deep Agents               │
+├─────────────────────────────────────────────────────────────────┤
+│                      LangChain (High-Level)                     │
+│    Agent Abstraction   │  Middleware  │  Structured Output      │
+│    (create_agent,      │  (wrap_model │  (with_structured       │
+│     tool loop)         │   _call)     │   _output)              │
+├────────────────────────┴─────────────┴──────────────────────────┤
+│                      LangGraph (Low-Level Orchestration)        │
+│    StateGraph  │  Functional API  │  Checkpointer  │  Command   │
+│    (nodes,     │  (entrypoint,    │  (persistence, │  (control  │
+│     edges,     │   task)          │   threads,     │   flow +   │
+│     state)     │                  │   time-travel) │   updates) │
+├─────────────────────────────────────────────────────────────────┤
+│                      LangChain Core                             │
+│    Runnable Protocol  │  Chat Models  │  Messages  │  Tools     │
+│    (invoke/stream/    │  (BaseChatModel│  (Human/AI/│  (BaseTool,│
+│     batch/transform)  │   + providers)│   Tool/Sys)│   @tool)   │
+├─────────────────────────────────────────────────────────────────┤
+│                      Integrations                               │
+│    OpenAI / Anthropic / Google / ... / MCP / Vector Stores      │
+└─────────────────────────────────────────────────────────────────┘
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;自底向上，Integrations 层对接各家模型供应商和外部工具；LangChain Core 定义了 Runnable 协议和核心数据类型；LangGraph 在 Core 之上构建了图执行引擎和持久化基础设施；LangChain 的高层 Agent 抽象则是面向开发者的最终接口。这种分层在项目结构上体现为独立的 Python 包——&lt;code&gt;langchain-core&lt;/code&gt;、&lt;code&gt;langgraph&lt;/code&gt;、&lt;code&gt;langchain&lt;/code&gt; 分别发布和版本管理，通过依赖关系松散耦合。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Google ADK 架构解析：如何用软件工程思维构建 AI Agent 系统</title>
+      <link>https://prov1dence.top/posts/ai-agent/google-adk-architecture/</link>
+      <pubDate>Fri, 27 Feb 2026 23:01:12 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/ai-agent/google-adk-architecture/</guid>
+      <description>&lt;h1 id=&#34;google-adk-架构解析如何用软件工程思维构建-ai-agent-系统&#34;&gt;Google ADK 架构解析：如何用软件工程思维构建 AI Agent 系统&lt;/h1&gt;
+&lt;p&gt;Agent Development Kit（ADK）是 Google 在 2025 年开源的一个 AI Agent 开发框架，目前在 GitHub 上有超过 18000 个 star，支持 Python、TypeScript、Go 和 Java 四种语言的实现。ADK 的设计目标很明确：让 Agent 开发回归软件工程的范式，而不是停留在 prompt engineering 的阶段。这意味着它需要提供清晰的抽象层级、可组合的模块、确定性的执行流程、以及工业级的状态管理能力。&lt;/p&gt;
+&lt;p&gt;当前 AI Agent 领域的框架呈现出一种两极分化的态势：一端是 LangChain 这样高度灵活但过于松散的链式调用框架，另一端是各家云厂商封闭的托管服务。ADK 试图在这两者之间找到一个平衡点——既保持代码优先（code-first）的灵活性，又提供足够的结构化约束来支撑复杂的多 Agent 系统。这个定位是否站得住脚，需要从架构层面逐一拆解。&lt;/p&gt;
+&lt;p&gt;在进入细节之前，先从宏观上理解 ADK 的整体分层结构：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;┌─────────────────────────────────────────────────────────────────┐
+│                      Application Layer                          │
+│              adk web / adk run / adk api_server                 │
+├─────────────────────────────────────────────────────────────────┤
+│                       Runner (Event Loop)                       │
+│         yield/pause/resume cycle ── Event processing            │
+├───────────────┬───────────────┬─────────────────────────────────┤
+│  Agent Layer  │   Tool Layer  │         Flow Layer              │
+│  BaseAgent    │   BaseTool    │     BaseLlmFlow                 │
+│  ├ LlmAgent   │  ├ FunctionTool│     ├ SingleFlow               │
+│  ├ Sequential │  ├ AgentTool  │     └ AutoFlow                  │
+│  ├ Parallel   │  ├ MCPTool    │       (LLM request/response     │
+│  ├ Loop       │  └ ...        │        + tool execution loop)   │
+│  └ Custom     │               │                                 │
+├───────────────┴───────────────┴─────────────────────────────────┤
+│                      Model Abstraction                          │
+│         BaseLlm ── LLMRegistry ── Gemini / OpenAI / ...        │
+├─────────────────────────────────────────────────────────────────┤
+│                      Services Layer                             │
+│    SessionService  │  ArtifactService  │  MemoryService         │
+│    (state + history)  (binary blobs)     (cross-session search) │
+├─────────────────────────────────────────────────────────────────┤
+│                      Infrastructure                             │
+│        InMemory / Database / GCS / Vertex AI Agent Engine       │
+└─────────────────────────────────────────────────────────────────┘
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;自底向上，Infrastructure 层提供可插拔的存储后端；Services 层管理状态、产物和记忆的持久化；Model 层抽象了不同 LLM 供应商的差异；Agent/Tool/Flow 三层构成了核心的执行逻辑；Runner 层驱动整个事件循环；Application 层则提供了面向开发者和终端用户的接口。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

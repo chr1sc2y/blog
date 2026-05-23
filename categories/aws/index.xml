@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>AWS on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/aws/</link>
+    <description>Recent content in AWS on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 11 Jan 2023 09:55:04 +1100</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/aws/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Disaster Recovery Architecture on AWS</title>
+      <link>https://prov1dence.top/posts/disaster-recovery-architecture-on-aws/disaster-recovery-architecture-on-aws-9b3dc135d29c47acbfe19084c57035d5/</link>
+      <pubDate>Wed, 11 Jan 2023 09:55:04 +1100</pubDate>
+      <guid>https://prov1dence.top/posts/disaster-recovery-architecture-on-aws/disaster-recovery-architecture-on-aws-9b3dc135d29c47acbfe19084c57035d5/</guid>
+      <description>&lt;h1 id=&#34;disaster-recovery-architecture-on-aws&#34;&gt;Disaster Recovery Architecture on AWS&lt;/h1&gt;
+&lt;p&gt;[TOC]&lt;/p&gt;
+&lt;p&gt;The downtime of software systems could have a significant impact on business, customer satisfaction, reputation, or income of the company. Thus maintaining the availability and durability must be the most crucial part of a software system. Disaster recovery (DR) helps engineers prepare for disaster events. This post summaries the architecture for DR on AWS.&lt;/p&gt;
+&lt;h2 id=&#34;dr-objectives&#34;&gt;DR objectives&lt;/h2&gt;
+&lt;p&gt;There are two key objectives:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Recovery time objective (RTO)&lt;/strong&gt;: The maximum time range between service &lt;strong&gt;collapse&lt;/strong&gt; and service &lt;strong&gt;restoration&lt;/strong&gt;. It represents &lt;strong&gt;how quickly the service could be restarted&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

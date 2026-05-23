@@ -1,0 +1,384 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>LeetCode 树（2） | Zhengyu Chen - 尾張</title>
+<meta name=keywords content><meta name=description content="LeetCode 树（2）
+题目
+3. 二叉搜索树
+95 不同的二叉搜索树 II
+生成由 1 &mldr; n 为节点所组成的二叉搜索树。
+为了构造以 i 为根节点的二叉搜索树，我们需要先构造以 1 &mldr; i - 1 为左子树的所有二叉搜索树与以 i + 1 &mldr; n 为右子树的所有二叉搜索树，再将这些子树排列组合得到以 i 为根节点的所有二叉搜索树。
+class Solution {
+public:
+    vector<TreeNode *> generateTrees(int n) {
+        if (n == 0)
+            return {};
+        return Generate(1, n);
+    }
+
+    vector<TreeNode *> Generate(int m, int n) {
+        vector<TreeNode *> nodes;
+        if (m == n)
+            nodes.push_back(new TreeNode(n));
+        if (m > n)
+            nodes.push_back(nullptr);
+        if (m >= n)
+            return nodes;
+        for (int i = m; i <= n; ++i) {
+            vector<TreeNode *> left = Generate(m, i - 1);
+            vector<TreeNode *> right = Generate(i + 1, n);
+            for (auto &amp;l:left)
+                for (auto &amp;r:right) {
+                    TreeNode *node = new TreeNode(i);
+                    node->left = l, node->right = r;
+                    nodes.push_back(node);
+                }
+        }
+        return nodes;
+    }
+};
+98 验证二叉搜索树
+因为二叉搜索树的中序遍历结果是一个有序数组，所以一种方法是将中序遍历的结果保存下来进行判断，也可以根据二叉搜索树的定义判断子节点和根节点的大小关系。"><meta name=author content><link rel=canonical href=https://prov1dence.top/posts/leetcode/tree-2/><link crossorigin=anonymous href=/assets/css/stylesheet.45e028aa8ce0961349adf411b013ee39406be2c0bc80d4ea3fc04555f7f4611a.css integrity="sha256-ReAoqozglhNJrfQRsBPuOUBr4sC8gNTqP8BFVff0YRo=" rel="preload stylesheet" as=style><link rel=icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://prov1dence.top/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://prov1dence.top/posts/leetcode/tree-2/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://prov1dence.top/posts/leetcode/tree-2/"><meta property="og:site_name" content="Zhengyu Chen - 尾張"><meta property="og:title" content="LeetCode 树（2）"><meta property="og:description" content="LeetCode 树（2） 题目 3. 二叉搜索树 95 不同的二叉搜索树 II 生成由 1 … n 为节点所组成的二叉搜索树。
+为了构造以 i 为根节点的二叉搜索树，我们需要先构造以 1 … i - 1 为左子树的所有二叉搜索树与以 i + 1 … n 为右子树的所有二叉搜索树，再将这些子树排列组合得到以 i 为根节点的所有二叉搜索树。
+class Solution { public: vector<TreeNode *> generateTrees(int n) { if (n == 0) return {}; return Generate(1, n); } vector<TreeNode *> Generate(int m, int n) { vector<TreeNode *> nodes; if (m == n) nodes.push_back(new TreeNode(n)); if (m > n) nodes.push_back(nullptr); if (m >= n) return nodes; for (int i = m; i <= n; ++i) { vector<TreeNode *> left = Generate(m, i - 1); vector<TreeNode *> right = Generate(i + 1, n); for (auto &amp;l:left) for (auto &amp;r:right) { TreeNode *node = new TreeNode(i); node->left = l, node->right = r; nodes.push_back(node); } } return nodes; } }; 98 验证二叉搜索树 因为二叉搜索树的中序遍历结果是一个有序数组，所以一种方法是将中序遍历的结果保存下来进行判断，也可以根据二叉搜索树的定义判断子节点和根节点的大小关系。"><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-07-18T19:12:25+10:00"><meta property="article:modified_time" content="2019-07-18T19:12:25+10:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="LeetCode 树（2）"><meta name=twitter:description content="LeetCode 树（2）
+题目
+3. 二叉搜索树
+95 不同的二叉搜索树 II
+生成由 1 &mldr; n 为节点所组成的二叉搜索树。
+为了构造以 i 为根节点的二叉搜索树，我们需要先构造以 1 &mldr; i - 1 为左子树的所有二叉搜索树与以 i + 1 &mldr; n 为右子树的所有二叉搜索树，再将这些子树排列组合得到以 i 为根节点的所有二叉搜索树。
+class Solution {
+public:
+    vector<TreeNode *> generateTrees(int n) {
+        if (n == 0)
+            return {};
+        return Generate(1, n);
+    }
+
+    vector<TreeNode *> Generate(int m, int n) {
+        vector<TreeNode *> nodes;
+        if (m == n)
+            nodes.push_back(new TreeNode(n));
+        if (m > n)
+            nodes.push_back(nullptr);
+        if (m >= n)
+            return nodes;
+        for (int i = m; i <= n; ++i) {
+            vector<TreeNode *> left = Generate(m, i - 1);
+            vector<TreeNode *> right = Generate(i + 1, n);
+            for (auto &amp;l:left)
+                for (auto &amp;r:right) {
+                    TreeNode *node = new TreeNode(i);
+                    node->left = l, node->right = r;
+                    nodes.push_back(node);
+                }
+        }
+        return nodes;
+    }
+};
+98 验证二叉搜索树
+因为二叉搜索树的中序遍历结果是一个有序数组，所以一种方法是将中序遍历的结果保存下来进行判断，也可以根据二叉搜索树的定义判断子节点和根节点的大小关系。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://prov1dence.top/posts/"},{"@type":"ListItem","position":2,"name":"LeetCode 树（2）","item":"https://prov1dence.top/posts/leetcode/tree-2/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"LeetCode 树（2）","name":"LeetCode 树（2）","description":"LeetCode 树（2） 题目 3. 二叉搜索树 95 不同的二叉搜索树 II 生成由 1 \u0026hellip; n 为节点所组成的二叉搜索树。\n为了构造以 i 为根节点的二叉搜索树，我们需要先构造以 1 \u0026hellip; i - 1 为左子树的所有二叉搜索树与以 i + 1 \u0026hellip; n 为右子树的所有二叉搜索树，再将这些子树排列组合得到以 i 为根节点的所有二叉搜索树。\nclass Solution { public: vector\u0026lt;TreeNode *\u0026gt; generateTrees(int n) { if (n == 0) return {}; return Generate(1, n); } vector\u0026lt;TreeNode *\u0026gt; Generate(int m, int n) { vector\u0026lt;TreeNode *\u0026gt; nodes; if (m == n) nodes.push_back(new TreeNode(n)); if (m \u0026gt; n) nodes.push_back(nullptr); if (m \u0026gt;= n) return nodes; for (int i = m; i \u0026lt;= n; ++i) { vector\u0026lt;TreeNode *\u0026gt; left = Generate(m, i - 1); vector\u0026lt;TreeNode *\u0026gt; right = Generate(i + 1, n); for (auto \u0026amp;l:left) for (auto \u0026amp;r:right) { TreeNode *node = new TreeNode(i); node-\u0026gt;left = l, node-\u0026gt;right = r; nodes.push_back(node); } } return nodes; } }; 98 验证二叉搜索树 因为二叉搜索树的中序遍历结果是一个有序数组，所以一种方法是将中序遍历的结果保存下来进行判断，也可以根据二叉搜索树的定义判断子节点和根节点的大小关系。\n","keywords":[],"articleBody":"LeetCode 树（2） 题目 3. 二叉搜索树 95 不同的二叉搜索树 II 生成由 1 … n 为节点所组成的二叉搜索树。\n为了构造以 i 为根节点的二叉搜索树，我们需要先构造以 1 … i - 1 为左子树的所有二叉搜索树与以 i + 1 … n 为右子树的所有二叉搜索树，再将这些子树排列组合得到以 i 为根节点的所有二叉搜索树。\nclass Solution { public: vector\u003cTreeNode *\u003e generateTrees(int n) { if (n == 0) return {}; return Generate(1, n); } vector\u003cTreeNode *\u003e Generate(int m, int n) { vector\u003cTreeNode *\u003e nodes; if (m == n) nodes.push_back(new TreeNode(n)); if (m \u003e n) nodes.push_back(nullptr); if (m \u003e= n) return nodes; for (int i = m; i \u003c= n; ++i) { vector\u003cTreeNode *\u003e left = Generate(m, i - 1); vector\u003cTreeNode *\u003e right = Generate(i + 1, n); for (auto \u0026l:left) for (auto \u0026r:right) { TreeNode *node = new TreeNode(i); node-\u003eleft = l, node-\u003eright = r; nodes.push_back(node); } } return nodes; } }; 98 验证二叉搜索树 因为二叉搜索树的中序遍历结果是一个有序数组，所以一种方法是将中序遍历的结果保存下来进行判断，也可以根据二叉搜索树的定义判断子节点和根节点的大小关系。\nclass Solution { public: bool isValidBST(TreeNode *root) { return IsValidSubtree(root, nullptr, nullptr); } bool IsValidSubtree(TreeNode *node, const int *min_val, const int *max_val) { if (!node) return true; if ((min_val \u0026\u0026 *min_val \u003e= node-\u003eval) || (max_val \u0026\u0026 *max_val \u003c= node-\u003eval)) return false; return IsValidSubtree(node-\u003eleft, min_val, \u0026(node-\u003eval)) \u0026\u0026 IsValidSubtree(node-\u003eright, \u0026(node-\u003eval), max_val); } }; 108 将有序数组转换为二叉搜索树 给一个有序数组，将其转换为一棵平衡二叉搜索树。\n二叉搜索树的中序遍历结果即为有序数组，所以只需要每次找到中间的元素作为根节点，左边的子数组作为左子树，右边的子数组作为右子树，递归构造即可。\nclass Solution { public: TreeNode *sortedArrayToBST(vector\u003cint\u003e \u0026nums) { return Build(nums, 0, nums.size()); } TreeNode *Build(vector\u003cint\u003e \u0026nums, int x, int y) { if (x \u003e= y) return nullptr; int pos = x + (y - x) / 2; TreeNode *node = new TreeNode(nums[pos]); node-\u003eleft = Build(nums, x, pos); node-\u003eright = Build(nums, pos + 1, y); return node; } }; 235 二叉搜索树的最近公共祖先 找到一个二叉搜索树中两个指定节点的最近公共祖先。\n由二叉搜索树可知，如果两个节点的值都大于根节点，那么他们都应该在根节点的右子树上；如果两个节点的值都小于根节点，那么他们都应该在根节点的左子树上；否则他们可能在根节点及其子树上的任意位置，那么根节点即是他们的最近公共祖先。\nclass Solution { public: TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q) { if (!root) return nullptr; else if (root-\u003eval \u003e p-\u003eval \u0026\u0026 root-\u003eval \u003e q-\u003eval) return lowestCommonAncestor(root-\u003eleft, p, q); else if (root-\u003eval \u003c p-\u003eval \u0026\u0026 root-\u003eval \u003c q-\u003eval) return lowestCommonAncestor(root-\u003eright, p, q); return root; } }; 671 二叉树中第二小的节点 给一个二叉树，其子节点数量只为 0 或 2，并且根节点的值一定小于等于子节点的值，找到所有节点中的第二小的值。\n因为二叉树上根节点一定小于等于子节点，所以整个树的根节点的值一定是最小值，只需要遍历整个树，找到除根节点之外的最小值即可。\nclass Solution { public: int findSecondMinimumValue(TreeNode *root) { if (!root) return -1; int first = root-\u003eval, *res = nullptr; queue\u003cTreeNode *\u003e q; q.push(root); while (!q.empty()) { TreeNode *node = q.front(); q.pop(); if (first \u003c node-\u003eval) if (!res) res = new int(node-\u003eval); else *res = min(*res, node-\u003eval); if (node-\u003eleft \u0026\u0026 node-\u003eright) q.push(node-\u003eleft), q.push(node-\u003eright); } return res ? *res : -1; } }; 230 二叉搜索树中第 K 小的元素 找到一个二叉搜索树中第 k 小的元素。\n因为二叉搜索树的中序遍历结果是有序的，我们可以使用中序遍历并在找到第 k 小的元素时提前终止并返回结果。\nclass Solution { int res; public: int kthSmallest(TreeNode *root, int k) { res = 0; Inorder(root, k); return res; } void Inorder(TreeNode *root, int \u0026k) { if (!root) return; Inorder(root-\u003eleft, k); if (k \u003c= 0) return; --k; if (k == 0) { res = root-\u003eval; return; } Inorder(root-\u003eright, k); } }; 450 删除二叉搜索树中的节点 给一个二叉搜索树和一个值，删除二叉搜索树中的对应节点。\n根据二叉搜素树的定义，很容易通过大小关系找到对应节点，找到之后只需要将原先的节点替换为左子树上的最大节点，也就是左子节点的最右子节点即可，注意要将左子节点的最右子节点的左子树接到其父节点的右子节点上。\nclass Solution { public: TreeNode *deleteNode(TreeNode *root, int key) { if (!root) return nullptr; if (root-\u003eval == key) { if (!root-\u003eleft) return root-\u003eright; auto node = root-\u003eleft, head = node; if (!node-\u003eright) { node-\u003eright = root-\u003eright; return node; } while (node-\u003eright) head = node, node = node-\u003eright; head-\u003eright = node-\u003eleft; node-\u003eleft = root-\u003eleft, node-\u003eright = root-\u003eright; return node; } else if (root-\u003eval \u003c key) root-\u003eright = deleteNode(root-\u003eright, key); else if (root-\u003eval \u003e key) root-\u003eleft = deleteNode(root-\u003eleft, key); return root; } }; 669 修剪二叉搜索树 给一个二叉搜索树，以及最小边界 L 和最大边界 R，修剪二叉搜索树使得所有节点值都在 [L, R] 的范围内。\n如果一个节点的值在范围外，根据二叉搜索树的定义，返回对应方向的节点修剪后的结果即可；如果一个节点的值在范围内，对其左右子树分别进行修建即可。\nclass Solution { public: TreeNode *trimBST(TreeNode *root, const int \u0026L, const int \u0026R) { if (!root) return nullptr; if (root-\u003eval \u003c L) return trimBST(root-\u003eright, L, R); if (root-\u003eval \u003e R) return trimBST(root-\u003eleft, L, R); root-\u003eleft = trimBST(root-\u003eleft, L, R); root-\u003eright = trimBST(root-\u003eright, L, R); return root; } }; 530 二叉搜索树的最小绝对差 求一个二叉搜索树树中任意两节点的差的绝对值的最小值。\n因为二叉搜索树的中序遍历结果是有序的，任意两节点的差的绝对值的最小值一定产生在相邻的两个值之间，因此做一次中序遍历，同时更新两节点的差的绝对值的最小值即可。\nclass Solution { TreeNode *node; int res; public: int getMinimumDifference(TreeNode *root) { node = nullptr; res = INT_MAX; Inorder(root); return res; }\nvoid Inorder(TreeNode *root) { if (!root) return; Inorder(root-\u003eleft); if (!node) node = root; else res = min(res, abs(node-\u003eval - root-\u003eval)); node = root; Inorder(root-\u003eright); } };\n783 二叉搜索树结点最小距离 求一个二叉搜索树树中任意两节点的差的绝对值的最小值。\n同上。\nclass Solution { TreeNode *node; int res; public: int minDiffInBST(TreeNode *root) { node = nullptr; res = INT_MAX; Inorder(root); return res; }\nvoid Inorder(TreeNode *root) { if (!root) return; Inorder(root-\u003eleft); if (!node) node = root; else res = min(res, abs(node-\u003eval - root-\u003eval)); node = root; Inorder(root-\u003eright); } };\n501 二叉搜索树中的众数 找出一个二叉搜索树中的所有众数。\n因为二叉搜索树的中序遍历结果是有序的，可以直接进行一次中序遍历，同时更新结果数组。\nclass Solution { vector\u003cint\u003e res; TreeNode *node; int n, m; public: vector\u003cint\u003e findMode(TreeNode *root) { res = vector\u003cint\u003e(); node = nullptr; n = m = 0; Inorder(root); return res; } void Inorder(TreeNode *root) { if (!root) return; Inorder(root-\u003eleft); if (!node || node-\u003eval != root-\u003eval) m = 1; else ++m; node = root; if (m \u003e n) { n = m; res.clear(); } if (m == n) res.push_back(node-\u003eval); Inorder(root-\u003eright); } }; 538 把二叉搜索树转换为累加树 把一个二叉搜索树转换成为累加树。\n按照二叉搜索树的定义，每个节点值一定比右子树上的节点值小，所以按照右中左的顺序遍历整个树，同时在根节点处加上右边的累积值。\nclass Solution { int val; public: TreeNode *convertBST(TreeNode *root) { val = 0; Accumulate(root); return root; } void Accumulate(TreeNode *root) { if (!root) return; Accumulate(root-\u003eright); root-\u003eval += val; val = root-\u003eval; Accumulate(root-\u003eleft); } }; 700 二叉搜索树中的搜索 在二叉搜索树中搜索一个特定值。\n按照二叉搜索树的特性搜索即可。\nclass Solution { public: TreeNode *searchBST(TreeNode *root, const int \u0026val) { if (!root) return nullptr; if (root-\u003eval \u003c val) return searchBST(root-\u003eright, val); else if (root-\u003eval \u003e val) return searchBST(root-\u003eleft, val); else return root; } }; 701 二叉搜索树中的插入操作 在一个二叉搜索树中插入一个值。\n按照给定值与节点的值的大小关系依次往下搜索直到找到空节点，新建一个节点并返回即可。\nclass Solution { public: TreeNode *insertIntoBST(TreeNode *root, const int \u0026val) { if (!root) return new TreeNode(val); else if (val \u003c root-\u003eval) root-\u003eleft = insertIntoBST(root-\u003eleft, val); else if (val \u003e root-\u003eval) root-\u003eright = insertIntoBST(root-\u003eright, val); return root; } }; 938 二叉搜索树的范围和 给一个二叉搜索树，计算 L 和 R 之间的所有结点的值的和。\n判断根节点的值 L \u003c= val \u003c= R 即可。\nclass Solution { public: int rangeSumBST(TreeNode* root, const int \u0026L, const int \u0026R) { if (!root) return 0; int left = 0, right = 0; if (root-\u003eval \u003e= L) left = rangeSumBST(root-\u003eleft, L, R); if (root-\u003eval \u003c= R) right = rangeSumBST(root-\u003eright, L, R); return left + right + (root-\u003eval \u003e= L \u0026\u0026 root-\u003eval \u003c= R ? root-\u003eval : 0); } }; 99 恢复二叉搜索树 恢复一个有两个节点被错误地交换的二叉搜索树。\n因为只有两个节点被错误地交换，只需要做一次中序遍历就能从相邻节点的大小关系找到这两个节点，将第一次出现错误位置关系的前一个节点与第二次出现错误位置关系的后一个节点交换即可。\nclass Solution { TreeNode *first, *second, *prev; public: void recoverTree(TreeNode *root) { first = second = prev = nullptr; Inorder(root); swap(first-\u003eval, second-\u003eval); } void Inorder(TreeNode *root) { if (!root) return; Inorder(root-\u003eleft); if (prev \u0026\u0026 prev-\u003eval \u003e= root-\u003eval \u0026\u0026 !first) first = prev; if (prev \u0026\u0026 prev-\u003eval \u003e= root-\u003eval \u0026\u0026 first) second = root; prev = root; Inorder(root-\u003eright); } }; ","wordCount":"1000","inLanguage":"en","datePublished":"2019-07-18T19:12:25+10:00","dateModified":"2019-07-18T19:12:25+10:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://prov1dence.top/posts/leetcode/tree-2/"},"publisher":{"@type":"Organization","name":"Zhengyu Chen - 尾張","logo":{"@type":"ImageObject","url":"https://prov1dence.top/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://prov1dence.top/ accesskey=h title="尾張 (Alt + H)">尾張</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://prov1dence.top/archives/ title=Posts><span>Posts</span></a></li><li><a href=https://prov1dence.top/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">LeetCode 树（2）</h1><div class=post-meta><span title='2019-07-18 19:12:25 +1000 +1000'>July 18, 2019</span>&nbsp;·&nbsp;5 min</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#leetcode-%e6%a0%912httpsleetcode-cncomtagtree aria-label="LeetCode 树（2）">LeetCode 树（2）</a><ul><li><a href=#%e9%a2%98%e7%9b%ae aria-label=题目>题目</a><ul><li><a href=#3-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91 aria-label="3. 二叉搜索树">3. 二叉搜索树</a><ul><li><a href=#95-%e4%b8%8d%e5%90%8c%e7%9a%84%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91-iihttpsleetcode-cncomproblemsunique-binary-search-trees-ii aria-label="95 不同的二叉搜索树 II">95 不同的二叉搜索树 II</a></li><li><a href=#98-%e9%aa%8c%e8%af%81%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91httpsleetcode-cncomproblemsvalidate-binary-search-tree aria-label="98 验证二叉搜索树">98 验证二叉搜索树</a></li><li><a href=#108-%e5%b0%86%e6%9c%89%e5%ba%8f%e6%95%b0%e7%bb%84%e8%bd%ac%e6%8d%a2%e4%b8%ba%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91httpsleetcode-cncomproblemsconvert-sorted-array-to-binary-search-tree aria-label="108 将有序数组转换为二叉搜索树">108 将有序数组转换为二叉搜索树</a></li><li><a href=#235-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e7%9a%84%e6%9c%80%e8%bf%91%e5%85%ac%e5%85%b1%e7%a5%96%e5%85%88httpsleetcode-cncomproblemslowest-common-ancestor-of-a-binary-search-tree aria-label="235 二叉搜索树的最近公共祖先">235 二叉搜索树的最近公共祖先</a></li><li><a href=#671-%e4%ba%8c%e5%8f%89%e6%a0%91%e4%b8%ad%e7%ac%ac%e4%ba%8c%e5%b0%8f%e7%9a%84%e8%8a%82%e7%82%b9httpsleetcode-cncomproblemssecond-minimum-node-in-a-binary-tree aria-label="671 二叉树中第二小的节点">671 二叉树中第二小的节点</a></li><li><a href=#230-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e4%b8%ad%e7%ac%ac-k-%e5%b0%8f%e7%9a%84%e5%85%83%e7%b4%a0httpsleetcode-cncomproblemskth-smallest-element-in-a-bst aria-label="230 二叉搜索树中第 K 小的元素">230 二叉搜索树中第 K 小的元素</a></li><li><a href=#450-%e5%88%a0%e9%99%a4%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e4%b8%ad%e7%9a%84%e8%8a%82%e7%82%b9httpsleetcode-cncomproblemsdelete-node-in-a-bst aria-label="450 删除二叉搜索树中的节点">450 删除二叉搜索树中的节点</a></li><li><a href=#669-%e4%bf%ae%e5%89%aa%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91httpsleetcode-cncomproblemstrim-a-binary-search-tree aria-label="669 修剪二叉搜索树">669 修剪二叉搜索树</a></li><li><a href=#530-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e7%9a%84%e6%9c%80%e5%b0%8f%e7%bb%9d%e5%af%b9%e5%b7%aehttpsleetcode-cncomproblemsminimum-absolute-difference-in-bst aria-label="530 二叉搜索树的最小绝对差">530 二叉搜索树的最小绝对差</a></li><li><a href=#783-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e7%bb%93%e7%82%b9%e6%9c%80%e5%b0%8f%e8%b7%9d%e7%a6%bbhttpsleetcode-cncomproblemsminimum-distance-between-bst-nodes aria-label="783 二叉搜索树结点最小距离">783 二叉搜索树结点最小距离</a></li><li><a href=#501-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e4%b8%ad%e7%9a%84%e4%bc%97%e6%95%b0httpsleetcode-cncomproblemsfind-mode-in-binary-search-tree aria-label="501 二叉搜索树中的众数">501 二叉搜索树中的众数</a></li><li><a href=#538-%e6%8a%8a%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e8%bd%ac%e6%8d%a2%e4%b8%ba%e7%b4%af%e5%8a%a0%e6%a0%91httpsleetcode-cncomproblemsconvert-bst-to-greater-tree aria-label="538 把二叉搜索树转换为累加树">538 把二叉搜索树转换为累加树</a></li><li><a href=#700-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e4%b8%ad%e7%9a%84%e6%90%9c%e7%b4%a2httpsleetcode-cncomproblemssearch-in-a-binary-search-tree aria-label="700 二叉搜索树中的搜索">700 二叉搜索树中的搜索</a></li><li><a href=#701-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e4%b8%ad%e7%9a%84%e6%8f%92%e5%85%a5%e6%93%8d%e4%bd%9chttpsleetcode-cncomproblemsinsert-into-a-binary-search-tree aria-label="701 二叉搜索树中的插入操作">701 二叉搜索树中的插入操作</a></li><li><a href=#938-%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91%e7%9a%84%e8%8c%83%e5%9b%b4%e5%92%8chttpsleetcode-cncomproblemsrange-sum-of-bst aria-label="938 二叉搜索树的范围和">938 二叉搜索树的范围和</a></li><li><a href=#99-%e6%81%a2%e5%a4%8d%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91httpsleetcode-cncomproblemsrecover-binary-search-tree aria-label="99 恢复二叉搜索树">99 恢复二叉搜索树</a></li></ul></li></ul></li></ul></li></ul></div></details></div><div class=post-content><h1 id=leetcode-树2httpsleetcode-cncomtagtree><a href=https://leetcode-cn.com/tag/tree/>LeetCode 树（2）</a><a hidden class=anchor aria-hidden=true href=#leetcode-树2httpsleetcode-cncomtagtree>#</a></h1><h2 id=题目>题目<a hidden class=anchor aria-hidden=true href=#题目>#</a></h2><h3 id=3-二叉搜索树>3. 二叉搜索树<a hidden class=anchor aria-hidden=true href=#3-二叉搜索树>#</a></h3><h4 id=95-不同的二叉搜索树-iihttpsleetcode-cncomproblemsunique-binary-search-trees-ii><a href=https://leetcode-cn.com/problems/unique-binary-search-trees-ii/>95 不同的二叉搜索树 II</a><a hidden class=anchor aria-hidden=true href=#95-不同的二叉搜索树-iihttpsleetcode-cncomproblemsunique-binary-search-trees-ii>#</a></h4><p>生成由 1 &mldr; n 为节点所组成的二叉搜索树。</p><p>为了构造以 i 为根节点的二叉搜索树，我们需要先构造以 1 &mldr; i - 1 为左子树的所有二叉搜索树与以 i + 1 &mldr; n 为右子树的所有二叉搜索树，再将这些子树排列组合得到以 i 为根节点的所有二叉搜索树。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span>TreeNode <span style=color:#f92672>*&gt;</span> generateTrees(<span style=color:#66d9ef>int</span> n) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (n <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> {};
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Generate</span>(<span style=color:#ae81ff>1</span>, n);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span>TreeNode <span style=color:#f92672>*&gt;</span> Generate(<span style=color:#66d9ef>int</span> m, <span style=color:#66d9ef>int</span> n) {
+</span></span><span style=display:flex><span>        vector<span style=color:#f92672>&lt;</span>TreeNode <span style=color:#f92672>*&gt;</span> nodes;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (m <span style=color:#f92672>==</span> n)
+</span></span><span style=display:flex><span>            nodes.push_back(<span style=color:#66d9ef>new</span> TreeNode(n));
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (m <span style=color:#f92672>&gt;</span> n)
+</span></span><span style=display:flex><span>            nodes.push_back(<span style=color:#66d9ef>nullptr</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (m <span style=color:#f92672>&gt;=</span> n)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> nodes;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> m; i <span style=color:#f92672>&lt;=</span> n; <span style=color:#f92672>++</span>i) {
+</span></span><span style=display:flex><span>            vector<span style=color:#f92672>&lt;</span>TreeNode <span style=color:#f92672>*&gt;</span> left <span style=color:#f92672>=</span> Generate(m, i <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>            vector<span style=color:#f92672>&lt;</span>TreeNode <span style=color:#f92672>*&gt;</span> right <span style=color:#f92672>=</span> Generate(i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>, n);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>auto</span> <span style=color:#f92672>&amp;</span>l:left)
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>auto</span> <span style=color:#f92672>&amp;</span>r:right) {
+</span></span><span style=display:flex><span>                    TreeNode <span style=color:#f92672>*</span>node <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> TreeNode(i);
+</span></span><span style=display:flex><span>                    node<span style=color:#f92672>-&gt;</span>left <span style=color:#f92672>=</span> l, node<span style=color:#f92672>-&gt;</span>right <span style=color:#f92672>=</span> r;
+</span></span><span style=display:flex><span>                    nodes.push_back(node);
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> nodes;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=98-验证二叉搜索树httpsleetcode-cncomproblemsvalidate-binary-search-tree><a href=https://leetcode-cn.com/problems/validate-binary-search-tree/>98 验证二叉搜索树</a><a hidden class=anchor aria-hidden=true href=#98-验证二叉搜索树httpsleetcode-cncomproblemsvalidate-binary-search-tree>#</a></h4><p>因为二叉搜索树的中序遍历结果是一个有序数组，所以一种方法是将中序遍历的结果保存下来进行判断，也可以根据二叉搜索树的定义判断子节点和根节点的大小关系。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>bool</span> isValidBST(TreeNode <span style=color:#f92672>*</span>root) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>IsValidSubtree</span>(root, <span style=color:#66d9ef>nullptr</span>, <span style=color:#66d9ef>nullptr</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>bool</span> <span style=color:#a6e22e>IsValidSubtree</span>(TreeNode <span style=color:#f92672>*</span>node, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>*</span>min_val, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>*</span>max_val) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>node)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> true;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> ((min_val <span style=color:#f92672>&amp;&amp;</span> <span style=color:#f92672>*</span>min_val <span style=color:#f92672>&gt;=</span> node<span style=color:#f92672>-&gt;</span>val) <span style=color:#f92672>||</span> (max_val <span style=color:#f92672>&amp;&amp;</span> <span style=color:#f92672>*</span>max_val <span style=color:#f92672>&lt;=</span> node<span style=color:#f92672>-&gt;</span>val))
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> false;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> IsValidSubtree(node<span style=color:#f92672>-&gt;</span>left, min_val, <span style=color:#f92672>&amp;</span>(node<span style=color:#f92672>-&gt;</span>val)) <span style=color:#f92672>&amp;&amp;</span> IsValidSubtree(node<span style=color:#f92672>-&gt;</span>right, <span style=color:#f92672>&amp;</span>(node<span style=color:#f92672>-&gt;</span>val), max_val);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=108-将有序数组转换为二叉搜索树httpsleetcode-cncomproblemsconvert-sorted-array-to-binary-search-tree><a href=https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/>108 将有序数组转换为二叉搜索树</a><a hidden class=anchor aria-hidden=true href=#108-将有序数组转换为二叉搜索树httpsleetcode-cncomproblemsconvert-sorted-array-to-binary-search-tree>#</a></h4><p>给一个有序数组，将其转换为一棵平衡二叉搜索树。</p><p>二叉搜索树的中序遍历结果即为有序数组，所以只需要每次找到中间的元素作为根节点，左边的子数组作为左子树，右边的子数组作为右子树，递归构造即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>sortedArrayToBST(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>nums) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Build</span>(nums, <span style=color:#ae81ff>0</span>, nums.size());
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span><span style=color:#a6e22e>Build</span>(vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> <span style=color:#f92672>&amp;</span>nums, <span style=color:#66d9ef>int</span> x, <span style=color:#66d9ef>int</span> y) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (x <span style=color:#f92672>&gt;=</span> y)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> pos <span style=color:#f92672>=</span> x <span style=color:#f92672>+</span> (y <span style=color:#f92672>-</span> x) <span style=color:#f92672>/</span> <span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span>        TreeNode <span style=color:#f92672>*</span>node <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> TreeNode(nums[pos]);
+</span></span><span style=display:flex><span>        node<span style=color:#f92672>-&gt;</span>left <span style=color:#f92672>=</span> Build(nums, x, pos);
+</span></span><span style=display:flex><span>        node<span style=color:#f92672>-&gt;</span>right <span style=color:#f92672>=</span> Build(nums, pos <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>, y);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> node;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=235-二叉搜索树的最近公共祖先httpsleetcode-cncomproblemslowest-common-ancestor-of-a-binary-search-tree><a href=https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/>235 二叉搜索树的最近公共祖先</a><a hidden class=anchor aria-hidden=true href=#235-二叉搜索树的最近公共祖先httpsleetcode-cncomproblemslowest-common-ancestor-of-a-binary-search-tree>#</a></h4><p>找到一个二叉搜索树中两个指定节点的最近公共祖先。</p><p>由二叉搜索树可知，如果两个节点的值都大于根节点，那么他们都应该在根节点的右子树上；如果两个节点的值都小于根节点，那么他们都应该在根节点的左子树上；否则他们可能在根节点及其子树上的任意位置，那么根节点即是他们的最近公共祖先。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>lowestCommonAncestor(TreeNode <span style=color:#f92672>*</span>root, TreeNode <span style=color:#f92672>*</span>p, TreeNode <span style=color:#f92672>*</span>q) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;</span> p<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&amp;&amp;</span> root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;</span> q<span style=color:#f92672>-&gt;</span>val)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> lowestCommonAncestor(root<span style=color:#f92672>-&gt;</span>left, p, q);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&lt;</span> p<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&amp;&amp;</span> root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&lt;</span> q<span style=color:#f92672>-&gt;</span>val)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> lowestCommonAncestor(root<span style=color:#f92672>-&gt;</span>right, p, q);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> root;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=671-二叉树中第二小的节点httpsleetcode-cncomproblemssecond-minimum-node-in-a-binary-tree><a href=https://leetcode-cn.com/problems/second-minimum-node-in-a-binary-tree/>671 二叉树中第二小的节点</a><a hidden class=anchor aria-hidden=true href=#671-二叉树中第二小的节点httpsleetcode-cncomproblemssecond-minimum-node-in-a-binary-tree>#</a></h4><p>给一个二叉树，其子节点数量只为 0 或 2，并且根节点的值一定小于等于子节点的值，找到所有节点中的第二小的值。</p><p>因为二叉树上根节点一定小于等于子节点，所以整个树的根节点的值一定是最小值，只需要遍历整个树，找到除根节点之外的最小值即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> findSecondMinimumValue(TreeNode <span style=color:#f92672>*</span>root) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> first <span style=color:#f92672>=</span> root<span style=color:#f92672>-&gt;</span>val, <span style=color:#f92672>*</span>res <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        queue<span style=color:#f92672>&lt;</span>TreeNode <span style=color:#f92672>*&gt;</span> q;
+</span></span><span style=display:flex><span>        q.push(root);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (<span style=color:#f92672>!</span>q.empty()) {
+</span></span><span style=display:flex><span>            TreeNode <span style=color:#f92672>*</span>node <span style=color:#f92672>=</span> q.front();
+</span></span><span style=display:flex><span>            q.pop();
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (first <span style=color:#f92672>&lt;</span> node<span style=color:#f92672>-&gt;</span>val)
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>res)
+</span></span><span style=display:flex><span>                    res <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>int</span>(node<span style=color:#f92672>-&gt;</span>val);
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>                    <span style=color:#f92672>*</span>res <span style=color:#f92672>=</span> min(<span style=color:#f92672>*</span>res, node<span style=color:#f92672>-&gt;</span>val);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (node<span style=color:#f92672>-&gt;</span>left <span style=color:#f92672>&amp;&amp;</span> node<span style=color:#f92672>-&gt;</span>right)
+</span></span><span style=display:flex><span>                q.push(node<span style=color:#f92672>-&gt;</span>left), q.push(node<span style=color:#f92672>-&gt;</span>right);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res <span style=color:#f92672>?</span> <span style=color:#f92672>*</span>res : <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=230-二叉搜索树中第-k-小的元素httpsleetcode-cncomproblemskth-smallest-element-in-a-bst><a href=https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/>230 二叉搜索树中第 K 小的元素</a><a hidden class=anchor aria-hidden=true href=#230-二叉搜索树中第-k-小的元素httpsleetcode-cncomproblemskth-smallest-element-in-a-bst>#</a></h4><p>找到一个二叉搜索树中第 k 小的元素。</p><p>因为二叉搜索树的中序遍历结果是有序的，我们可以使用中序遍历并在找到第 k 小的元素时提前终止并返回结果。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> res;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> kthSmallest(TreeNode <span style=color:#f92672>*</span>root, <span style=color:#66d9ef>int</span> k) {
+</span></span><span style=display:flex><span>        res <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        Inorder(root, k);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>Inorder</span>(TreeNode <span style=color:#f92672>*</span>root, <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>k) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>        Inorder(root<span style=color:#f92672>-&gt;</span>left, k);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (k <span style=color:#f92672>&lt;=</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>        <span style=color:#f92672>--</span>k;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (k <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>            res <span style=color:#f92672>=</span> root<span style=color:#f92672>-&gt;</span>val;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        Inorder(root<span style=color:#f92672>-&gt;</span>right, k);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=450-删除二叉搜索树中的节点httpsleetcode-cncomproblemsdelete-node-in-a-bst><a href=https://leetcode-cn.com/problems/delete-node-in-a-bst/>450 删除二叉搜索树中的节点</a><a hidden class=anchor aria-hidden=true href=#450-删除二叉搜索树中的节点httpsleetcode-cncomproblemsdelete-node-in-a-bst>#</a></h4><p>给一个二叉搜索树和一个值，删除二叉搜索树中的对应节点。</p><p>根据二叉搜素树的定义，很容易通过大小关系找到对应节点，找到之后只需要将原先的节点替换为左子树上的最大节点，也就是左子节点的最右子节点即可，注意要将左子节点的最右子节点的左子树接到其父节点的右子节点上。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>deleteNode(TreeNode <span style=color:#f92672>*</span>root, <span style=color:#66d9ef>int</span> key) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>==</span> key) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root<span style=color:#f92672>-&gt;</span>left)
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>return</span> root<span style=color:#f92672>-&gt;</span>right;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>auto</span> node <span style=color:#f92672>=</span> root<span style=color:#f92672>-&gt;</span>left, head <span style=color:#f92672>=</span> node;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>node<span style=color:#f92672>-&gt;</span>right) {
+</span></span><span style=display:flex><span>                node<span style=color:#f92672>-&gt;</span>right <span style=color:#f92672>=</span> root<span style=color:#f92672>-&gt;</span>right;
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>return</span> node;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (node<span style=color:#f92672>-&gt;</span>right)
+</span></span><span style=display:flex><span>                head <span style=color:#f92672>=</span> node, node <span style=color:#f92672>=</span> node<span style=color:#f92672>-&gt;</span>right;
+</span></span><span style=display:flex><span>            head<span style=color:#f92672>-&gt;</span>right <span style=color:#f92672>=</span> node<span style=color:#f92672>-&gt;</span>left;
+</span></span><span style=display:flex><span>            node<span style=color:#f92672>-&gt;</span>left <span style=color:#f92672>=</span> root<span style=color:#f92672>-&gt;</span>left, node<span style=color:#f92672>-&gt;</span>right <span style=color:#f92672>=</span> root<span style=color:#f92672>-&gt;</span>right;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> node;
+</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&lt;</span> key)
+</span></span><span style=display:flex><span>            root<span style=color:#f92672>-&gt;</span>right <span style=color:#f92672>=</span> deleteNode(root<span style=color:#f92672>-&gt;</span>right, key);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;</span> key)
+</span></span><span style=display:flex><span>            root<span style=color:#f92672>-&gt;</span>left <span style=color:#f92672>=</span> deleteNode(root<span style=color:#f92672>-&gt;</span>left, key);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> root;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=669-修剪二叉搜索树httpsleetcode-cncomproblemstrim-a-binary-search-tree><a href=https://leetcode-cn.com/problems/trim-a-binary-search-tree/>669 修剪二叉搜索树</a><a hidden class=anchor aria-hidden=true href=#669-修剪二叉搜索树httpsleetcode-cncomproblemstrim-a-binary-search-tree>#</a></h4><p>给一个二叉搜索树，以及最小边界 L 和最大边界 R，修剪二叉搜索树使得所有节点值都在 [L, R] 的范围内。</p><p>如果一个节点的值在范围外，根据二叉搜索树的定义，返回对应方向的节点修剪后的结果即可；如果一个节点的值在范围内，对其左右子树分别进行修建即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>trimBST(TreeNode <span style=color:#f92672>*</span>root, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>L, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>R) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&lt;</span> L)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> trimBST(root<span style=color:#f92672>-&gt;</span>right, L, R);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;</span> R)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> trimBST(root<span style=color:#f92672>-&gt;</span>left, L, R);
+</span></span><span style=display:flex><span>        root<span style=color:#f92672>-&gt;</span>left <span style=color:#f92672>=</span> trimBST(root<span style=color:#f92672>-&gt;</span>left, L, R);
+</span></span><span style=display:flex><span>        root<span style=color:#f92672>-&gt;</span>right <span style=color:#f92672>=</span> trimBST(root<span style=color:#f92672>-&gt;</span>right, L, R);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> root;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=530-二叉搜索树的最小绝对差httpsleetcode-cncomproblemsminimum-absolute-difference-in-bst><a href=https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/>530 二叉搜索树的最小绝对差</a><a hidden class=anchor aria-hidden=true href=#530-二叉搜索树的最小绝对差httpsleetcode-cncomproblemsminimum-absolute-difference-in-bst>#</a></h4><p>求一个二叉搜索树树中任意两节点的差的绝对值的最小值。</p><p>因为二叉搜索树的中序遍历结果是有序的，任意两节点的差的绝对值的最小值一定产生在相邻的两个值之间，因此做一次中序遍历，同时更新两节点的差的绝对值的最小值即可。</p><p>class Solution {
+TreeNode *node;
+int res;
+public:
+int getMinimumDifference(TreeNode *root) {
+node = nullptr;
+res = INT_MAX;
+Inorder(root);
+return res;
+}</p><pre><code>void Inorder(TreeNode *root) {
+    if (!root)
+        return;
+    Inorder(root-&gt;left);
+    if (!node)
+        node = root;
+    else
+        res = min(res, abs(node-&gt;val - root-&gt;val));
+    node = root;
+    Inorder(root-&gt;right);
+}
+</code></pre><p>};</p><h4 id=783-二叉搜索树结点最小距离httpsleetcode-cncomproblemsminimum-distance-between-bst-nodes><a href=https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/>783 二叉搜索树结点最小距离</a><a hidden class=anchor aria-hidden=true href=#783-二叉搜索树结点最小距离httpsleetcode-cncomproblemsminimum-distance-between-bst-nodes>#</a></h4><p>求一个二叉搜索树树中任意两节点的差的绝对值的最小值。</p><p>同上。</p><p>class Solution {
+TreeNode *node;
+int res;
+public:
+int minDiffInBST(TreeNode *root) {
+node = nullptr;
+res = INT_MAX;
+Inorder(root);
+return res;
+}</p><pre><code>void Inorder(TreeNode *root) {
+    if (!root)
+        return;
+    Inorder(root-&gt;left);
+    if (!node)
+        node = root;
+    else
+        res = min(res, abs(node-&gt;val - root-&gt;val));
+    node = root;
+    Inorder(root-&gt;right);
+}
+</code></pre><p>};</p><h4 id=501-二叉搜索树中的众数httpsleetcode-cncomproblemsfind-mode-in-binary-search-tree><a href=https://leetcode-cn.com/problems/find-mode-in-binary-search-tree/>501 二叉搜索树中的众数</a><a hidden class=anchor aria-hidden=true href=#501-二叉搜索树中的众数httpsleetcode-cncomproblemsfind-mode-in-binary-search-tree>#</a></h4><p>找出一个二叉搜索树中的所有众数。</p><p>因为二叉搜索树的中序遍历结果是有序的，可以直接进行一次中序遍历，同时更新结果数组。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> res;
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>node;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> n, m;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span> findMode(TreeNode <span style=color:#f92672>*</span>root) {
+</span></span><span style=display:flex><span>        res <span style=color:#f92672>=</span> vector<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>int</span><span style=color:#f92672>&gt;</span>();
+</span></span><span style=display:flex><span>        node <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        n <span style=color:#f92672>=</span> m <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        Inorder(root);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> res;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>Inorder</span>(TreeNode <span style=color:#f92672>*</span>root) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>        Inorder(root<span style=color:#f92672>-&gt;</span>left);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>node <span style=color:#f92672>||</span> node<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>!=</span> root<span style=color:#f92672>-&gt;</span>val)
+</span></span><span style=display:flex><span>            m <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>++</span>m;
+</span></span><span style=display:flex><span>        node <span style=color:#f92672>=</span> root;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (m <span style=color:#f92672>&gt;</span> n) {
+</span></span><span style=display:flex><span>            n <span style=color:#f92672>=</span> m;
+</span></span><span style=display:flex><span>            res.clear();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (m <span style=color:#f92672>==</span> n)
+</span></span><span style=display:flex><span>            res.push_back(node<span style=color:#f92672>-&gt;</span>val);
+</span></span><span style=display:flex><span>        Inorder(root<span style=color:#f92672>-&gt;</span>right);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=538-把二叉搜索树转换为累加树httpsleetcode-cncomproblemsconvert-bst-to-greater-tree><a href=https://leetcode-cn.com/problems/convert-bst-to-greater-tree/>538 把二叉搜索树转换为累加树</a><a hidden class=anchor aria-hidden=true href=#538-把二叉搜索树转换为累加树httpsleetcode-cncomproblemsconvert-bst-to-greater-tree>#</a></h4><p>把一个二叉搜索树转换成为累加树。</p><p>按照二叉搜索树的定义，每个节点值一定比右子树上的节点值小，所以按照右中左的顺序遍历整个树，同时在根节点处加上右边的累积值。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> val;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>convertBST(TreeNode <span style=color:#f92672>*</span>root) {
+</span></span><span style=display:flex><span>        val <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        Accumulate(root);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> root;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>Accumulate</span>(TreeNode <span style=color:#f92672>*</span>root) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>        Accumulate(root<span style=color:#f92672>-&gt;</span>right);
+</span></span><span style=display:flex><span>        root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>+=</span> val;
+</span></span><span style=display:flex><span>        val <span style=color:#f92672>=</span> root<span style=color:#f92672>-&gt;</span>val;
+</span></span><span style=display:flex><span>        Accumulate(root<span style=color:#f92672>-&gt;</span>left);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=700-二叉搜索树中的搜索httpsleetcode-cncomproblemssearch-in-a-binary-search-tree><a href=https://leetcode-cn.com/problems/search-in-a-binary-search-tree/>700 二叉搜索树中的搜索</a><a hidden class=anchor aria-hidden=true href=#700-二叉搜索树中的搜索httpsleetcode-cncomproblemssearch-in-a-binary-search-tree>#</a></h4><p>在二叉搜索树中搜索一个特定值。</p><p>按照二叉搜索树的特性搜索即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>searchBST(TreeNode <span style=color:#f92672>*</span>root, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>val) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&lt;</span> val)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> searchBST(root<span style=color:#f92672>-&gt;</span>right, val);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;</span> val)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> searchBST(root<span style=color:#f92672>-&gt;</span>left, val);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> root;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=701-二叉搜索树中的插入操作httpsleetcode-cncomproblemsinsert-into-a-binary-search-tree><a href=https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/>701 二叉搜索树中的插入操作</a><a hidden class=anchor aria-hidden=true href=#701-二叉搜索树中的插入操作httpsleetcode-cncomproblemsinsert-into-a-binary-search-tree>#</a></h4><p>在一个二叉搜索树中插入一个值。</p><p>按照给定值与节点的值的大小关系依次往下搜索直到找到空节点，新建一个节点并返回即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>insertIntoBST(TreeNode <span style=color:#f92672>*</span>root, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>val) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>new</span> TreeNode(val);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (val <span style=color:#f92672>&lt;</span> root<span style=color:#f92672>-&gt;</span>val)
+</span></span><span style=display:flex><span>            root<span style=color:#f92672>-&gt;</span>left <span style=color:#f92672>=</span> insertIntoBST(root<span style=color:#f92672>-&gt;</span>left, val);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> <span style=color:#a6e22e>if</span> (val <span style=color:#f92672>&gt;</span> root<span style=color:#f92672>-&gt;</span>val)
+</span></span><span style=display:flex><span>            root<span style=color:#f92672>-&gt;</span>right <span style=color:#f92672>=</span> insertIntoBST(root<span style=color:#f92672>-&gt;</span>right, val);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> root;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=938-二叉搜索树的范围和httpsleetcode-cncomproblemsrange-sum-of-bst><a href=https://leetcode-cn.com/problems/range-sum-of-bst/>938 二叉搜索树的范围和</a><a hidden class=anchor aria-hidden=true href=#938-二叉搜索树的范围和httpsleetcode-cncomproblemsrange-sum-of-bst>#</a></h4><p>给一个二叉搜索树，计算 L 和 R 之间的所有结点的值的和。</p><p>判断根节点的值 L &lt;= val &lt;= R 即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> rangeSumBST(TreeNode<span style=color:#f92672>*</span> root, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>L, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> <span style=color:#f92672>&amp;</span>R) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> left <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, right <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;=</span> L)
+</span></span><span style=display:flex><span>            left <span style=color:#f92672>=</span> rangeSumBST(root<span style=color:#f92672>-&gt;</span>left, L, R);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&lt;=</span> R)
+</span></span><span style=display:flex><span>            right <span style=color:#f92672>=</span> rangeSumBST(root<span style=color:#f92672>-&gt;</span>right, L, R);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> left <span style=color:#f92672>+</span> right <span style=color:#f92672>+</span> (root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;=</span> L <span style=color:#f92672>&amp;&amp;</span> root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&lt;=</span> R <span style=color:#f92672>?</span> root<span style=color:#f92672>-&gt;</span>val : <span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h4 id=99-恢复二叉搜索树httpsleetcode-cncomproblemsrecover-binary-search-tree><a href=https://leetcode-cn.com/problems/recover-binary-search-tree/>99 恢复二叉搜索树</a><a hidden class=anchor aria-hidden=true href=#99-恢复二叉搜索树httpsleetcode-cncomproblemsrecover-binary-search-tree>#</a></h4><p>恢复一个有两个节点被错误地交换的二叉搜索树。</p><p>因为只有两个节点被错误地交换，只需要做一次中序遍历就能从相邻节点的大小关系找到这两个节点，将第一次出现错误位置关系的前一个节点与第二次出现错误位置关系的后一个节点交换即可。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span> {
+</span></span><span style=display:flex><span>    TreeNode <span style=color:#f92672>*</span>first, <span style=color:#f92672>*</span>second, <span style=color:#f92672>*</span>prev;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> recoverTree(TreeNode <span style=color:#f92672>*</span>root) {
+</span></span><span style=display:flex><span>        first <span style=color:#f92672>=</span> second <span style=color:#f92672>=</span> prev <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        Inorder(root);
+</span></span><span style=display:flex><span>        swap(first<span style=color:#f92672>-&gt;</span>val, second<span style=color:#f92672>-&gt;</span>val);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>Inorder</span>(TreeNode <span style=color:#f92672>*</span>root) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>root)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>        Inorder(root<span style=color:#f92672>-&gt;</span>left);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (prev <span style=color:#f92672>&amp;&amp;</span> prev<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;=</span> root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&amp;&amp;</span> <span style=color:#f92672>!</span>first)
+</span></span><span style=display:flex><span>            first <span style=color:#f92672>=</span> prev;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (prev <span style=color:#f92672>&amp;&amp;</span> prev<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&gt;=</span> root<span style=color:#f92672>-&gt;</span>val <span style=color:#f92672>&amp;&amp;</span> first)
+</span></span><span style=display:flex><span>            second <span style=color:#f92672>=</span> root;
+</span></span><span style=display:flex><span>        prev <span style=color:#f92672>=</span> root;
+</span></span><span style=display:flex><span>        Inorder(root<span style=color:#f92672>-&gt;</span>right);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=prev href=https://prov1dence.top/posts/leetcode/concurrency/><span class=title>« Prev</span><br><span>LeetCode 并发</span>
+</a><a class=next href=https://prov1dence.top/posts/leetcode/tree-1/><span class=title>Next »</span><br><span>LeetCode 树（1）</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://prov1dence.top/>Zhengyu Chen - 尾張</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

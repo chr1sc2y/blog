@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>C&#43;&#43; on Zhengyu Chen - 尾張</title>
+    <link>https://prov1dence.top/categories/c&#43;&#43;/</link>
+    <description>Recent content in C&#43;&#43; on Zhengyu Chen - 尾張</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 24 Sep 2020 16:43:27 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Effective C&#43;&#43; notes</title>
+      <link>https://prov1dence.top/posts/cpp/basics/effective-cpp/</link>
+      <pubDate>Thu, 24 Sep 2020 16:43:27 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/basics/effective-cpp/</guid>
+      <description>&lt;h1 id=&#34;effective-c-笔记&#34;&gt;Effective C++ 笔记&lt;/h1&gt;
+&lt;h2 id=&#34;0-导言&#34;&gt;0 导言&lt;/h2&gt;
+&lt;h3 id=&#34;1-构造函数&#34;&gt;1 构造函数&lt;/h3&gt;
+&lt;p&gt;default 构造函数：可被调用而不带任何实参的构造函数，这样的构造函数要么没有参数，要么每个参数都带有默认值，例如&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Bar&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// explicit Bar(); // 是 default 构造函数
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// explicit Bar(int x = 0) // 不是 default 构造函数
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;explicit&lt;/span&gt; Bar(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; b &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true); &lt;span style=&#34;color:#75715e&#34;&gt;// 是 default 构造函数
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; x;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; b;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;explicit 关键字：阻止执行隐式类型转换，其优点是禁止了编译器执行非预期的类型转换，例如&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt;(Bar obj); &lt;span style=&#34;color:#75715e&#34;&gt;// Foo 函数的参数是一个类型为 Bar 的对象
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Bar obj_1; &lt;span style=&#34;color:#75715e&#34;&gt;// 构造一个 Bar 类型的对象
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;Foo (obj_1); &lt;span style=&#34;color:#75715e&#34;&gt;// 没问题，传递一个 Bar 类型的对象给 Foo 函数
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;Foo (Bar()); &lt;span style=&#34;color:#75715e&#34;&gt;// 没问题，构造一个 Bar 类型的对象，并传递给 Foo 函数
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;Foo (&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;); &lt;span style=&#34;color:#75715e&#34;&gt;// 如果 Bar 的构造函数没有被声明为 explicit，那么会调用 Bar 的构造函数构造一个成员变量 x = 2 的对象，也就是说发生了隐式类型转换；如果其构造函数被声明为 explicit，那么就不会构造出 Bar 类型的对象
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;copy 构造函数：用同类型的对象初始化新的对象，它定义了一个对象如何 pass by reference。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>boost::typeIndex 的相关探究</title>
+      <link>https://prov1dence.top/posts/cpp/boost/boost-typeindex/</link>
+      <pubDate>Fri, 31 Jul 2020 20:31:06 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/boost/boost-typeindex/</guid>
+      <description>&lt;h2 id=&#34;boosttypeindex-的相关探究&#34;&gt;boost::typeIndex 的相关探究&lt;/h2&gt;
+&lt;p&gt;Effective Modern C++ 的 Item 4: Know how to view deduced types. 中提到了 &lt;code&gt;Boost::typeindex&lt;/code&gt; 的使用，但并没有讲到其实现原理。&lt;/p&gt;
+&lt;h2 id=&#34;1-typeidhttpsencppreferencecomwcpplanguagetypeid-操作符&#34;&gt;1. &lt;a href=&#34;https://en.cppreference.com/w/cpp/language/typeid&#34;&gt;typeid&lt;/a&gt; 操作符&lt;/h2&gt;
+&lt;p&gt;typeid 是 C++ 中的一个操作符，可以用于获取类型的信息，常常用在必须知道多态对象的动态类型，或是识别静态类型的地方。&lt;/p&gt;
+&lt;p&gt;我们可以写一个简单的 demo 用于获取对象类型相关的信息，需要包含 &lt;code&gt;tepyinfo&lt;/code&gt; 头文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;typeinfo&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;namespace&lt;/span&gt; std;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt; {};
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;typeid&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;).name() &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;int: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;typeid&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;).name() &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl; &lt;span style=&#34;color:#75715e&#34;&gt;// 和 sizeof 操作符类似，typeid 也可以直接对数据类型（比如 int）进行操作
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typeid: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;typeid&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;typeid&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;)).name() &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typeid: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;typeid&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; type_info &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;).name() &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; Foo &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;foo &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Foo();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;foo: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;typeid&lt;/span&gt;(foo).name() &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*foo: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;typeid&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;foo).name() &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Foo: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;typeid&lt;/span&gt;(Foo).name() &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;joelzychen@DevCloud ~/typeid&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ g++ -std&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;c++11 -otypeid_test typeid_test.cpp 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;joelzychen@DevCloud ~/typeid&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;$ ./typeid_test 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1: i
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;int: i
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;typeid: N10__cxxabiv123__fundamental_type_infoE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;typeid: St9type_info
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;foo: PK3Foo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;*foo: 3Foo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Foo: 3Foo
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;std::type_info::name()&lt;/code&gt; 函数返回的字符串中，在 GCC 和 Clang 的实现里一般 i 代表 int，P 代表 pointer，K 代表 const，数字用于标识其后跟随了几个字符；我们可以将这段代码使用微软的 MSVC 编译运行，得到更加直观的输出：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>CMake 入门</title>
+      <link>https://prov1dence.top/posts/cpp/compilation/cmake/</link>
+      <pubDate>Sun, 21 Jun 2020 15:46:06 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/compilation/cmake/</guid>
+      <description>&lt;h1 id=&#34;cmake-入门&#34;&gt;CMake 入门&lt;/h1&gt;
+&lt;h2 id=&#34;0-序&#34;&gt;0. 序&lt;/h2&gt;
+&lt;p&gt;CMake 是一个跨平台的开源构建工具，使用 CMake 能够方便地管理依赖多个库的目录层次结构并生成 makefile 和使用 GNU make 来编译和连接程序。&lt;/p&gt;
+&lt;h2 id=&#34;1-构建单个文件&#34;&gt;1. 构建单个文件&lt;/h2&gt;
+&lt;h3 id=&#34;11-使用-gcc-编译&#34;&gt;1.1 使用 GCC 编译&lt;/h3&gt;
+&lt;p&gt;假设现在我们希望编写一个函数来实现安全的 int 类型加法防止数据溢出，这个源文件没有任何依赖的源码或静态库：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// safe_add.cpp
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;memory&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define INT_MAX 2147483647
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define ERROR_DATA_OVERFLOW 2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SafeIntAdd&lt;/span&gt;(std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;unique_ptr&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;sum, &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; a, &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; b)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (a &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; INT_MAX &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; b)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;sum &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; INT_MAX;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; ERROR_DATA_OVERFLOW;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;sum &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; a &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; EXIT_SUCCESS;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; a, b;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cin &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; a &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; b;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;unique_ptr&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; sum(&lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; res &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; SafeIntAdd(sum, a, b);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;sum &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; res;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们可以直接使用一句简单的 gcc 命令来编译这个文件并执行：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>GDB 调试入门</title>
+      <link>https://prov1dence.top/posts/cpp/compilation/gdb/</link>
+      <pubDate>Wed, 22 Apr 2020 17:46:06 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/compilation/gdb/</guid>
+      <description>&lt;h1 id=&#34;gdb-调试入门&#34;&gt;GDB 调试入门&lt;/h1&gt;
+&lt;h2 id=&#34;0-序&#34;&gt;0. 序&lt;/h2&gt;
+&lt;p&gt;调试程序是开发过程中必不可少的一环，在 Windows 或 MacOS 上开发时，可以使用 VS 和 CLion 等 IDE 上自带的调试功能来打断点或查看变量和堆栈，但 Linux 并没有图形化的操作界面，而如果只通过打 log 的方式来查找问题的话效率将会非常低下，此时我们可以利用 GDB 来提升我们的开发效率。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/GNU_Debugger&#34;&gt;GDB&lt;/a&gt; 是 GNU Debugger 的简写，是 &lt;a href=&#34;https://zh.wikipedia.org/wiki/GNU&#34;&gt;GNU&lt;/a&gt; 软件系统中的标准&lt;a href=&#34;https://en.wikipedia.org/wiki/Debugger&#34;&gt;调试器&lt;/a&gt;。GDB 具备各种调试功能，包括但不限于打断点、单步执行、打印变量、查看寄存器、查看函数调用堆栈等，能够有效地针对函数的运行进行追踪和警告；使用 GDB 调试时，可以监督和修改程序的变量，并且这些修改是独立于主程序之外的。GDB 主要用于调试编译型语言，对 C，C++，Go，Fortran 等语言有内置的支持，但它不支持解释型语言。&lt;/p&gt;
+&lt;h2 id=&#34;1-环境搭建&#34;&gt;1. 环境搭建&lt;/h2&gt;
+&lt;h3 id=&#34;11-编写程序&#34;&gt;1.1 编写程序&lt;/h3&gt;
+&lt;p&gt;为了进行调试，我们需要准备一个简单的 C++ 程序：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;$&lt;/span&gt; cat test.cpp
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; Func(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;s) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;r &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;static_cast&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;gt;&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; num &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;atoi(s);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    r &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; num;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, r);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;argv[]) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (argc &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;test [int]&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Func(argv[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;12-编译&#34;&gt;1.2 编译&lt;/h3&gt;
+&lt;p&gt;对于 C/C++ 程序，在使用 gcc/clang 编译的时候需要加上参数 -g，才能生成完整的调试信息并在 GDB 中调试：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>coverity 的 WRAPPER_ESCAPE 告警</title>
+      <link>https://prov1dence.top/posts/cpp/basics/wrapper_escape-in-coverity/</link>
+      <pubDate>Sun, 15 Mar 2020 17:24:27 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/basics/wrapper_escape-in-coverity/</guid>
+      <description>&lt;h1 id=&#34;coverity-的-wrapper_escape-告警&#34;&gt;coverity 的 WRAPPER_ESCAPE 告警&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Foo&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;string str_msg(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;test&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; str_msg.c_str();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p_msg &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Foo();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%s&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, p_msg);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// output:（为空，或乱码）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;D&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上面代码中的 Foo 函数会被 coverity 报告 WRAPPER_ESCAPE，详细说明是：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Wrapper object use after free (WRAPPER_ESCAPE)
+1. escape: The internal representation of local strMsg escapes, but is destroyed when it exits scope
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;大意是局部变量 str_msg 在离开函数 Foo 的时候会被释放（因为 str_msg 是分配在栈上的变量），而通过函数 std::string::c_str() 获取的指向 str_msg 头部的指针会因此变为一个悬空指针，将这个悬空指针返回给函数调用者使用将会发生不可预知的行为。&lt;/p&gt;
+&lt;p&gt;而 c_str() 本身返回的是一个 const char *p，虽然我们无法直接修改指针 p 所指向的数据，但我们可以通过修改 str_msg 来达到修改 p 所指向内存的效果，例如如下的代码：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>C&#43;&#43; 协程（1）：函数和协程</title>
+      <link>https://prov1dence.top/posts/cpp/coroutine/c&#43;&#43;-coroutine---function-and-coroutine/</link>
+      <pubDate>Mon, 20 Jan 2020 20:15:05 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/coroutine/c&#43;&#43;-coroutine---function-and-coroutine/</guid>
+      <description>&lt;h1 id=&#34;c-协程1函数和协程&#34;&gt;C++ 协程（1）：函数和协程&lt;/h1&gt;
+&lt;p&gt;这篇文章的目的是探究 C++ 中协程的机制和用法，以及怎样利用协程的特性来构建上层的库和应用。&lt;/p&gt;
+&lt;h2 id=&#34;1-栈帧和函数&#34;&gt;1. 栈帧和函数&lt;/h2&gt;
+&lt;p&gt;栈帧是一个函数执行的环境，包括函数参数、函数返回地址、局部变量等信息。操作系统每次调用一个函数，都会为其分配一个新的栈帧，相关的概念有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ESP：栈指针寄存器（Extended Stack Pointer），其内存中存放一个始终指向系统栈最顶部栈帧栈顶的指针&lt;/li&gt;
+&lt;li&gt;EBP：基址指针寄存器（Extended Base Pointer），其内存中存放一个始终指向系统最顶部栈帧栈底的指针&lt;/li&gt;
+&lt;li&gt;函数栈帧：ESP和EBP之间的内存空间为当前栈帧，EBP标识了当前栈帧的底部，ESP标识了当前栈帧的顶部&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对于普通的函数来说，一般我们可以对其进行两种操作：call（调用）和 return（返回）。为了方便对比，此处不讨论 throw exception 的情况。在运行一个 C++ 程序时，编译器会先执行 C++ runtime，然后会调用 main 函数，再由 main 函数调用其他的函数。&lt;/p&gt;
+&lt;p&gt;call 操作一般包含以下几个步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;参数入栈：参数从右向左依次入栈&lt;/li&gt;
+&lt;li&gt;返回地址入栈：将当前代码区的下一条待执行的指令入栈，以便在函数 return 之后执行&lt;/li&gt;
+&lt;li&gt;代码区跳转：处理器跳转到被调函数的入口&lt;/li&gt;
+&lt;li&gt;栈帧调整，包括：
+&lt;ol&gt;
+&lt;li&gt;保存当前栈帧状态值，EBP 入栈&lt;/li&gt;
+&lt;li&gt;从当前栈帧切换到新的栈帧，更新 EBP，将 EBP 的值设置为 ESP 的值&lt;/li&gt;
+&lt;li&gt;给新的栈帧分配内存空间，更新 ESP，将 ESP 的值减去所需空间的大小&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;当一个函数通过 return 语句返回时，执行的步骤与调用时相反：&lt;/p&gt;
+&lt;h2 id=&#34;2-协程&#34;&gt;2. 协程&lt;/h2&gt;
+&lt;p&gt;协程由程序所控制，即在用户态执行，而不是像线程一样由操作系统内核管理，使用协程时，不需要如线程一般频繁地进行上下文切换，性能能够得到很大的提升，因此协程的开销远远小于线程的开销。一般来说协程有三种特性：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;suspend 悬停：暂停当前协程的执行，将执行权交还给调用者，但是保留当前栈帧。和函数的 return 类似，协程的 suspend 只能由协程自身发起&lt;/li&gt;
+&lt;li&gt;resume 恢复：继续执行已经 suspend 的协程，重新激活协程的栈帧&lt;/li&gt;
+&lt;li&gt;destroy 销毁：销毁协程的栈帧和其对应的内存&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;可以看到，协程可以在不清除栈帧的情况下被挂起而不被销毁，因此我们不能够使用调用栈这样的数据结构来严格保证活动栈帧的生命周期，我们可以把协程存储在堆中。我们可以把协程的栈帧分为两部分，一部分是&lt;strong&gt;执行栈帧&lt;/strong&gt;，这部分仅在当前协程执行期间存在，在执行结束，即协程 suspend 的时候被释放；另一部分是&lt;strong&gt;数据栈帧&lt;/strong&gt;，这部分即使在协程 suspend 的时候依然存在。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>C&#43;&#43; 智能指针（3）：shared_ptr</title>
+      <link>https://prov1dence.top/posts/cpp/smart-pointer/c&#43;&#43;-smart-pointer-3/</link>
+      <pubDate>Fri, 25 Jan 2019 17:47:38 +1100</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/smart-pointer/c&#43;&#43;-smart-pointer-3/</guid>
+      <description>&lt;h1 id=&#34;c智能指针3shared_ptr&#34;&gt;C++智能指针（3）：shared_ptr&lt;/h1&gt;
+&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
+&lt;p&gt;UniquePointer对象只能绑定单个指针，要实现指针的自动管理和销毁需要引入计数器&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;private:
+    int *counter;
+    T *pointer;
+    D *deleter;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;计数器的主要作用是标识当前指针被几个智能指针对象所引用，在析构当前对象时，使其计数器自减1。如果计数器等于0，则表示已经没有其他的对象在使用当前指针，此时则可以销毁指针，计数器和删除器。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;template&amp;lt;typename T, typename D&amp;gt;
+void SharedPointer&amp;lt;T, D&amp;gt;::release() {
+    if (pointer) {
+        std::cout &amp;lt;&amp;lt; &amp;#34;SharedPointer &amp;#34; &amp;lt;&amp;lt; this &amp;lt;&amp;lt; &amp;#34; counter remains &amp;#34; &amp;lt;&amp;lt; *counter &amp;lt;&amp;lt; std::endl;
+        if (--(*counter) == 0) {
+            std::cout &amp;lt;&amp;lt; &amp;#34;SharedPointer &amp;#34; &amp;lt;&amp;lt; this &amp;lt;&amp;lt; &amp;#34; destructor called.&amp;#34; &amp;lt;&amp;lt; std::endl;
+            (*deleter)(pointer);
+            (*deleter)(counter);
+            (*deleter)(deleter);
+            pointer = nullptr;
+            counter = nullptr;
+            deleter = nullptr;
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;reset函数将指针设为other的指针&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;template&amp;lt;typename T, typename D&amp;gt;
+void SharedPointer&amp;lt;T, D&amp;gt;::reset(const SharedPointer&amp;lt;T, D&amp;gt; &amp;amp;other) {
+    pointer = other.pointer;
+    counter = other.counter;
+    deleter = other.deleter;
+    if (pointer)
+        ++(*counter);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;析构函数可以直接调用release函数&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>C&#43;&#43; 智能指针（2）：unique_ptr</title>
+      <link>https://prov1dence.top/posts/cpp/smart-pointer/c&#43;&#43;-smart-pointer-2/</link>
+      <pubDate>Sat, 19 Jan 2019 01:02:02 +1100</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/smart-pointer/c&#43;&#43;-smart-pointer-2/</guid>
+      <description>&lt;h1 id=&#34;c智能指针2unique_ptr&#34;&gt;C++智能指针（2）：unique_ptr&lt;/h1&gt;
+&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
+&lt;p&gt;在使用 AutoPointer 的时候会发生所有权转移和内存泄漏的问题，所以我们可以对 AutoPointer 类稍加修改，修复这两个问题。&lt;/p&gt;
+&lt;h3 id=&#34;所有权转移&#34;&gt;所有权转移&lt;/h3&gt;
+&lt;p&gt;为了规避可能发生所有权转移的情况，我们可以直接禁止它使用拷贝构造函数和赋值操作符。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    UniquePointer(UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;delete&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;delete&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但很多时候我们都需要使用到传递指针的操作，如果只是使用 deleted 函数禁止拷贝构造函数和赋值操作符，那么这个智能指针存在的意义就不大了，我们可以通过 move 语义来实现移动构造函数和移动赋值操作符，从而在使用 UniquePointer 的时候可以在特定情况下进行所有权转移。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    UniquePointer(UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#66d9ef&#34;&gt;noexcept&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    UniquePointer &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(UniquePointer &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#66d9ef&#34;&gt;noexcept&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;内存泄漏&#34;&gt;内存泄漏&lt;/h3&gt;
+&lt;p&gt;为了防止发生内存泄漏，我们可以在UniquePointer的私有成员中增加一个删除器，并根据当前指针对象的类型指定删除器，从而防止发生内存泄漏。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Deleter&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;()(T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (p)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;delete&lt;/span&gt; p;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;UniquePointer&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  ...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;pointer;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Deleter deleter;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;实现&#34;&gt;实现&lt;/h2&gt;
+&lt;p&gt;根据unique_ptr的源码，能够大致实现UniquePointer类&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;UniquePointer&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;explicit&lt;/span&gt; UniquePointer(T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;t, &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; D &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;d);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;UniquePointer();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    T &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;release&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;reset&lt;/span&gt;(T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    UniquePointer(UniquePointer &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#66d9ef&#34;&gt;noexcept&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    UniquePointer &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(UniquePointer &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#66d9ef&#34;&gt;noexcept&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    UniquePointer(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; UniquePointer &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;delete&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    UniquePointer &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; UniquePointer &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;delete&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;pointer;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    D deleter;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;UniquePointer(T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;t, &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; D &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;d) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;UniquePointer &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; constructor called.&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; t;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;deleter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; d;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::~&lt;/span&gt;UniquePointer() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;UniquePointer &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; destructor called.&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    deleter(&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;T &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;release() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;new_pointer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; new_pointer;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;reset(T &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; p) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        deleter(&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;UniquePointer(UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#66d9ef&#34;&gt;noexcept&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;UniquePointer &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; move constructor called.&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; other.release();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    deleter(std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;move(other.deleter));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; T, &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;operator&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(UniquePointer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, D&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#66d9ef&#34;&gt;noexcept&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;UniquePointer &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; assignment operator called.&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pointer &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; other.pointer) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        reset(other.release());
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        deleter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;move(other.deleter);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;测试&#34;&gt;测试&lt;/h2&gt;
+&lt;p&gt;尝试使用移动构造函数&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>C&#43;&#43; 智能指针（1.5）：move 语义</title>
+      <link>https://prov1dence.top/posts/cpp/smart-pointer/c&#43;&#43;-smart-pointer-1.5/</link>
+      <pubDate>Wed, 02 Jan 2019 09:55:05 +1100</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/smart-pointer/c&#43;&#43;-smart-pointer-1.5/</guid>
+      <description>&lt;h1 id=&#34;c智能指针15move语义&#34;&gt;C++智能指针（1.5）：move语义&lt;/h1&gt;
+&lt;h2 id=&#34;move语义&#34;&gt;move语义&lt;/h2&gt;
+&lt;h3 id=&#34;定义&#34;&gt;定义&lt;/h3&gt;
+&lt;p&gt;右值引用（Rvalue Referene）是 C++ 11中引入的新特性，它实现了转移语义（Move Sementics）和精确传递（Perfect Forwarding），其主要目的有&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;消除两个对象交互时不必要的对象拷贝，节省运算存储资源，提高效率。&lt;/li&gt;
+&lt;li&gt;能够更简洁明确地定义泛型函数。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;实现&#34;&gt;实现&lt;/h3&gt;
+&lt;p&gt;move 语义的实现非常简单，它将传入的参数 _Tp&amp;amp;&amp;amp; __t 使用静态类型转换 static_cast&amp;lt;_Up&amp;amp;&amp;amp;&amp;gt;(__t) 转变成了成了对应类型的右值，也就是说使用 move 语义之后，编译器窃取（一般会在移动构造函数和移动赋值操作符里将原有对象指向 nullptr）了原有对象的右值，并延长了这个右值的生命周期并将其用来赋值给其他的对象，而没有对右值做任何拷贝操作。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_Tp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; remove_reference&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;_Tp&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;type&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;move(_Tp&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; __t) _NOEXCEPT
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;typedef&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;typename&lt;/span&gt; remove_reference&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;_Tp&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;type _Up;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;static_cast&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;_Up&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&amp;gt;&lt;/span&gt;(__t);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;测试&#34;&gt;测试&lt;/h3&gt;
+&lt;p&gt;定义一个 Object 类和一个 MoveObject 函数使用 move 语义返回一个 Object 的类对象，可以看到在 MoveObject 函数返回右值后，obj 对象调用了移动构造函数。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Object&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object() { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Construct&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; Object &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;other) { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Copy&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object(Object &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#66d9ef&#34;&gt;noexcept&lt;/span&gt; { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Move&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;Object() { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Destruct&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Print&lt;/span&gt;() { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Print&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Object &lt;span style=&#34;color:#a6e22e&#34;&gt;MoveObject&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object obj;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; move(obj);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object obj &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; MoveObject();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;/*
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;output:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Construct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Move
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Destruct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Destruct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;*/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;返回值优化rvoreturn-value-optimisation&#34;&gt;返回值优化（RVO，Return value optimisation）&lt;/h3&gt;
+&lt;p&gt;返回值优化是一种编译器优化技术，允许编译器在调用点（&lt;a href=&#34;https://en.wikipedia.org/wiki/Call_site&#34;&gt;call site&lt;/a&gt;）直接构造函数的返回值。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>C&#43;&#43; 智能指针（1）：auto_ptr</title>
+      <link>https://prov1dence.top/posts/cpp/smart-pointer/c&#43;&#43;-smart-pointer-1/</link>
+      <pubDate>Thu, 27 Dec 2018 15:21:35 +1100</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/smart-pointer/c&#43;&#43;-smart-pointer-1/</guid>
+      <description>&lt;h1 id=&#34;c智能指针1auto_ptr&#34;&gt;C++智能指针（1）：auto_ptr&lt;/h1&gt;
+&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
+&lt;p&gt;C++ 中经常会出现因为没有 delete 指针而造成的内存泄漏，例如有一个 Object 类&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Object&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object() { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Construct&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; Object &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;other) { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Copy&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object(Object &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;other) &lt;span style=&#34;color:#66d9ef&#34;&gt;noexcept&lt;/span&gt; { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Move&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;Object() { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Destruct&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Print&lt;/span&gt;() { std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Print&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建一个指向 Object 类型的指针&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;o &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Object();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    o&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;Print();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;/*
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;output:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Construct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Print
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;*/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们没有进行delete o的操作，导致o没有被正确地析构，造成了内存泄漏。作为对比，创建一个Obj类型的对象&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;o1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Object();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    o1&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;Print();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Object o2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Object();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    o2.Print();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;/*
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;output:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Construct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Print
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Construct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Print
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;Destruct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;*/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;产生这样的结果是因为对象创建在栈（&lt;a href=&#34;https://isocpp.org/blog/2015/09/stack-heap-pool-tony-bulldozer00-bd00-dasilva&#34;&gt;stack&lt;/a&gt;）上，编译器会自动进行对象的创建和销毁，而指针是创建在堆（heap）上，需要手动进行创建和销毁。为了规避这样的问题，我们可以封装一个智能指针类，用类来管理指针，防止造成内存泄漏，并且尽可能的模仿指针的用法。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>C&#43;&#43; 基础知识整理</title>
+      <link>https://prov1dence.top/posts/cpp/basics/basics/</link>
+      <pubDate>Sun, 05 Jul 2015 08:57:52 +1000</pubDate>
+      <guid>https://prov1dence.top/posts/cpp/basics/basics/</guid>
+      <description>&lt;h1 id=&#34;c-基础知识&#34;&gt;C++ 基础知识&lt;/h1&gt;
+&lt;h2 id=&#34;const-相关&#34;&gt;const 相关&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;#define，typedef，const&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;# 是宏，宏不做类型检查，只进行简单替换；在编译前被处理，编译阶段的程序是宏处理后的结果&lt;/li&gt;
+&lt;li&gt;typedef 用于声明自定义数据类型，简化代码&lt;/li&gt;
+&lt;li&gt;const 用于定义常量，有数据类型，编译器会对进行类型检查&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;const 和指针&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;const char *p: p is a pointer to const char&lt;/li&gt;
+&lt;li&gt;char const *p: p is a pointer to char const（同上）&lt;/li&gt;
+&lt;li&gt;char *const p: p is a const pointer to char&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;a&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;b&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; p3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;c&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;d&amp;#39;&lt;/span&gt;; &lt;span style=&#34;color:#75715e&#34;&gt;// error: read-only variable is notassignable
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;p2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;e&amp;#39;&lt;/span&gt;; &lt;span style=&#34;color:#75715e&#34;&gt;// error: read-only variable is notassignable
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;p3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;f&amp;#39;&lt;/span&gt;); &lt;span style=&#34;color:#75715e&#34;&gt;// error: cannot assign tovariable &amp;#39;p3&amp;#39; with const-qualified type &amp;#39;char *const&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;p3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;;  &lt;span style=&#34;color:#75715e&#34;&gt;// error: cannot assign to variable&amp;#39;p3&amp;#39; with const-qualified type &amp;#39;char *const&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;const 和类&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
