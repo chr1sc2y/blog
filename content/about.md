@@ -5,7 +5,23 @@ draft: false
 showtoc: false
 ---
 
-Hi, I'm Zhengyu. Software Engineer.
+### 👋 Hi there
 
-- [GitHub](https://github.com/chr1sc2y) — code, projects, longer bio
-- Resume: [English](/attachments/Resume_Zhengyu_Chen_EN_2026.pdf) · [简体中文](/attachments/陈正宇_简历_2026.pdf)
+I'm Zhengyu — Software Engineer @ **ByteDance**, previously **Amazon**, **Tencent**, and a startup.
+
+### 🌐 My Corners of the Web
+
+- 📝 **[Personal Blog](https://prov1dence.top/archives)**
+- 🤖 **[Firsthand AI Digest](https://ai.prov1dence.top/)**
+- 📷 **[Photography Website](https://photography.prov1dence.top/)**
+
+### 📧 Get in Touch
+
+- 💼 [LinkedIn](https://www.linkedin.com/in/chr1sc2y/)
+- 📫 zhengyuchen.chris@gmail.com
+
+
+### 📄 Resume
+
+- [English](/attachments/Resume_Zhengyu_Chen_EN_2026.pdf)
+- [简体中文](/attachments/陈正宇_简历_2026.pdf)
