@@ -28,12 +28,6 @@ jobs:
             echo '---'
             echo
             cat /tmp/readme.md
-            echo
-            echo
-            echo '### 📄 Resume'
-            echo
-            echo '- [English](/attachments/Resume_Zhengyu_Chen_EN_2026.pdf)'
-            echo '- [简体中文](/attachments/陈正宇_简历_2026.pdf)'
           } > /tmp/about.md.new
 
       - name: Commit if changed

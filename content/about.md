@@ -15,13 +15,12 @@ I'm Zhengyu — Software Engineer @ **ByteDance**, previously **Amazon**, **Tenc
 - 🤖 **[Firsthand AI Digest](https://ai.prov1dence.top/)**
 - 📷 **[Photography Website](https://photography.prov1dence.top/)**
 
+### 📄 Resume
+
+- [English](https://prov1dence.top/attachments/Resume_Zhengyu_Chen_EN_2026.pdf)
+- [简体中文](https://prov1dence.top/attachments/陈正宇_简历_2026.pdf)
+
 ### 📧 Get in Touch
 
 - 💼 [LinkedIn](https://www.linkedin.com/in/chr1sc2y/)
 - 📫 zhengyuchen.chris@gmail.com
-
-
-### 📄 Resume
-
-- [English](/attachments/Resume_Zhengyu_Chen_EN_2026.pdf)
-- [简体中文](/attachments/陈正宇_简历_2026.pdf)
