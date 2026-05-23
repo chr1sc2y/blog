@@ -372,14 +372,11 @@
       <link>https://prov1dence.top/about/</link>
       <pubDate>Tue, 18 Jan 2022 21:48:35 +0800</pubDate>
       <guid>https://prov1dence.top/about/</guid>
-      <description>&lt;h3 id=&#34;hi-there-&#34;&gt;Hi there 👋&lt;/h3&gt;
-&lt;p&gt;This is Zhengyu, Software Engineer at ByteDance, previously at Amazon, Tencent, and a Startup.&lt;/p&gt;
-&lt;p&gt;Checkout my resume:&lt;/p&gt;
+      <description>&lt;p&gt;Hi, I&amp;rsquo;m Zhengyu. Software Engineer.&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://prov1dence.top/attachments/Resume_Zhengyu_Chen_EN_2026.pdf&#34;&gt;English&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://prov1dence.top/attachments/%E9%99%88%E6%AD%A3%E5%AE%87_%E7%AE%80%E5%8E%86_2026.pdf&#34;&gt;Simplified Chinese&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Cheers 🍻&lt;/p&gt;</description>
+&lt;li&gt;&lt;a href=&#34;https://github.com/chr1sc2y&#34;&gt;GitHub&lt;/a&gt; — code, projects, longer bio&lt;/li&gt;
+&lt;li&gt;Resume: &lt;a href=&#34;https://prov1dence.top/attachments/Resume_Zhengyu_Chen_EN_2026.pdf&#34;&gt;English&lt;/a&gt; · &lt;a href=&#34;https://prov1dence.top/attachments/%E9%99%88%E6%AD%A3%E5%AE%87_%E7%AE%80%E5%8E%86_2026.pdf&#34;&gt;简体中文&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
     <item>
       <title>Kafka 入门</title>
