@@ -5,7 +5,6 @@ theme: "PaperMod"
 
 pagination:
   pagerSize: 5
-theme: PaperMod
 
 enableRobotsTXT: true
 buildDrafts: false
@@ -106,9 +105,9 @@ params:
 
 menu:
   main:
-    - identifier: archives
+    - identifier: posts
       name: Posts
-      url: /archives/
+      url: /posts/
       weight: 10
     - identifier: about
       name: About

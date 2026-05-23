@@ -8,7 +8,7 @@ For new posts, use [sop-add-post.md](sop-add-post.md) instead.
 
 ## Deploy model — read this first
 
-This site is deployed by **GitHub Actions**, not by hand. There is **one repo** (`chr1sc2y/hugo-site`); the built HTML lives on the `gh-pages` branch and is managed entirely by CI.
+This site is deployed by **GitHub Actions**, not by hand. There is **one repo** (`chr1sc2y/blog`); the built HTML lives on the `gh-pages` branch and is managed entirely by CI.
 
 - You do **not** run `hugo` locally to deploy.
 - You do **not** push to a second repo. (The old `public/` submodule pointing at `chr1sc2y/prov1dence.github.io` was retired in commit `f0f3726`, 2026-05-23.)
@@ -51,7 +51,7 @@ If SSH on port 22 is blocked (VPN), use the port-443 fallback documented in `CLA
 
 ### 5. Wait for the Action
 
-GitHub Actions runs `hugo --minify` and pushes the build to `gh-pages`. Takes ~60 s. Watch at https://github.com/chr1sc2y/hugo-site/actions.
+GitHub Actions runs `hugo --minify` and pushes the build to `gh-pages`. Takes ~60 s. Watch at https://github.com/chr1sc2y/blog/actions.
 
 ### 6. Verify
 

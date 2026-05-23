@@ -68,10 +68,10 @@ No scheduled windows. GitHub Pages serves static content with no downtime; deplo
 **Site down (DNS / Pages issue):**
 1. Check `https://www.githubstatus.com/`.
 2. Verify DNS: `dig prov1dence.top A` — should return GitHub Pages IPs (185.199.108.153 / .109.153 / .110.153 / .111.153).
-3. Verify Pages config: GitHub → `chr1sc2y/hugo-site` → Settings → Pages → custom domain = `prov1dence.top`, source = `gh-pages` branch.
+3. Verify Pages config: GitHub → `chr1sc2y/blog` → Settings → Pages → custom domain = `prov1dence.top`, source = `gh-pages` branch.
 
 **Deployment failing:**
-1. Check the Actions tab on `chr1sc2y/hugo-site` for error logs.
+1. Check the Actions tab on `chr1sc2y/blog` for error logs.
 2. Common causes: Hugo version mismatch, malformed frontmatter, missing PaperMod submodule (Actions does `submodules: recursive`, so this would mean the submodule URL is broken).
 
 **Broken page or 404 after deploy:**

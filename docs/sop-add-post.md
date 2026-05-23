@@ -78,7 +78,7 @@ git push origin master
 
 Commit-message convention (per `git log`): prefix with `add:`, `update:`, or `fix:` followed by a short imperative description.
 
-GitHub Actions then runs `hugo --minify` and pushes the build to `gh-pages`. Takes ~60 s. Watch progress at https://github.com/chr1sc2y/hugo-site/actions.
+GitHub Actions then runs `hugo --minify` and pushes the build to `gh-pages`. Takes ~60 s. Watch progress at https://github.com/chr1sc2y/blog/actions.
 
 ---
 

@@ -154,14 +154,23 @@ LeetCode/、Code-Jam/、Kick-Start/、compilation/、Machine-Learning/、LeetCod
 
 ---
 
-## 阶段五：构建与部署
+## 阶段五：提交与部署
 
-### Hugo 构建
+部署完全由 GitHub Actions 处理：push 到 `master` → CI 跑 `hugo --minify` → 推到 `gh-pages` 分支 → GitHub Pages 上线，约 60 秒。**不要本地跑 `hugo` 然后提交 `public/`**，`public/` 已经 gitignore。
+
+### 本地预览（可选）
 ```bash
-hugo --minify
+hugo server -D    # 浏览器打开 http://localhost:1313 确认渲染
 ```
 
-确认输出页数合理（对比上一次）。
+### 提交并推送
+```bash
+git add content/posts/<新文章路径>
+git commit -m "add: <文章主题简述>"
+git push origin master
+```
+
+仓库 remote：`git@ssh.github.com:chr1sc2y/blog.git`。
 
 ### SSH 说明
 
@@ -172,29 +181,14 @@ hugo --minify
 - key：`~/.ssh/id_ed25519`
 - SSH config host：`ssh.github.com`（port 443）
 
-### 提交推送顺序
-
-**1. public submodule**（`prov1dence.github.io`）：
-```bash
-cd public
-git remote set-url origin git@ssh.github.com:chr1sc2y/prov1dence.github.io.git
-git add .
-git commit -m "update: <文章主题简述>"
-git push origin master
-```
-
-**2. 主仓库**（`hugo-site`）：
-```bash
-git remote set-url origin git@ssh.github.com:chr1sc2y/hugo-site.git
-git add content/posts/<新文章路径> public
-git commit -m "update: <文章主题简述>"
-git push origin master
-```
-
 **SSH fallback**（config 不生效时）：
 ```bash
 GIT_SSH_COMMAND="ssh -p 443 -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes" git push origin master
 ```
+
+### 验证
+
+打开 GitHub Actions 页面确认构建成功，然后访问 https://prov1dence.top 检查文章上线。
 
 ---
 

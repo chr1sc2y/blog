@@ -1,4 +1,4 @@
-# hugo-site
+# blog
 
 Zhengyu Chen 的个人技术博客，地址 [prov1dence.top](https://prov1dence.top/)。
 
@@ -6,16 +6,18 @@ Zhengyu Chen 的个人技术博客，地址 [prov1dence.top](https://prov1dence.
 
 - **生成器**：Hugo v0.143.1（extended）
 - **主题**：PaperMod（`themes/PaperMod`，git submodule）
-- **部署**：GitHub Pages，`public/` 指向 `chr1sc2y/prov1dence.github.io`（git submodule）
+- **部署**：GitHub Pages，构建产物推到本仓库的 `gh-pages` 分支（由 GitHub Actions 管理，见 `.github/workflows/deploy.yml`）
 - **配置**：`config.yml`
 
 ## 目录结构
 
 ```
-content/posts/          # 博客文章，按主题分目录
+content/posts/          # 博客文章，按主题分目录（_index.md 是 /posts/ 列表页）
+content/about.md        # /about
 static/attachments/     # 简历 PDF 等静态文件
 themes/PaperMod/        # 主题 submodule
-public/                 # 构建输出（submodule）
+.github/workflows/      # CI: push to master → build → deploy to gh-pages
+docs/                   # 运维文档（tech-stack / maintenance / SOPs）
 .claude/commands/       # Claude Code skills
 ```
 
@@ -24,20 +26,21 @@ public/                 # 构建输出（submodule）
 ## 常用命令
 
 ```bash
-hugo server -D      # 本地预览
-hugo --minify       # 构建到 public/
+hugo server -D      # 本地预览（含草稿）
+hugo --minify       # 构建到 public/（仅本地预览用，CI 会自己构建）
 ```
 
 ## 部署
 
-先推 `public` submodule，再推主仓库。VPN 环境下 SSH 22 端口不通，走 443：
+推到 `master` 即可，GitHub Actions 自动构建并发布到 `gh-pages`，约 60 秒。**不要手动 `hugo` 后提交 `public/`**，也不要碰 `gh-pages` 分支。详见 `docs/sop-site-edit.md`。
+
+VPN 环境下 SSH 22 端口不通，走 443：
 
 ```bash
-# SSH fallback
 GIT_SSH_COMMAND="ssh -p 443 -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes" git push origin master
 ```
 
-两个仓库的 remote 均使用 `git@ssh.github.com:chr1sc2y/<repo>.git`。
+Remote: `git@ssh.github.com:chr1sc2y/blog.git`。
 
 ## Skill
 

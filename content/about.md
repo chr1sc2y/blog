@@ -5,13 +5,7 @@ draft: false
 showtoc: false
 ---
 
-### Hi there 👋
+Hi, I'm Zhengyu. Software Engineer.
 
-This is Zhengyu, Software Engineer at ByteDance, previously at Amazon, Tencent, and a Startup.
-
-Checkout my resume:
-
-- [English](/attachments/Resume_Zhengyu_Chen_EN_2026.pdf)
-- [Simplified Chinese](/attachments/陈正宇_简历_2026.pdf)
-
-Cheers 🍻
+- [GitHub](https://github.com/chr1sc2y) — code, projects, longer bio
+- Resume: [English](/attachments/Resume_Zhengyu_Chen_EN_2026.pdf) · [简体中文](/attachments/陈正宇_简历_2026.pdf)

@@ -5,7 +5,7 @@
 Static technical blog hosted on GitHub Pages, built with Hugo. No backend, no database — all content is compiled at deploy time from Markdown.
 
 **Live URL:** https://prov1dence.top
-**Repository:** https://github.com/chr1sc2y/hugo-site
+**Repository:** https://github.com/chr1sc2y/blog
 **Maintained by:** Prov1dence (chr1sc2y), with Claude (AI) assistance via Claude Code
 
 ---
@@ -114,8 +114,8 @@ There is a benign duplicate `theme: PaperMod` line in `config.yml` — Hugo acce
 Requirements: Hugo extended ≥ 0.143.1, Git.
 
 ```bash
-git clone --recurse-submodules git@github.com:chr1sc2y/hugo-site.git
-cd hugo-site
+git clone --recurse-submodules git@ssh.github.com:chr1sc2y/blog.git
+cd blog
 hugo server -D       # -D = include drafts
 ```
 
