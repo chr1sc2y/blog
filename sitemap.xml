@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://prov1dence.top/posts/</loc>
+    <lastmod>2026-06-18T10:00:00+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/</loc>
+    <lastmod>2026-06-18T10:00:00+08:00</lastmod>
+  </url><url>
     <loc>https://prov1dence.top/categories/ai-agent/</loc>
     <lastmod>2026-05-18T10:00:00+08:00</lastmod>
   </url><url>
@@ -9,12 +15,6 @@
     <lastmod>2026-05-18T10:00:00+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/posts/harness-engineering/harness-engineering-architecture/</loc>
-    <lastmod>2026-05-18T10:00:00+08:00</lastmod>
-  </url><url>
-    <loc>https://prov1dence.top/posts/</loc>
-    <lastmod>2026-05-18T10:00:00+08:00</lastmod>
-  </url><url>
-    <loc>https://prov1dence.top/</loc>
     <lastmod>2026-05-18T10:00:00+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/posts/ai-agent/claude-code-architecture/</loc>
