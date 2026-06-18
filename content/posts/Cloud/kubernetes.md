@@ -1,0 +1,137 @@
+---
+title: "kubernetes"
+date: 2023-01-29T04:26:00+08:00
+draft: true
+categories: ["Cloud"]
+tags: ["kubernetes", "cloud-native"]
+---
+
+# Kubernetes
+
+Kubernetes 是一个容器编排系统，简称 k8s，它在概念上主要分为资源对象和控制对象两种，资源对象有容器、应用、配置、网络、存储等，控制对象是用于管理资源对象而抽象出来的控制层。
+
+## 1 资源对象
+
+### 1.1 容器
+
+容器是最小的隔离单位，类似于一台虚拟机。
+
+### 1.2 Pod
+
+Pod 是 kubernetes 中部署的最小单位，也是集群中运行的进程，它用于封装容器、存储、网络 IP、运行策略等，kuberentes 直接管理 Pod 而不是容器。
+
+Pod 被创建后会被 Kubernetes 调度到集群的 node 上，直到这个 Pod 进程被终止或 node 发生故障。
+
+### 1.2.1 管理容器
+
+通常来说每个 Pod 用于封装单个容器，除非有多个耦合并且需要共享存储和网络的容器，这些容器共同成为一个 service 单位，需要使用另一个 sidecar 容器来更新这些文件。
+
+每个 Pod 都会被分配一个唯一的 IP，Pod 中的所有容器共享存储和网络空间（包括 IP 和 port），内部容器在与外部通信时需要分配网络资源（例如使用宿主机的端口映射）。
+
+### 1.2.2 Pod 中的容器
+
+## 2 控制对象
+
+### 2.1 ReplicaSet
+
+在进行服务的部署时，一般会部署多个副本，以提高承载能力，并防止单点故障影响服务的可用性。
+
+ReplicaSet 就是多个副本的集合，它是一个控制器，当其中一个副本因为异常而被终止后，控制器会启动新的 pod 来满足副本数的需求。
+
+一般我们通过 Deployment 来控制 ReplicaSet。
+
+### 2.2 Deployment
+
+Deployment 也是一个控制器，通过配置文件我们可以很方便地控制 pod 的部署、更新、回滚、扩展、收缩等等。
+
+获取配置：
+
+```plain text
+kubectl get deploy
+```
+
+### 2.3 Service
+
+Service 用于发现后端集群中的 pod 服务，为具有相同功能的容器提供统一的网络入口，并将请求通过负载均衡后分发到各个容器上。Service 有三种类型：
+
+1. ClusterIP
+2. NodePort
+   - 在所有 node 上开启一个端口，将所有流量转发到服务的对应端口上去
+   - 坏处：无法控制 node 的 ip 发生变化的情况
+3. LoadBalancer
+   - 由 kubernetes 提供一个 ip
+
+### servicemonitor
+
+用于管理 service 对象，包含 SampleLimit 等信息。
+
+```plain text
+kubectl get servicemonitor -o wide
+kubectl edit servicemonitor $servicemonitor_name
+```
+
+### 2.4 Namespace
+
+Namespace 可以将不同的资源对象隔离开，不同的 Namespace 之间的资源是不共享的。
+
+## 3 资源管理
+
+### 访问集群
+
+为了访问集群，我们需要拥有访问它的凭证，并通过修改环境变量、修改默认配置参数、添加执行参数等方式使用凭证：
+
+```plain text
+# 1
+echo "export KUBECONFIG_SAVED=config" > ~/.bashrc
+source ~/.bashrc
+
+# 2
+kubectl --kubeconfig=config
+```
+
+### Context
+
+kubeconfig 文件中的 context 用于对参数分组，它包含 cluster, namespace, user 三个参数：
+
+```yaml
+contexts:
+- context:
+    cluster: c
+    user: u
+  name: n
+```
+
+对 context 的所有操作都在 `kubectl config` 下。
+
+### Namespace
+
+- 获取集群中现有的 namespace：`kubectl get ns`
+- 集群中默认有 `default` 和 `kube-system` 两个 namespace
+- 使用 `-n` 指定操作的 namespace，默认在 `default` 下执行，为整个集群提供服务的应用一般部署在 `kube-system` 下，例如在安装 kubernetes 集群时部署的 `kubedns`、`heapseter`、`EFK` 等
+- 并不是所有的资源对象都有 namespace，`node` 和 `persistentVolume` 就不属于任何 namespace
+
+### 创建
+
+通过 yaml 文件：
+
+```yaml
+# namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns
+```
+
+```plain text
+kubectl create -f namespace.yaml
+```
+
+直接创建：
+
+```plain text
+kubectl create namespace foo
+```
+
+### 删除
+
+原 Notion 页面到这里结束，后续如果继续整理，可以补充 namespace 删除、deployment rollout、service debug 等常用操作。
