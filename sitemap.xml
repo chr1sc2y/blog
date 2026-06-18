@@ -26,12 +26,6 @@
     <loc>https://prov1dence.top/posts/ai-agent/google-adk-architecture/</loc>
     <lastmod>2026-02-27T23:01:12+08:00</lastmod>
   </url><url>
-    <loc>https://prov1dence.top/posts/cloud/aws-sap-c02-cheatsheet/</loc>
-    <lastmod>2024-08-20T10:00:00+08:00</lastmod>
-  </url><url>
-    <loc>https://prov1dence.top/categories/cloud/</loc>
-    <lastmod>2024-08-20T10:00:00+08:00</lastmod>
-  </url><url>
     <loc>https://prov1dence.top/categories/redis/</loc>
     <lastmod>2023-02-01T18:02:04+11:00</lastmod>
   </url><url>
@@ -85,6 +79,9 @@
   </url><url>
     <loc>https://prov1dence.top/categories/message-broker/</loc>
     <lastmod>2021-11-29T23:41:52+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/categories/cloud/</loc>
+    <lastmod>2021-10-21T18:01:12+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/posts/cloud/intro-to-prometheus/</loc>
     <lastmod>2021-10-21T18:01:12+08:00</lastmod>

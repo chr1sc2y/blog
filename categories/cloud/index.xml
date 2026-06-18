@@ -6,51 +6,8 @@
     <description>Recent content in Cloud on Zhengyu Chen - 尾張</description>
     <generator>Hugo -- 0.143.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 20 Aug 2024 10:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 21 Oct 2021 18:01:12 +0800</lastBuildDate>
     <atom:link href="https://prov1dence.top/categories/cloud/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>AWS SAP-C02 认证速查笔记</title>
-      <link>https://prov1dence.top/posts/cloud/aws-sap-c02-cheatsheet/</link>
-      <pubDate>Tue, 20 Aug 2024 10:00:00 +0800</pubDate>
-      <guid>https://prov1dence.top/posts/cloud/aws-sap-c02-cheatsheet/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;这是一份认证备考速查笔记，按服务域和考试易错点组织；AWS 服务能力和考试范围会变化，正式备考应以 AWS 最新官方文档和考试指南为准。&lt;/p&gt;&lt;/blockquote&gt;
-&lt;h2 id=&#34;identity&#34;&gt;Identity&lt;/h2&gt;
-&lt;table&gt;
-&lt;thead&gt;&lt;tr&gt;&lt;th&gt;AWS 服务&lt;/th&gt;&lt;th&gt;用途&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;IAM&lt;/td&gt;&lt;td&gt;无法跨账户 assume role&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;IAM Service Role&lt;/td&gt;&lt;td&gt;将权限授予 AWS 服务，从而代为执行操作&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;STS（Security Token Service）&lt;/td&gt;&lt;td&gt;创建临时的、有限权限的凭证&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;SAML（Security Assertion Markup Language）&lt;/td&gt;&lt;td&gt;在身份提供商（IdP）和服务提供商（SP）之间交换认证和授权数据；通常用于实现单点登录（SSO）&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;Cognito&lt;/td&gt;&lt;td&gt;身份与访问管理：&lt;br&gt;· identity pool：向 AWS 授予临时访问权限&lt;br&gt;· user pool：用于用户注册和认证&lt;/td&gt;&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h3 id=&#34;identity-based-policy-vs-resource-based-policy&#34;&gt;Identity-based Policy vs. Resource-based Policy&lt;/h3&gt;
-&lt;figure&gt;&lt;img src=&#34;https://prov1dence.top/attachments/aws-sap-c02/diagram-9.png&#34; alt=&#34;Identity-based 与 Resource-based 策略对比图&#34;&gt;&lt;figcaption&gt;来自备考笔记的原始示意图。&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;h3 id=&#34;iam-permission-boundary&#34;&gt;IAM Permission Boundary&lt;/h3&gt;
-&lt;p&gt;权限边界：限制一个 IAM User / Role 能够获得的最大权限。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;https://prov1dence.top/attachments/aws-sap-c02/diagram-1.png&#34; alt=&#34;IAM 权限边界示意图&#34;&gt;&lt;figcaption&gt;来自备考笔记的原始示意图。&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;h3 id=&#34;stsaws-security-token-service&#34;&gt;STS（AWS Security Token Service）&lt;/h3&gt;
-&lt;p&gt;创建临时安全凭证。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;https://prov1dence.top/attachments/aws-sap-c02/diagram-2.png&#34; alt=&#34;STS 示意图&#34;&gt;&lt;figcaption&gt;来自备考笔记的原始示意图。&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;figure&gt;&lt;img src=&#34;https://prov1dence.top/attachments/aws-sap-c02/diagram-3.png&#34; alt=&#34;STS 示意图&#34;&gt;&lt;figcaption&gt;来自备考笔记的原始示意图。&lt;/figcaption&gt;&lt;/figure&gt;
-&lt;h3 id=&#34;trust-policy-amp-permission-policy&#34;&gt;Trust Policy &amp;amp; Permission Policy&lt;/h3&gt;
-&lt;p&gt;Trust Policy 指定哪个主体（Principal）可以执行哪些操作（Action）。&lt;/p&gt;
-      &lt;pre&gt;&lt;code&gt;{
-  &#34;Version&#34;: &#34;2012-10-17&#34;,
-  &#34;Statement&#34;: [
-    {
-      &#34;Effect&#34;: &#34;Allow&#34;,
-      &#34;Principal&#34;: {
-        &#34;AWS&#34;: &#34;arn:aws:iam::123456789012:user/Alice&#34;
-      },
-      &#34;Action&#34;: &#34;sts:AssumeRole&#34;
-    }
-  ]
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Permission Policy 定义拥有该角色的用户或服务，可以对哪些 AWS 资源执行哪些操作。&lt;/p&gt;</description>
-    </item>
     <item>
       <title>Prometheus 入门</title>
       <link>https://prov1dence.top/posts/cloud/intro-to-prometheus/</link>
