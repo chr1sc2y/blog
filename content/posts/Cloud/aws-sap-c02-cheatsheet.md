@@ -420,14 +420,3 @@ categories: ["Cloud"]
 <tr><td>Backup &amp; Restore</td><td>RTO 与 RPO 为小时级</td></tr>
 </tbody>
 </table>
-
-## 错题笔记
-<ul>
-<li>预留实例（RI）适用于 EC2 实例的长期预留，但不适用于其他类型的计算资源（如 Fargate 和 Lambda），在需求波动较大时可能不够灵活。</li>
-<li>Compute Savings Plan 为所有类型的计算资源（EC2、Fargate、Lambda）提供灵活的节省选项，可跨账户和跨区域应用，灵活性和成本节省最大，适合组织内不同账户和波动需求。</li>
-<li>处理 API Gateway 的跨域问题，应直接在 API Gateway 上启用 CORS。</li>
-<li>使用预装 CodeDeploy 代理的 AMI 配置 Auto Scaling 组，可简化部署管理。</li>
-<li>Provisioned IOPS 不能按需自动伸缩（don't scale on demand）。</li>
-<li>将 API Gateway 转换为 edge-optimized 端点并启用缓存，比 ElastiCache 更便宜。</li>
-<li>将 EC2 实例用作网络代理（NAT）时，需要禁用 source/destination check。</li>
-</ul>
