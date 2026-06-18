@@ -1,7 +1,7 @@
 ---
 title: "AWS SAP-C02 认证速查笔记"
 date: 2024-08-20T10:00:00+08:00
-draft: false
+draft: true
 categories: ["Cloud"]
 ---
 
