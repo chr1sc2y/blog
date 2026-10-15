@@ -2,23 +2,29 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://prov1dence.top/categories/ai-agents/</loc>
+    <lastmod>2026-10-15T10:00:00+08:00</lastmod>
+  </url><url>
     <loc>https://prov1dence.top/categories/</loc>
-    <lastmod>2026-09-09T00:00:00+08:00</lastmod>
+    <lastmod>2026-10-15T10:00:00+08:00</lastmod>
   </url><url>
-    <loc>https://prov1dence.top/posts/systems/consistent-hashing/</loc>
-    <lastmod>2026-09-09T00:00:00+08:00</lastmod>
-  </url><url>
-    <loc>https://prov1dence.top/categories/distributed-systems/</loc>
-    <lastmod>2026-09-09T00:00:00+08:00</lastmod>
+    <loc>https://prov1dence.top/posts/ai-agents/comparing-agent-sdks/</loc>
+    <lastmod>2026-10-15T10:00:00+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/posts/</loc>
-    <lastmod>2026-09-09T00:00:00+08:00</lastmod>
+    <lastmod>2026-10-15T10:00:00+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/</loc>
-    <lastmod>2026-09-09T00:00:00+08:00</lastmod>
+    <lastmod>2026-10-15T10:00:00+08:00</lastmod>
   </url><url>
-    <loc>https://prov1dence.top/categories/ai-agents/</loc>
-    <lastmod>2026-09-09T00:00:00+08:00</lastmod>
+    <loc>https://prov1dence.top/categories/ai-engineering/</loc>
+    <lastmod>2026-10-15T10:00:00+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/posts/ai-agents/physical-ai-simulation-basics/</loc>
+    <lastmod>2026-10-15T10:00:00+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/posts/ai-agents/local-hybrid-retrieval/</loc>
+    <lastmod>2026-10-15T10:00:00+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/posts/ai-agents/engineering-reliable-coding-agents/</loc>
     <lastmod>2026-09-09T00:00:00+08:00</lastmod>
@@ -100,6 +106,12 @@
   </url><url>
     <loc>https://prov1dence.top/categories/cloud/</loc>
     <lastmod>2021-10-21T18:01:12+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/posts/systems/consistent-hashing/</loc>
+    <lastmod>2021-09-09T00:00:00+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/categories/distributed-systems/</loc>
+    <lastmod>2021-09-09T00:00:00+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/categories/python/</loc>
     <lastmod>2021-08-04T17:38:52+08:00</lastmod>

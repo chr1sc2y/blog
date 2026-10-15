@@ -6,20 +6,20 @@
     <description>Recent content in Categories on Zhengyu Chen</description>
     <generator>Hugo -- 0.143.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 09 Sep 2026 00:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 15 Oct 2026 10:00:00 +0800</lastBuildDate>
     <atom:link href="https://prov1dence.top/categories/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Distributed Systems</title>
-      <link>https://prov1dence.top/categories/distributed-systems/</link>
-      <pubDate>Wed, 09 Sep 2026 00:00:00 +0800</pubDate>
-      <guid>https://prov1dence.top/categories/distributed-systems/</guid>
-      <description></description>
-    </item>
     <item>
       <title>AI Agents</title>
       <link>https://prov1dence.top/categories/ai-agents/</link>
-      <pubDate>Mon, 18 May 2026 10:00:00 +0800</pubDate>
+      <pubDate>Thu, 15 Oct 2026 10:00:00 +0800</pubDate>
       <guid>https://prov1dence.top/categories/ai-agents/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>AI Engineering</title>
+      <link>https://prov1dence.top/categories/ai-engineering/</link>
+      <pubDate>Mon, 22 Jun 2026 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/categories/ai-engineering/</guid>
       <description></description>
     </item>
     <item>
@@ -97,6 +97,13 @@
       <link>https://prov1dence.top/categories/cloud/</link>
       <pubDate>Thu, 21 Oct 2021 18:01:12 +0800</pubDate>
       <guid>https://prov1dence.top/categories/cloud/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Distributed Systems</title>
+      <link>https://prov1dence.top/categories/distributed-systems/</link>
+      <pubDate>Thu, 09 Sep 2021 00:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/categories/distributed-systems/</guid>
       <description></description>
     </item>
     <item>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>AI Engineering on Zhengyu Chen</title>
+    <link>https://prov1dence.top/categories/ai-engineering/</link>
+    <description>Recent content in AI Engineering on Zhengyu Chen</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 15 Oct 2026 10:00:00 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/ai-engineering/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Physical AI and Simulation Generation Basics</title>
+      <link>https://prov1dence.top/posts/ai-agents/physical-ai-simulation-basics/</link>
+      <pubDate>Mon, 22 Jun 2026 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/ai-agents/physical-ai-simulation-basics/</guid>
+      <description>A dependency-ordered primer on Physical AI, embodied AI, simulation-ready assets, targeted datasets, sim-to-real, robot learning, and agent-guided generation.</description>
+    </item>
+    <item>
+      <title>Local Hybrid Retrieval for Private Knowledge Bases</title>
+      <link>https://prov1dence.top/posts/ai-agents/local-hybrid-retrieval/</link>
+      <pubDate>Sat, 20 Jun 2026 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/ai-agents/local-hybrid-retrieval/</guid>
+      <description>Structured queries, inverted indexes, BM25, vector embeddings, reciprocal-rank fusion, SQLite architecture, and local privacy boundaries.</description>
+    </item>
+  </channel>
+</rss>

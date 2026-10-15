@@ -6,8 +6,15 @@
     <description>Recent content in AI Agents on Zhengyu Chen</description>
     <generator>Hugo -- 0.143.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 09 Sep 2026 00:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 15 Oct 2026 10:00:00 +0800</lastBuildDate>
     <atom:link href="https://prov1dence.top/categories/ai-agents/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Comparing Agent SDKs: Who Owns the Loop, State, and Runtime?</title>
+      <link>https://prov1dence.top/posts/ai-agents/comparing-agent-sdks/</link>
+      <pubDate>Thu, 15 Oct 2026 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/ai-agents/comparing-agent-sdks/</guid>
+      <description>An architectural comparison of the OpenAI client SDK, OpenAI Agents SDK, Claude Agent SDK, Google ADK, Vercel AI SDK, and LangGraph through execution, state, permissions, and recovery.</description>
+    </item>
     <item>
       <title>Engineering Reliable Coding Agents</title>
       <link>https://prov1dence.top/posts/ai-agents/engineering-reliable-coding-agents/</link>
