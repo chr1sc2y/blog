@@ -1,6 +1,6 @@
 ---
 title: "Consistent Hashing for Distributed Systems"
-date: 2026-09-09T00:00:00+08:00
+date: 2021-09-09T00:00:00+08:00
 draft: false
 categories: ["Distributed Systems"]
 description: "How hash rings, Jump Consistent Hash, and Maglev balance distribution, remapping, lookup cost, and operational constraints."
