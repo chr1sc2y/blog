@@ -6,8 +6,22 @@
     <description>Recent content in Distributed Systems on Zhengyu Chen</description>
     <generator>Hugo -- 0.143.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 09 Sep 2021 00:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 14 Nov 2025 10:00:00 +0800</lastBuildDate>
     <atom:link href="https://prov1dence.top/categories/distributed-systems/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rebuilding a Data Platform Under Continuous Writes</title>
+      <link>https://prov1dence.top/posts/systems/rebuilding-a-data-platform-under-continuous-writes/</link>
+      <pubDate>Fri, 14 Nov 2025 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/systems/rebuilding-a-data-platform-under-continuous-writes/</guid>
+      <description>A worked engineering case study in stable data identity, versioned replication, bounded caching, safe ownership transfer, and measurable recovery.</description>
+    </item>
+    <item>
+      <title>Bounding Database Work in a Shared Data Access Service</title>
+      <link>https://prov1dence.top/posts/systems/bounding-database-work-in-a-shared-data-access-service/</link>
+      <pubDate>Fri, 05 Jul 2024 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/systems/bounding-database-work-in-a-shared-data-access-service/</guid>
+      <description>An engineering case study in connection budgets, bounded admission, binary protocol migration, and cache behavior for a shared data access service.</description>
+    </item>
     <item>
       <title>Consistent Hashing for Distributed Systems</title>
       <link>https://prov1dence.top/posts/systems/consistent-hashing/</link>

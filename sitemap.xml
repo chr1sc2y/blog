@@ -41,6 +41,15 @@
     <loc>https://prov1dence.top/posts/ai-agent/google-adk-architecture/</loc>
     <lastmod>2026-02-27T23:01:12+08:00</lastmod>
   </url><url>
+    <loc>https://prov1dence.top/categories/distributed-systems/</loc>
+    <lastmod>2025-11-14T10:00:00+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/posts/systems/rebuilding-a-data-platform-under-continuous-writes/</loc>
+    <lastmod>2025-11-14T10:00:00+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/posts/systems/bounding-database-work-in-a-shared-data-access-service/</loc>
+    <lastmod>2024-07-05T10:00:00+08:00</lastmod>
+  </url><url>
     <loc>https://prov1dence.top/categories/redis/</loc>
     <lastmod>2023-02-01T18:02:04+11:00</lastmod>
   </url><url>
@@ -52,6 +61,12 @@
   </url><url>
     <loc>https://prov1dence.top/posts/disaster-recovery-architecture-on-aws/disaster-recovery-architecture-on-aws-9b3dc135d29c47acbfe19084c57035d5/</loc>
     <lastmod>2023-01-11T09:55:04+11:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/posts/systems/reducing-copy-and-allocation-costs-in-a-cpp-queueing-service/</loc>
+    <lastmod>2022-08-20T10:00:00+08:00</lastmod>
+  </url><url>
+    <loc>https://prov1dence.top/categories/software-engineering/</loc>
+    <lastmod>2022-08-20T10:00:00+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/posts/version-control/git/</loc>
     <lastmod>2022-03-31T19:29:39+08:00</lastmod>
@@ -108,9 +123,6 @@
     <lastmod>2021-10-21T18:01:12+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/posts/systems/consistent-hashing/</loc>
-    <lastmod>2021-09-09T00:00:00+08:00</lastmod>
-  </url><url>
-    <loc>https://prov1dence.top/categories/distributed-systems/</loc>
     <lastmod>2021-09-09T00:00:00+08:00</lastmod>
   </url><url>
     <loc>https://prov1dence.top/categories/python/</loc>

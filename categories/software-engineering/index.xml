@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Software Engineering on Zhengyu Chen</title>
+    <link>https://prov1dence.top/categories/software-engineering/</link>
+    <description>Recent content in Software Engineering on Zhengyu Chen</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 20 Aug 2022 10:00:00 +0800</lastBuildDate>
+    <atom:link href="https://prov1dence.top/categories/software-engineering/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reducing Copy and Allocation Costs in a C&#43;&#43; Queueing Service</title>
+      <link>https://prov1dence.top/posts/systems/reducing-copy-and-allocation-costs-in-a-cpp-queueing-service/</link>
+      <pubDate>Sat, 20 Aug 2022 10:00:00 +0800</pubDate>
+      <guid>https://prov1dence.top/posts/systems/reducing-copy-and-allocation-costs-in-a-cpp-queueing-service/</guid>
+      <description>A focused C&#43;&#43; performance case study: profile expensive queue transitions, establish single ownership, reject stale handles, and validate lifecycle behavior before rollout.</description>
+    </item>
+  </channel>
+</rss>
