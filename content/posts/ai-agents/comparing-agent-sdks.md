@@ -1,12 +1,13 @@
 ---
-title: "Comparing Agent SDKs: Who Owns the Loop, State, and Runtime?"
+title: "Comparing Agent SDKs and Frameworks: Who Owns the Loop, State, and Runtime?"
 date: 2026-10-15T10:00:00+08:00
+lastmod: 2026-10-15
 draft: false
 categories: ["AI Agents"]
-description: "An architectural comparison of the OpenAI client SDK, OpenAI Agents SDK, Claude Agent SDK, Google ADK, Vercel AI SDK, and LangGraph through execution, state, permissions, and recovery."
+description: "Compare OpenAI Agents, Claude, Codex, Google ADK, Vercel AI SDK, LangChain/LangGraph, Pydantic AI, Microsoft Agent Framework, and CrewAI through execution, state, and recovery."
 ---
 
-Agent development frameworks increasingly expose similar vocabulary: tools, sessions, memory, handoffs, and streaming. That vocabulary hides substantial architectural differences. Calling a model through the OpenAI client SDK, embedding Claude Code through the Claude Agent SDK, and compiling a stateful LangGraph workflow place different parts of the system under framework control. Comparing them through a list of supported features misses the decision that will determine most of the integration work: which execution responsibilities the application keeps, and which it delegates.
+Agent development frameworks increasingly expose similar vocabulary: tools, sessions, memory, handoffs, and streaming. That vocabulary hides substantial architectural differences. Defining tools for an OpenAI agent, embedding Claude Code through the Claude Agent SDK, and compiling a stateful LangGraph workflow place different parts of the system under framework control. Comparing them through a list of supported features misses the decision that will determine most of the integration work: which execution responsibilities the application keeps, and which it delegates.
 
 The useful starting point is a layered architecture:
 
@@ -24,7 +25,9 @@ Infrastructure      workers, isolation, storage, identity, telemetry
 
 A framework can span several layers. Its name does not establish where the boundary lies.
 
-This comparison covers the OpenAI client SDK and OpenAI Agents SDK separately, then Claude Agent SDK, Google ADK, and Vercel AI SDK. LangGraph provides an additional reference for explicit workflow state and interruption. The scope is architectural behavior documented and inspected on October 15, 2026. Source links point to inspected commits; documentation links can evolve. These are qualitative engineering judgments, not benchmark results or adoption rankings. Language implementations within a project may expose different capabilities.
+This comparison covers nine agent-development stacks: OpenAI Agents SDK, Claude Agent SDK, Codex SDK, Google ADK, Vercel AI SDK, LangChain/LangGraph, Pydantic AI, Microsoft Agent Framework, and CrewAI. Each provides agent execution or orchestration abstractions. Their useful differences concern reusable agent loops, developed coding harnesses, typed application contracts, and explicit workflows. Those responsibilities overlap, so the comparison follows execution behavior rather than treating every framework as an interchangeable package.
+
+The scope is architectural behavior documented and inspected on October 15, 2026. Source links point to inspected commits; documentation links can evolve. These are qualitative engineering judgments, not benchmark results or adoption rankings. Language implementations within a project may expose different capabilities.
 
 ## 1. Establish the execution boundary
 
@@ -34,45 +37,23 @@ The first comparison is therefore about ownership:
 
 | Integration | Primary abstraction | Main execution responsibility | Application responsibility to examine |
 | --- | --- | --- | --- |
-| OpenAI client SDK | API request and response | Typed access to model and platform APIs | Custom tool loop and business workflow, unless selecting a managed API |
 | OpenAI Agents SDK | Agent and runner | Repeated model/tool execution and agent handoffs | Deployment, tool implementations, storage and approval policy |
 | Claude Agent SDK | Programmable Claude Code session | An existing harness with tools and context management | Process hosting, workspace lifecycle and isolation |
+| Codex SDK | Codex thread and turn | Programmatic execution of the Codex harness | Local runtime, workspaces and thread lifecycle |
 | Google ADK | Agents, runner, events and services | Agent execution with structured workflow components | Service backends, state design and tool boundaries |
 | Vercel AI SDK | Model/provider interface and agent loop | TypeScript generation, tool execution and product streaming | Choice of in-memory or workflow execution and persistence |
-| LangGraph | State graph and checkpointed execution | Explicit transitions and persisted workflow progress | Node logic, checkpointer backend and external-effect semantics |
+| LangChain / LangGraph | High-level agent and state graph | Ready-made agent loops or explicit checkpointed transitions | Choice of abstraction, node logic and external-effect semantics |
+| Pydantic AI | Typed agent, dependencies and output | Tool execution with typed application interfaces | Semantic validation, storage and durable-engine integration |
+| Microsoft Agent Framework | Agents, sessions and workflows | Agent execution and explicit multi-agent coordination | Hosting, checkpoint storage and durable-extension configuration |
+| CrewAI | Agents, tasks, crews and flows | Role/task collaboration and event-driven workflow logic | Task boundaries, persistence and validation of delegated work |
 
-The table describes default integration surfaces rather than hard capability ceilings. OpenAI's current documentation also distinguishes the hosted Agents API from the application-operated Agents SDK. The same client library can access a managed service without becoming an application-side orchestration framework. Likewise, Anthropic distinguishes its client SDK, Agent SDK, and Managed Agents. Both distinctions matter when reviewing an architecture diagram: a library import alone does not reveal where the agent runs. See the official [OpenAI runtime comparison](https://developers.openai.com/api/docs/guides/agents) and [Claude integration comparison](https://code.claude.com/docs/en/agent-sdk/overview).
+The table describes integration surfaces rather than hard capability ceilings. A coding-harness SDK starts with an established file/tool execution model. An agent-loop SDK starts with an application-defined tool contract. A workflow framework gives transitions and state their own explicit representation. For the incident assistant, the relevant decision is whether the product primarily needs repository work, bounded tool use, or a business process that must survive interruption.
 
 I would start a design review by drawing this boundary before discussing model quality. Moving the loop from application code into a framework changes debugging and lifecycle responsibilities even when the underlying model remains identical.
 
 ## 2. Follow one tool call through each architecture
 
-### 2.1 OpenAI client SDK: explicit application control
-
-The ordinary OpenAI client SDK exposes API resources. In the inspected Python implementation, [`Responses` and `AsyncResponses`](https://github.com/openai/openai-python/blob/95dbee9ee406587053a0a21296eb82418073f2aa/src/openai/resources/responses/responses.py) implement the Responses resource. That is a useful place to see the distinction between transporting a request and orchestrating application work.
-
-For a custom function tool, the model can produce a call; the application executes the function and returns its result to the API. Hosted tools have different execution ownership. The official [function-calling guide](https://developers.openai.com/api/docs/guides/function-calling) documents this exchange. Describing every Responses request as a single isolated inference would be misleading, because the API also offers hosted tools and conversation-state mechanisms.
-
-An application-owned loop can be understood through the following deliberately incomplete pseudocode:
-
-```text
-load authorized conversation and task state
-repeat within a task budget:
-    request a response with the currently allowed tools
-    persist the response and any proposed calls
-    if no tool work remains:
-        verify the required result and finish
-    for each proposed application tool call:
-        validate arguments and authorize the exact action
-        execute with timeout and idempotency protection
-        persist the outcome and return it to the conversation
-```
-
-This is a control-flow sketch, not runnable SDK code. It omits streaming, cancellation, provider-specific item formats, concurrency, and approval suspension.
-
-The attraction is direct control. A product with an established workflow engine can use a model as one decision step without introducing a second scheduler. The cost is that the team owns every omitted lifecycle detail. A small successful demonstration does not establish that the resulting loop is operationally complete.
-
-### 2.2 OpenAI Agents SDK: delegate the recurring loop
+### 2.1 OpenAI Agents SDK: delegate the recurring loop
 
 The OpenAI Agents SDK moves recurring agent execution into a runner. An agent definition groups instructions, tools and related behavior; the runner handles repeated execution and handoffs. The inspected [`Runner.run` implementation and its underlying runner](https://github.com/openai/openai-agents-python/blob/17d994bd3045dae71acda676a4ef4762ed8ecd94/src/agents/run.py) make the control flow explicit: final output ends a run, a handoff changes the active agent, and tool calls can lead to another turn. See also the [SDK overview](https://developers.openai.com/api/docs/guides/agents/sdk).
 
@@ -80,7 +61,7 @@ A handoff and a specialist exposed as a tool have different ownership semantics.
 
 My preference would be to use the runner when its execution contract matches the product. Reimplementing a standard tool loop adds maintenance without much differentiation. Conversely, forcing a transaction-oriented workflow into model-directed handoffs can obscure the business states that operations teams need to inspect.
 
-### 2.3 Claude Agent SDK: embed a developed harness
+### 2.2 Claude Agent SDK: embed a developed harness
 
 Claude Agent SDK starts from another point in the stack: it exposes the agent loop, tools and context management used by Claude Code. Python and TypeScript applications can operate that harness programmatically, including built-in file and command tools, sessions, hooks and MCP integrations. The [overview](https://code.claude.com/docs/en/agent-sdk/overview) explicitly distinguishes it from direct client-SDK access.
 
@@ -89,6 +70,14 @@ In the inspected Python source, [`query()`](https://github.com/anthropics/claude
 For repository maintenance, that is an attractive starting point: file inspection, editing and command execution already have a coherent interaction model. For a narrow customer-service product, those capabilities may introduce more runtime surface than the application needs.
 
 The engineering question becomes whether the product wants this harness's working model. Its host must account for workspaces, subprocesses, cancellation and tool permissions. Those responsibilities belong in deployment design, even if the integration begins with a short `query()` call. Anthropic's [hosting guidance](https://code.claude.com/docs/en/agent-sdk/hosting) addresses the operating environment separately from the library API.
+
+### 2.3 Codex SDK: program a coding agent through threads
+
+Codex SDK also embeds an existing coding harness, making it a direct architectural peer of Claude Agent SDK. The official [SDK documentation](https://learn.chatgpt.com/docs/codex-sdk) describes starting, continuing and resuming local Codex threads. In the inspected TypeScript implementation, [`Codex.startThread()` and `resumeThread()`](https://github.com/openai/codex/blob/ac9db7d8b556c7c34a73793aed34b1f980a4fe39/sdk/typescript/src/codex.ts) create thread handles, while [`Thread.run()` and `runStreamed()`](https://github.com/openai/codex/blob/ac9db7d8b556c7c34a73793aed34b1f980a4fe39/sdk/typescript/src/thread.ts) drive turns. The [`CodexExec` transport](https://github.com/openai/codex/blob/ac9db7d8b556c7c34a73793aed34b1f980a4fe39/sdk/typescript/src/exec.ts) manages interaction with a Codex executable.
+
+For an incident assistant that must inspect a repository and attempt a patch, this provides a concrete execution environment to integrate. It also makes the thread and workspace separate lifecycle resources. Resuming a conversation cannot, by itself, establish that the checked-out branch or generated files still match the earlier turn.
+
+I would compare Codex SDK and Claude Agent SDK on repository behavior, permission boundaries, cancellation, event handling and workspace recovery. For a product that needs detailed interactive lifecycle control, OpenAI separately documents [Codex app-server](https://developers.openai.com/blog/codex-as-a-platform); that integration should be evaluated on its own terms. Neither harness should be scored as though it were simply a provider-neutral business-tool loop.
 
 ### 2.4 Google ADK: agents within an event and service architecture
 
@@ -124,26 +113,61 @@ The product-facing advantage is the connection between server-side tool activity
 
 It would nevertheless be outdated to characterize the entire ecosystem as request-bound. The separately packaged [`WorkflowAgent`](https://ai-sdk.dev/docs/agents/workflow-agent) runs inside a workflow and adds durable execution and resumable approvals. Choosing that integration changes the runtime contract. It should be evaluated separately from an ordinary in-memory `ToolLoopAgent`.
 
-### 2.6 LangGraph: make transitions inspectable
+### 2.6 LangChain and LangGraph: choose the level of workflow control
 
-LangGraph provides a useful comparison when the workflow itself is the product's central state machine. Its inspected [`StateGraph` and `compile()`](https://github.com/langchain-ai/langgraph/blob/5eb60aef6f3837a1fb632a8abc6cf8e8da81785b/libs/langgraph/langgraph/graph/state.py) expose state updates, graph construction and checkpointer configuration. The graph structure gives application code a place to represent branching and joins explicitly.
+LangChain and LangGraph occupy related layers. LangChain's [`create_agent`](https://github.com/langchain-ai/langchain/blob/84ba23c414eca6bf6f6ebd1394a3006378113540/libs/langchain_v1/langchain/agents/factory.py) constructs a graph-based agent runtime, giving applications a higher-level entry point for models, tools and middleware. The [agent documentation](https://docs.langchain.com/oss/python/langchain/agents) describes that ready-made loop. An application does not have to design a custom graph merely to use an agent in this ecosystem.
 
-That can be valuable for an incident workflow with mandatory review and remediation stages. It also creates work: the team must define state, reducers and transition conditions. Graph structure earns its complexity when operators need those states to remain meaningful across failures and human intervention. The [persistence documentation](https://docs.langchain.com/oss/python/langgraph/persistence) distinguishes checkpointed thread state from stores used across threads.
+LangGraph becomes the more direct interface when workflow transitions need explicit application structure. Its inspected [`StateGraph` and `compile()`](https://github.com/langchain-ai/langgraph/blob/5eb60aef6f3837a1fb632a8abc6cf8e8da81785b/libs/langgraph/langgraph/graph/state.py) expose state updates, graph construction and checkpointer configuration. The [persistence documentation](https://docs.langchain.com/oss/python/langgraph/persistence) distinguishes checkpointed thread state from stores used across threads.
+
+For an incident assistant, I would start with the higher-level agent when the task is mainly repeated tool use. A custom graph earns its additional state and transition definitions when investigation, review and remediation must remain separately inspectable across failures. Using a graph provides a place to represent those obligations; the application must still define them correctly and make external operations safe to replay.
+
+### 2.7 Pydantic AI: make application contracts explicit
+
+An incident assistant eventually needs to return something the application can act on: an incident identifier, evidence references, a proposed action and a review status. Pydantic AI makes typed dependencies and output definitions central to that integration. Its [`Agent` implementation](https://github.com/pydantic/pydantic-ai/blob/9ac853bb84ffed7ba0edccb026c5b4f3228c1de7/pydantic_ai_slim/pydantic_ai/agent/__init__.py) connects these contracts to agent execution; the official [dependency guide](https://pydantic.dev/docs/ai/core-concepts/dependencies/) explains how tools receive application services through run context.
+
+That separation gives the model a tool interface while keeping a tenant-scoped database client or policy service in application code. It also gives a Python team a concrete seam for dependency substitution during testing. The [output guide](https://pydantic.dev/docs/ai/core-concepts/output/) describes validating returned data against output types.
+
+A valid schema still cannot prove that the cited evidence supports a diagnosis. I would use typed output to reject malformed results, then apply domain checks to verify identifiers, evidence and allowed transitions. This distinguishes interface correctness from task correctness.
+
+Durability remains a separate execution choice. Pydantic AI documents integrations with engines including Temporal and DBOS in its [durable-execution guide](https://pydantic.dev/docs/ai/capabilities/durable_execution/overview/). A typed agent definition alone does not mean a run survives worker replacement. I would evaluate the chosen engine's replay behavior, serialization constraints and deployment cost alongside the agent API.
+
+### 2.8 Microsoft Agent Framework: connect agents and explicit workflows
+
+Microsoft Agent Framework provides another useful comparison for applications that combine autonomous tool use with application-controlled coordination. Its [overview](https://learn.microsoft.com/en-us/agent-framework/overview/) describes agents, session state, middleware and graph-based workflows. Microsoft identifies it as the successor to the agent work in Semantic Kernel and AutoGen; this article evaluates the current framework rather than counting those predecessor APIs as separate contemporary choices.
+
+The inspected Python [`Agent`](https://github.com/microsoft/agent-framework/blob/0cc867d966daa2891c191204b1c9b7a4ff0e7619/python/packages/core/agent_framework/_agents.py), [`Workflow`](https://github.com/microsoft/agent-framework/blob/0cc867d966daa2891c191204b1c9b7a4ff0e7619/python/packages/core/agent_framework/_workflows/_workflow.py) and [`WorkflowBuilder`](https://github.com/microsoft/agent-framework/blob/0cc867d966daa2891c191204b1c9b7a4ff0e7619/python/packages/core/agent_framework/_workflows/_workflow_builder.py) expose both agent execution and workflow composition. The official [workflow capabilities](https://learn.microsoft.com/en-us/agent-framework/workflows/) cover external input, checkpoints and orchestration patterns. For the incident assistant, these provide a place to distinguish an investigative agent from a mandatory review transition.
+
+The hosting boundary deserves a separate decision. Microsoft's [Durable Extension](https://learn.microsoft.com/en-us/agent-framework/hosting/azure-functions) adds durable agent and workflow execution through Durable Task infrastructure, with Azure Functions and self-hosted options. Persistence and recovery therefore depend on the selected integration, storage and workers; they should not be inferred from the core agent definition.
+
+I would evaluate this stack when its application interfaces and deployment options fit the team. The trade-off is integration breadth: verify the exact language, package and hosting path instead of assuming every documented capability is available in every configuration.
+
+### 2.9 CrewAI: separate role collaboration from workflow control
+
+CrewAI expresses collaboration through agents, tasks and crews. Its [crew documentation](https://docs.crewai.com/en/concepts/crews) describes coordinating task execution through a configured process. The inspected [`Crew.kickoff()`](https://github.com/crewAIInc/crewAI/blob/aa5f2acd9b48782b6b6a756bcef24cc54ac0530b/lib/crewai/src/crewai/crew.py) is a concrete entry point into that execution model.
+
+The incident assistant could express investigation and review as separate tasks, each with an expected result and assigned responsibility. This can make specialist responsibilities easy to describe. My concern would be whether each delegation produces additional evidence or merely another model-generated opinion. A reviewer role needs a concrete evidence contract and an independent check to provide meaningful assurance.
+
+CrewAI also exposes Flows for event-driven application logic, branching and state. Its inspected [`Flow`](https://github.com/crewAIInc/crewAI/blob/aa5f2acd9b48782b6b6a756bcef24cc54ac0530b/lib/crewai/src/crewai/flow/flow.py) implementation and [Flow documentation](https://docs.crewai.com/en/concepts/flows) provide a separate surface for controlling how work advances. A flow can coordinate crew execution while application logic determines what follows.
+
+I would inspect flow persistence and resume configuration independently of crew memory. Restoring state does not by itself establish that an interrupted external write cannot happen twice. The appeal is a role/task model connected to explicit flow control; the evaluation burden is to make task outputs, delegation cost and recovery semantics observable.
 
 ## 3. Separate conversation memory from execution recovery
 
-All six approaches can participate in a stateful application. That statement provides almost no guidance until the kind of state is specified.
+All nine stacks can participate in a stateful application. That statement provides almost no guidance until the kind of state is specified.
 
 **Conversation state** contains messages and tool results. **Business state** contains authoritative records such as an approved incident action. **Execution state** records what the runtime has completed and where it can resume. A workspace adds another resource: files may survive even when the worker or conversation does not.
 
 | Approach | State surface to inspect | Recovery question |
 | --- | --- | --- |
-| OpenAI client SDK | Application records and API conversation mechanisms | Which pending calls and outcomes can the application reconstruct? |
 | OpenAI Agents SDK | Sessions, run results and resumable run state | Which objects are persisted, and who schedules continuation? |
 | Claude Agent SDK | Session identity and persisted session data | Can a replacement worker access both the session and its workspace? |
+| Codex SDK | Persisted thread history and a separate workspace | Does the restored thread still refer to the intended repository state? |
 | Google ADK | Session service, events and state | What survives with the selected backend and resume configuration? |
 | Vercel AI SDK | Stored messages; workflow state when using WorkflowAgent | Is only the transcript durable, or is execution durable too? |
-| LangGraph | Thread checkpoints and cross-thread stores | What work re-executes when the graph resumes? |
+| LangChain / LangGraph | Agent state, thread checkpoints and cross-thread stores | What work re-executes when the graph resumes? |
+| Pydantic AI | Message history and the selected durable engine | Which model/tool steps are recorded, and can dependencies be reconstructed? |
+| Microsoft Agent Framework | Sessions, workflow checkpoints and optional Durable Task integration | Which backing store and hosting model provide recovery? |
+| CrewAI | Crew memory, flow state and configured persistence | What state is restored, and which unfinished work can repeat? |
 
 The OpenAI Agents SDK [results and state guide](https://developers.openai.com/api/docs/guides/agents/results) describes result and continuation surfaces. Claude's [session guide](https://code.claude.com/docs/en/agent-sdk/sessions) describes continuing earlier sessions. ADK's [state guide](https://adk.dev/sessions/state/) makes persistence dependent on the selected session service; an in-memory service does not survive a process restart. These are different contracts, even though each is described with the word “session.”
 
@@ -165,6 +189,8 @@ The frameworks provide different interception points. OpenAI Agents SDK document
 
 My preferred approval unit is a concrete operation: tool name, validated arguments, tenant, target revision and expiry. The service should verify those values immediately before execution. A chat message saying “approved” is insufficient unless it is authenticated and bound to the pending operation.
 
+Typed dependencies and structured outputs strengthen the application boundary in a different way. Pydantic AI emphasizes these contracts; other frameworks expose their own schema and validation surfaces. Across stacks, an output that names a valid service can still prescribe the wrong remediation. Validation must check the relationship between evidence, requested action and current business state.
+
 The containment boundary matters as much as the permission callback. A shell-capable agent can invoke a network client through an allowed command. An application function can access credentials even when it never launches a subprocess. Tool admission, operating-system isolation and downstream authorization protect different boundaries.
 
 This distinction changes framework selection. If the application needs repository exploration, a developed filesystem harness may save substantial implementation work. If it only needs three business APIs, deliberately narrow functions can simplify the authority model. The relevant comparison is the amount of executable capability the product actually needs.
@@ -175,12 +201,16 @@ Framework features do not establish task success, latency or cost. A useful eval
 
 For the incident assistant, I would begin with the same evidence corpus, tool contracts, task budget and acceptance criteria. Where model compatibility permits, use the same model. Where a harness is tied to a different model or execution environment, report that difference explicitly and avoid attributing the entire outcome to the SDK.
 
+Provider portability should also be tested as behavior. Two adapters can accept similar tool schemas while differing in supported output modes, parallel calls or native tools. A useful substitution test changes the model and reruns the same acceptance suite; successfully changing a model name is only the first step.
+
 The evaluation should include failure as well as completion:
 
 | Scenario | Evidence to collect |
 | --- | --- |
 | Routine incident investigation | Correct diagnosis, cited evidence, tool and model-call counts |
 | A tool returns a malformed result | Validation outcome and whether the agent invents missing evidence |
+| A typed result cites unrelated evidence | Whether domain validation catches a semantically wrong answer |
+| A specialist delegates work to another agent | Additional evidence, model-call overhead and final-answer ownership |
 | A worker dies after an external update | Duplicate effects, reconciliation and restart behavior |
 | Approval arrives after a deployment changes | Whether the stale action is rejected or reauthorized |
 | A document includes malicious instructions | Which tool requests reach the authorization boundary |
@@ -194,16 +224,19 @@ Cost comparison should include failed attempts, repeated context, retry behavior
 
 ## 6. Choose the abstraction that matches the product
 
-My selection would follow the dominant engineering constraint.
+My selection would follow the dominant engineering constraint. These are starting points for evaluation, not exclusive capabilities. Several stacks can satisfy the same requirement through different integrations.
 
 | Dominant requirement | Starting point I would evaluate | Main trade-off to verify |
 | --- | --- | --- |
-| Existing workflow engine; precise control over model calls | OpenAI client SDK with an explicit application loop | Ownership of retries, continuation and tool scheduling |
 | Application-defined tools and agent delegation | OpenAI Agents SDK | Fit between runner semantics and business transitions |
-| Repository work with file and command tools | Claude Agent SDK | Harness assumptions, worker hosting and isolation |
+| Repository work with file and command tools | Claude Agent SDK or Codex SDK | Harness assumptions, worker hosting, thread/workspace recovery and isolation |
 | Composable agent pipelines with explicit service backends | Google ADK | State ownership, backend configuration and language parity |
 | TypeScript product with interactive model/tool streaming | Vercel AI SDK | In-memory loop versus durable workflow integration |
+| A ready-made agent loop with ecosystem middleware | LangChain agents | Whether high-level customization is enough before introducing a custom graph |
 | Explicit branching, checkpoints and delayed human decisions | LangGraph | Graph complexity and replay-safe external operations |
+| Typed Python dependencies and structured application results | Pydantic AI | Schema validity versus semantic correctness; chosen durable engine |
+| Agent/workflow composition with Microsoft application integrations | Microsoft Agent Framework | Language/package parity and the hosting/durability boundary |
+| Role-based specialist tasks coordinated by an explicit flow | CrewAI | Delegation overhead, task-output quality and persistence semantics |
 
 These choices can coexist. A TypeScript UI can stream events from a separate agent worker. A durable workflow can call a model client for bounded decisions. A repository harness can be one specialized stage inside a broader business process. Combining them is useful when ownership remains explicit; overlapping schedulers and competing session stores make failures harder to explain.
 
