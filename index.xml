@@ -9,11 +9,11 @@
     <lastBuildDate>Thu, 15 Oct 2026 10:00:00 +0800</lastBuildDate>
     <atom:link href="https://prov1dence.top/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Comparing Agent SDKs: Who Owns the Loop, State, and Runtime?</title>
+      <title>Comparing Agent SDKs and Frameworks: Who Owns the Loop, State, and Runtime?</title>
       <link>https://prov1dence.top/posts/ai-agents/comparing-agent-sdks/</link>
       <pubDate>Thu, 15 Oct 2026 10:00:00 +0800</pubDate>
       <guid>https://prov1dence.top/posts/ai-agents/comparing-agent-sdks/</guid>
-      <description>An architectural comparison of the OpenAI client SDK, OpenAI Agents SDK, Claude Agent SDK, Google ADK, Vercel AI SDK, and LangGraph through execution, state, permissions, and recovery.</description>
+      <description>Compare OpenAI Agents, Claude, Codex, Google ADK, Vercel AI SDK, LangChain/LangGraph, Pydantic AI, Microsoft Agent Framework, and CrewAI through execution, state, and recovery.</description>
     </item>
     <item>
       <title>Physical AI and Simulation Generation Basics</title>
